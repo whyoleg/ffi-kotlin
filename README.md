@@ -1,2 +1,3 @@
-# kxcme
-kotlinx.cinterop multiplatform experiment
+# ffi-kotlin
+
+Kotlin Multiplatform Foreign Function Interface experiment
