@@ -6,10 +6,6 @@ import dev.whyoleg.ffi.*
 import java.lang.foreign.*
 import java.lang.invoke.*
 
-//expect class OSSL_LIB_CTX : COpaque
-//expect class OSSL_PARAM : CStructVariable
-//expect class EVP_MD : COpaque
-
 actual class OSSL_LIB_CTX(segment: MemorySegment) : COpaque(segment)
 
 actual class EVP_MD(segment: MemorySegment) : COpaque(segment)
@@ -24,15 +20,15 @@ private val EVP_MD_fetch_MH: MethodHandle = Runtime.methodHandle(
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS)
 )
 
-actual fun CInteropScope.EVP_MD_fetch(
+actual fun EVP_MD_fetch(
     ctx: CPointer<OSSL_LIB_CTX>?,
-    algorithm: String?,
-    properties: String?,
+    algorithm: CString?,
+    properties: CString?,
 ): CPointer<EVP_MD>? = CPointer(
     EVP_MD_fetch_MH.invokeExact(
         ctx.segment,
-        algorithm?.let(::alloc).segment,
-        properties?.let(::alloc).segment,
+        algorithm.segment,
+        properties.segment,
     ) as MemorySegment,
     ::EVP_MD
 )
@@ -42,7 +38,7 @@ private val EVP_MD_CTX_new_MH: MethodHandle = Runtime.methodHandle(
     result = ValueLayout.ADDRESS,
 )
 
-actual fun CInteropScope.EVP_MD_CTX_new(): CPointer<EVP_MD_CTX>? {
+actual fun EVP_MD_CTX_new(): CPointer<EVP_MD_CTX>? {
     return CPointer(EVP_MD_CTX_new_MH.invokeExact() as MemorySegment, ::EVP_MD_CTX)
 }
 
@@ -52,7 +48,7 @@ private val EVP_MD_get_size_MH: MethodHandle = Runtime.methodHandle(
     args = arrayOf(ValueLayout.ADDRESS)
 )
 
-actual fun CInteropScope.EVP_MD_get_size(md: CPointer<EVP_MD>?): Int {
+actual fun EVP_MD_get_size(md: CPointer<EVP_MD>?): Int {
     return EVP_MD_get_size_MH.invokeExact(md.segment) as Int
 }
 
@@ -62,7 +58,7 @@ private val EVP_DigestInit_MH: MethodHandle = Runtime.methodHandle(
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS)
 )
 
-actual fun CInteropScope.EVP_DigestInit(
+actual fun EVP_DigestInit(
     ctx: CPointer<EVP_MD_CTX>?,
     type: CPointer<EVP_MD>?,
 ): Int {
@@ -75,7 +71,7 @@ private val EVP_DigestUpdate_MH: MethodHandle = Runtime.methodHandle(
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG)
 )
 
-actual fun CInteropScope.EVP_DigestUpdate(
+actual fun EVP_DigestUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     d: CPointer<*>?,
     cnt: CULong,
@@ -89,7 +85,7 @@ private val EVP_DigestFinal_MH: MethodHandle = Runtime.methodHandle(
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS)
 )
 
-actual fun CInteropScope.EVP_DigestFinal(
+actual fun EVP_DigestFinal(
     ctx: CPointer<EVP_MD_CTX>?,
     md: CPointer<CUByteVariable>?,
     s: CPointer<CUIntVariable>?,
@@ -102,7 +98,7 @@ private val EVP_MD_CTX_free_MH: MethodHandle = Runtime.methodHandle(
     args = arrayOf(ValueLayout.ADDRESS)
 )
 
-actual fun CInteropScope.EVP_MD_CTX_free(ctx: CPointer<EVP_MD_CTX>?) {
+actual fun EVP_MD_CTX_free(ctx: CPointer<EVP_MD_CTX>?) {
     EVP_MD_CTX_free_MH.invokeExact(ctx.segment)
 }
 
@@ -111,7 +107,7 @@ private val EVP_MD_free_MH: MethodHandle = Runtime.methodHandle(
     args = arrayOf(ValueLayout.ADDRESS)
 )
 
-actual fun CInteropScope.EVP_MD_free(ctx: CPointer<EVP_MD>?) {
+actual fun EVP_MD_free(ctx: CPointer<EVP_MD>?) {
     EVP_MD_free_MH.invokeExact(ctx.segment)
 }
 
@@ -121,15 +117,15 @@ private val EVP_MAC_fetch_MH: MethodHandle = Runtime.methodHandle(
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS)
 )
 
-actual fun CInteropScope.EVP_MAC_fetch(
+actual fun EVP_MAC_fetch(
     libctx: CPointer<OSSL_LIB_CTX>?,
-    algorithm: String?,
-    properties: String?,
+    algorithm: CString?,
+    properties: CString?,
 ): CPointer<EVP_MAC>? = CPointer(
     EVP_MAC_fetch_MH.invokeExact(
         libctx.segment,
-        algorithm?.let(::alloc).segment,
-        properties?.let(::alloc).segment,
+        algorithm.segment,
+        properties.segment,
     ) as MemorySegment,
     ::EVP_MAC
 )
@@ -140,7 +136,7 @@ private val EVP_MAC_CTX_new_MH: MethodHandle = Runtime.methodHandle(
     args = arrayOf(ValueLayout.ADDRESS)
 )
 
-actual fun CInteropScope.EVP_MAC_CTX_new(
+actual fun EVP_MAC_CTX_new(
     mac: CPointer<EVP_MAC>?,
 ): CPointer<EVP_MAC_CTX>? {
     return CPointer(EVP_MAC_CTX_new_MH.invokeExact(mac.segment) as MemorySegment, ::EVP_MAC_CTX)
@@ -152,7 +148,7 @@ private val EVP_MAC_init_MH: MethodHandle = Runtime.methodHandle(
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG, OSSL_PARAM_Type.layout)
 )
 
-actual fun CInteropScope.EVP_MAC_init(
+actual fun EVP_MAC_init(
     ctx: CPointer<EVP_MAC_CTX>?,
     key: CPointer<CUByteVariable>?,
     keylen: CULong,
@@ -172,7 +168,7 @@ private val EVP_MAC_CTX_get_mac_size_MH: MethodHandle = Runtime.methodHandle(
     args = arrayOf(ValueLayout.ADDRESS)
 )
 
-actual fun CInteropScope.EVP_MAC_CTX_get_mac_size(
+actual fun EVP_MAC_CTX_get_mac_size(
     ctx: CPointer<EVP_MAC_CTX>?,
 ): CULong {
     return (EVP_MAC_CTX_get_mac_size_MH.invokeExact(ctx.segment) as Long).toULong()
@@ -184,7 +180,7 @@ private val EVP_MAC_update_MH: MethodHandle = Runtime.methodHandle(
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG)
 )
 
-actual fun CInteropScope.EVP_MAC_update(
+actual fun EVP_MAC_update(
     ctx: CPointer<EVP_MAC_CTX>?,
     data: CPointer<CUByteVariable>?,
     datalen: CULong,
@@ -202,7 +198,7 @@ private val EVP_MAC_final_MH: MethodHandle = Runtime.methodHandle(
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG)
 )
 
-actual fun CInteropScope.EVP_MAC_final(
+actual fun EVP_MAC_final(
     ctx: CPointer<EVP_MAC_CTX>?,
     out: CPointer<CUByteVariable>?,
     outl: CPointer<CULongVariable>?,
@@ -240,15 +236,15 @@ private val OSSL_PARAM_construct_utf8_string_MH: MethodHandle = Runtime.methodHa
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG)
 )
 
-actual fun CInteropScope.OSSL_PARAM_construct_utf8_string(
-    key: String?,
+actual fun OSSL_PARAM_construct_utf8_string(
+    key: CString?,
     buf: CString?,
     bsize: CULong,
 ): CValue<OSSL_PARAM> = cValue(
     OSSL_PARAM_Type,
     OSSL_PARAM_construct_utf8_string_MH.invokeExact(
-        arena as SegmentAllocator,
-        key?.let(::alloc).segment,
+        Runtime.autoSegmentAllocator,
+        key.segment,
         buf.segment,
         bsize.toLong()
     ) as MemorySegment
@@ -259,9 +255,9 @@ private val OSSL_PARAM_construct_end_MH: MethodHandle = Runtime.methodHandle(
     result = OSSL_PARAM_Type.layout
 )
 
-actual fun CInteropScope.OSSL_PARAM_construct_end(): CValue<OSSL_PARAM> = cValue(
+actual fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM> = cValue(
     OSSL_PARAM_Type,
     OSSL_PARAM_construct_end_MH.invokeExact(
-        arena as SegmentAllocator
+        Runtime.autoSegmentAllocator
     ) as MemorySegment
 )

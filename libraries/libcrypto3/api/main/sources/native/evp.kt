@@ -15,30 +15,30 @@ actual typealias EVP_MD_CTX = dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MD_CTX
 actual typealias EVP_MAC = dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC
 actual typealias EVP_MAC_CTX = dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC_CTX
 
-actual fun CInteropScope.EVP_MD_fetch(
+actual fun EVP_MD_fetch(
     ctx: CPointer<OSSL_LIB_CTX>?,
-    algorithm: String?,
-    properties: String?,
+    algorithm: CString?,
+    properties: CString?,
 ): CPointer<EVP_MD>? {
-    return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MD_fetch(ctx, algorithm, properties)
+    return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MD_fetch(ctx, algorithm?.toKString(), properties?.toKString())
 }
 
-actual fun CInteropScope.EVP_MD_CTX_new(): CPointer<EVP_MD_CTX>? {
+actual fun EVP_MD_CTX_new(): CPointer<EVP_MD_CTX>? {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MD_CTX_new()
 }
 
-actual fun CInteropScope.EVP_MD_get_size(md: CPointer<EVP_MD>?): Int {
+actual fun EVP_MD_get_size(md: CPointer<EVP_MD>?): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MD_get_size(md)
 }
 
-actual fun CInteropScope.EVP_DigestInit(
+actual fun EVP_DigestInit(
     ctx: CPointer<EVP_MD_CTX>?,
     type: CPointer<EVP_MD>?,
 ): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_DigestInit(ctx, type)
 }
 
-actual fun CInteropScope.EVP_DigestUpdate(
+actual fun EVP_DigestUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     d: CPointer<*>?,
     cnt: CULong,
@@ -46,7 +46,7 @@ actual fun CInteropScope.EVP_DigestUpdate(
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_DigestUpdate(ctx, d, cnt)
 }
 
-actual fun CInteropScope.EVP_DigestFinal(
+actual fun EVP_DigestFinal(
     ctx: CPointer<EVP_MD_CTX>?,
     md: CPointer<CUByteVariable>?,
     s: CPointer<CUIntVariable>?,
@@ -54,27 +54,27 @@ actual fun CInteropScope.EVP_DigestFinal(
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_DigestFinal(ctx, md, s)
 }
 
-actual fun CInteropScope.EVP_MD_CTX_free(ctx: CPointer<EVP_MD_CTX>?) {
+actual fun EVP_MD_CTX_free(ctx: CPointer<EVP_MD_CTX>?) {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MD_CTX_free(ctx)
 }
 
-actual fun CInteropScope.EVP_MD_free(ctx: CPointer<EVP_MD>?) {
+actual fun EVP_MD_free(ctx: CPointer<EVP_MD>?) {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MD_free(ctx)
 }
 
-actual fun CInteropScope.EVP_MAC_fetch(
+actual fun EVP_MAC_fetch(
     libctx: CPointer<OSSL_LIB_CTX>?,
-    algorithm: String?,
-    properties: String?,
+    algorithm: CString?,
+    properties: CString?,
 ): CPointer<EVP_MAC>? {
-    return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC_fetch(libctx, algorithm, properties)
+    return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC_fetch(libctx, algorithm?.toKString(), properties?.toKString())
 }
 
-actual fun CInteropScope.EVP_MAC_CTX_new(mac: CPointer<EVP_MAC>?): CPointer<EVP_MAC_CTX>? {
+actual fun EVP_MAC_CTX_new(mac: CPointer<EVP_MAC>?): CPointer<EVP_MAC_CTX>? {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC_CTX_new(mac)
 }
 
-actual fun CInteropScope.EVP_MAC_init(
+actual fun EVP_MAC_init(
     ctx: CPointer<EVP_MAC_CTX>?,
     key: CPointer<CUByteVariable>?,
     keylen: CULong,
@@ -83,13 +83,13 @@ actual fun CInteropScope.EVP_MAC_init(
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC_init(ctx, key, keylen, params)
 }
 
-actual fun CInteropScope.EVP_MAC_CTX_get_mac_size(
+actual fun EVP_MAC_CTX_get_mac_size(
     ctx: CPointer<EVP_MAC_CTX>?,
 ): CULong {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC_CTX_get_mac_size(ctx)
 }
 
-actual fun CInteropScope.EVP_MAC_update(
+actual fun EVP_MAC_update(
     ctx: CPointer<EVP_MAC_CTX>?,
     data: CPointer<CUByteVariable>?,
     datalen: CULong,
@@ -97,7 +97,7 @@ actual fun CInteropScope.EVP_MAC_update(
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC_update(ctx, data, datalen)
 }
 
-actual fun CInteropScope.EVP_MAC_final(
+actual fun EVP_MAC_final(
     ctx: CPointer<EVP_MAC_CTX>?,
     out: CPointer<CUByteVariable>?,
     outl: CPointer<CULongVariable>?,
@@ -114,14 +114,14 @@ actual fun EVP_MAC_free(ctx: CPointer<EVP_MAC>?) {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC_free(ctx)
 }
 
-actual fun CInteropScope.OSSL_PARAM_construct_utf8_string(
-    key: String?,
+actual fun OSSL_PARAM_construct_utf8_string(
+    key: CString?,
     buf: CString?,
     bsize: CULong,
 ): CValue<OSSL_PARAM> {
-    return dev.whyoleg.ffi.libcrypto3.cinterop.OSSL_PARAM_construct_utf8_string(key?.let(::alloc), buf, bsize)
+    return dev.whyoleg.ffi.libcrypto3.cinterop.OSSL_PARAM_construct_utf8_string(key, buf, bsize)
 }
 
-actual fun CInteropScope.OSSL_PARAM_construct_end(): CValue<OSSL_PARAM> {
+actual fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM> {
     return dev.whyoleg.ffi.libcrypto3.cinterop.OSSL_PARAM_construct_end()
 }

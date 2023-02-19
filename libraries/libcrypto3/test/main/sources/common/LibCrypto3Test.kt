@@ -14,7 +14,7 @@ abstract class LibCrypto3Test {
 
     @Test
     fun testSha(): Unit = cInteropScope {
-        val md = checkNotNull(EVP_MD_fetch(null, "SHA256", null))
+        val md = checkNotNull(EVP_MD_fetch(null, alloc("SHA256"), null))
         val digest = try {
             val context = checkNotNull(EVP_MD_CTX_new())
             try {
@@ -38,7 +38,7 @@ abstract class LibCrypto3Test {
 
     @Test
     fun testHmac(): Unit = cInteropScope {
-        val mac = checkNotNull(EVP_MAC_fetch(null, "HMAC", null))
+        val mac = checkNotNull(EVP_MAC_fetch(null, alloc("HMAC"), null))
         val signature = try {
             val context = EVP_MAC_CTX_new(mac)
             try {
@@ -51,7 +51,7 @@ abstract class LibCrypto3Test {
                                 keylen = keySize.toULong(),
                                 params = allocArrayOf(
                                     OSSL_PARAM_Type,
-                                    OSSL_PARAM_construct_utf8_string("digest", alloc("SHA256"), 0UL),
+                                    OSSL_PARAM_construct_utf8_string(alloc("digest"), alloc("SHA256"), 0UL),
                                     OSSL_PARAM_construct_end()
                                 )
                             )
