@@ -14,7 +14,7 @@ actual class EVP_MD_CTX(segment: MemorySegment) : COpaque(segment)
 actual class EVP_MAC(segment: MemorySegment) : COpaque(segment)
 actual class EVP_MAC_CTX(segment: MemorySegment) : COpaque(segment)
 
-private val EVP_MD_fetch_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_MD_fetch_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_MD_fetch",
     result = ValueLayout.ADDRESS,
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS)
@@ -33,7 +33,7 @@ actual fun EVP_MD_fetch(
     ::EVP_MD
 )
 
-private val EVP_MD_CTX_new_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_MD_CTX_new_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_MD_CTX_new",
     result = ValueLayout.ADDRESS,
 )
@@ -42,7 +42,7 @@ actual fun EVP_MD_CTX_new(): CPointer<EVP_MD_CTX>? {
     return CPointer(EVP_MD_CTX_new_MH.invokeExact() as MemorySegment, ::EVP_MD_CTX)
 }
 
-private val EVP_MD_get_size_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_MD_get_size_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_MD_get_size",
     result = ValueLayout.JAVA_INT,
     args = arrayOf(ValueLayout.ADDRESS)
@@ -52,7 +52,7 @@ actual fun EVP_MD_get_size(md: CPointer<EVP_MD>?): Int {
     return EVP_MD_get_size_MH.invokeExact(md.segment) as Int
 }
 
-private val EVP_DigestInit_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_DigestInit_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_DigestInit",
     result = ValueLayout.JAVA_INT,
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS)
@@ -65,7 +65,7 @@ actual fun EVP_DigestInit(
     return EVP_DigestInit_MH.invokeExact(ctx.segment, type.segment) as Int
 }
 
-private val EVP_DigestUpdate_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_DigestUpdate_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_DigestUpdate",
     result = ValueLayout.JAVA_INT,
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG)
@@ -79,7 +79,7 @@ actual fun EVP_DigestUpdate(
     return EVP_DigestUpdate_MH.invokeExact(ctx.segment, d.segment, cnt.toLong()) as Int
 }
 
-private val EVP_DigestFinal_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_DigestFinal_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_DigestFinal",
     result = ValueLayout.JAVA_INT,
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS)
@@ -93,7 +93,7 @@ actual fun EVP_DigestFinal(
     return EVP_DigestFinal_MH.invokeExact(ctx.segment, md.segment, s.segment) as Int
 }
 
-private val EVP_MD_CTX_free_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_MD_CTX_free_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_MD_CTX_free",
     args = arrayOf(ValueLayout.ADDRESS)
 )
@@ -102,7 +102,7 @@ actual fun EVP_MD_CTX_free(ctx: CPointer<EVP_MD_CTX>?) {
     EVP_MD_CTX_free_MH.invokeExact(ctx.segment)
 }
 
-private val EVP_MD_free_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_MD_free_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_MD_free",
     args = arrayOf(ValueLayout.ADDRESS)
 )
@@ -111,7 +111,7 @@ actual fun EVP_MD_free(ctx: CPointer<EVP_MD>?) {
     EVP_MD_free_MH.invokeExact(ctx.segment)
 }
 
-private val EVP_MAC_fetch_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_MAC_fetch_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_MAC_fetch",
     result = ValueLayout.ADDRESS,
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS)
@@ -130,7 +130,7 @@ actual fun EVP_MAC_fetch(
     ::EVP_MAC
 )
 
-private val EVP_MAC_CTX_new_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_MAC_CTX_new_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_MAC_CTX_new",
     result = ValueLayout.ADDRESS,
     args = arrayOf(ValueLayout.ADDRESS)
@@ -142,7 +142,7 @@ actual fun EVP_MAC_CTX_new(
     return CPointer(EVP_MAC_CTX_new_MH.invokeExact(mac.segment) as MemorySegment, ::EVP_MAC_CTX)
 }
 
-private val EVP_MAC_init_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_MAC_init_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_MAC_init",
     result = ValueLayout.JAVA_INT,
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG, OSSL_PARAM_Type.layout)
@@ -162,7 +162,7 @@ actual fun EVP_MAC_init(
     ) as Int
 }
 
-private val EVP_MAC_CTX_get_mac_size_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_MAC_CTX_get_mac_size_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_MAC_CTX_get_mac_size",
     result = ValueLayout.JAVA_LONG,
     args = arrayOf(ValueLayout.ADDRESS)
@@ -174,7 +174,7 @@ actual fun EVP_MAC_CTX_get_mac_size(
     return (EVP_MAC_CTX_get_mac_size_MH.invokeExact(ctx.segment) as Long).toULong()
 }
 
-private val EVP_MAC_update_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_MAC_update_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_MAC_update",
     result = ValueLayout.JAVA_INT,
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG)
@@ -192,7 +192,7 @@ actual fun EVP_MAC_update(
     ) as Int
 }
 
-private val EVP_MAC_final_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_MAC_final_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_MAC_final",
     result = ValueLayout.JAVA_INT,
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG)
@@ -212,7 +212,7 @@ actual fun EVP_MAC_final(
     ) as Int
 }
 
-private val EVP_MAC_CTX_free_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_MAC_CTX_free_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_MAC_CTX_free",
     args = arrayOf(ValueLayout.ADDRESS)
 )
@@ -221,7 +221,7 @@ actual fun EVP_MAC_CTX_free(ctx: CPointer<EVP_MAC_CTX>?) {
     EVP_MAC_CTX_free_MH.invokeExact(ctx.segment)
 }
 
-private val EVP_MAC_free_MH: MethodHandle = Runtime.methodHandle(
+private val EVP_MAC_free_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "EVP_MAC_free",
     args = arrayOf(ValueLayout.ADDRESS)
 )
@@ -230,7 +230,7 @@ actual fun EVP_MAC_free(ctx: CPointer<EVP_MAC>?) {
     EVP_MAC_free_MH.invokeExact(ctx.segment)
 }
 
-private val OSSL_PARAM_construct_utf8_string_MH: MethodHandle = Runtime.methodHandle(
+private val OSSL_PARAM_construct_utf8_string_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "OSSL_PARAM_construct_utf8_string",
     result = OSSL_PARAM_Type.layout,
     args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG)
@@ -243,14 +243,14 @@ actual fun OSSL_PARAM_construct_utf8_string(
 ): CValue<OSSL_PARAM> = cValue(
     OSSL_PARAM_Type,
     OSSL_PARAM_construct_utf8_string_MH.invokeExact(
-        Runtime.autoSegmentAllocator,
+        Libcrypto3.autoSegmentAllocator,
         key.segment,
         buf.segment,
         bsize.toLong()
     ) as MemorySegment
 )
 
-private val OSSL_PARAM_construct_end_MH: MethodHandle = Runtime.methodHandle(
+private val OSSL_PARAM_construct_end_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "OSSL_PARAM_construct_end",
     result = OSSL_PARAM_Type.layout
 )
@@ -258,6 +258,6 @@ private val OSSL_PARAM_construct_end_MH: MethodHandle = Runtime.methodHandle(
 actual fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM> = cValue(
     OSSL_PARAM_Type,
     OSSL_PARAM_construct_end_MH.invokeExact(
-        Runtime.autoSegmentAllocator
+        Libcrypto3.autoSegmentAllocator
     ) as MemorySegment
 )

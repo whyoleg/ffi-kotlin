@@ -7,14 +7,14 @@ import java.lang.foreign.*
 import java.lang.invoke.*
 
 
-private val ERR_get_error_MH: MethodHandle = Runtime.methodHandle(
+private val ERR_get_error_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "ERR_get_error",
     result = ValueLayout.JAVA_LONG
 )
 
 actual fun ERR_get_error(): CULong = (ERR_get_error_MH.invokeExact() as Long).toULong()
 
-private val ERR_error_string_MH: MethodHandle = Runtime.methodHandle(
+private val ERR_error_string_MH: MethodHandle = Libcrypto3.methodHandle(
     name = "ERR_error_string",
     result = ValueLayout.ADDRESS.asUnbounded(), //TODO: looks like unbounded should be for every result
     args = arrayOf(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS)
