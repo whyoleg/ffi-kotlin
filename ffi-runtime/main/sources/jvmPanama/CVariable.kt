@@ -5,7 +5,7 @@ import java.lang.foreign.*
 public actual abstract class CVariable
 internal constructor(segment: MemorySegment) : CPointed(segment)
 
-public actual abstract class CVariableType<T : CVariable>
-internal constructor() {
-    internal abstract fun allocate(allocator: SegmentAllocator): T
-}
+public actual abstract class CVariableType<T : CVariable>(
+    internal val wrap: (MemorySegment) -> T,
+    public val layout: MemoryLayout,
+)

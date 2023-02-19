@@ -4,5 +4,5 @@ import java.lang.foreign.*
 
 public actual abstract class CPointed
 internal constructor(
-    internal val segment: MemorySegment,
+    public val segment: MemorySegment,
 )

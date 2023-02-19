@@ -9,3 +9,11 @@ public expect var CByteVariable.value: CByte
 
 public expect fun CPointer<CByteVariable>.toUByte(): CPointer<CUByteVariable>
 public expect fun CPointer<CUByteVariable>.toByte(): CPointer<CByteVariable>
+
+//TODO: overall should be like this, but it's not possible to make it like this because of compatibility with cinterop
+// may be later?
+//public expect class ByteVariable : CVariable {
+//    public var value: Byte
+//
+//    public companion object Type : CVariableType<ByteVariable>
+//}

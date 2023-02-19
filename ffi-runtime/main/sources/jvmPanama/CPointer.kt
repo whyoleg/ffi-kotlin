@@ -23,5 +23,8 @@ public inline fun <T : CPointed> CPointer(segment: MemorySegment, block: (Memory
     return CPointer(block(segment))
 }
 
+
 //public val CPointer<*>.segment: MemorySegment get() = pointed.segment
-public val CPointer<*>?.segment: MemorySegment get() = this?.pointed?.segment ?: MemorySegment.NULL //TODO!!!
+public val CPointer<*>?.segment: MemorySegment get() = this?.pointed?.segment.orNull
+
+public val MemorySegment?.orNull: MemorySegment get() = this ?: MemorySegment.NULL

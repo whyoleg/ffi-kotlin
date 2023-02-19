@@ -2,12 +2,9 @@ package dev.whyoleg.ffi
 
 import java.lang.foreign.*
 
-public actual class CByteVariable
-internal constructor(segment: MemorySegment) : CVariable(segment)
+public actual class CByteVariable(segment: MemorySegment) : CVariable(segment)
 
-public actual object CByteVariableType : CVariableType<CByteVariable>() {
-    override fun allocate(allocator: SegmentAllocator): CByteVariable = CByteVariable(allocator.allocate(ValueLayout.JAVA_BYTE))
-}
+public actual object CByteVariableType : CVariableType<CByteVariable>(::CByteVariable, ValueLayout.JAVA_BYTE)
 
 public actual var CByteVariable.value: CByte
     get() = segment.get(ValueLayout.JAVA_BYTE, 0)

@@ -1,3 +1,3 @@
 package dev.whyoleg.ffi
 
-//public expect class CValue<T : CVariable>
+public expect abstract class CValue<T : CVariable>

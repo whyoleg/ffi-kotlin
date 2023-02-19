@@ -1,6 +1,7 @@
 package = dev.whyoleg.ffi.libcrypto3.cinterop
 headerFilter = openssl/*
-headers = openssl/evp.h
+headers = openssl/evp.h \
+          openssl/err.h
 noStringConversion = OSSL_PARAM_construct_double \
                      OSSL_PARAM_construct_int \
                      OSSL_PARAM_construct_int32 \
