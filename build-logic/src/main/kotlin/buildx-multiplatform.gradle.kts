@@ -3,6 +3,8 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain(20) //for panama
+
     targets.all {
         compilations.all {
             compilerOptions.configure {
@@ -21,6 +23,7 @@ kotlin {
 
         languageSettings {
             progressiveMode = true
+            optIn("kotlin.ExperimentalStdlibApi")
         }
 
         if (compilationName == "test") when (targetName) {

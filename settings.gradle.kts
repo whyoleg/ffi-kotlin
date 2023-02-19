@@ -13,6 +13,7 @@ pluginManagement {
 plugins {
     id("kotlin-version-catalog")
     id("com.gradle.enterprise") version "3.12.2"
+    id("org.gradle.toolchains.foojay-resolver-convention") version ("0.4.0")
 }
 
 dependencyResolutionManagement {
@@ -32,4 +33,11 @@ rootProject.name = "ffi-kotlin"
 
 include("ffi-runtime")
 
-include("libcrypto3")
+fun includeLibrary(name: String) {
+    listOf("api", "static", "dynamic", "test").forEach { submodule ->
+        include("libraries:$name:$name-$submodule")
+        project(":libraries:$name:$name-$submodule").projectDir = file("libraries/$name/$submodule")
+    }
+}
+
+includeLibrary("libcrypto3")
