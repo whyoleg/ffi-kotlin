@@ -1,17 +1,35 @@
+import org.jetbrains.kotlin.gradle.tasks.*
+
 plugins {
     id("buildx-multiplatform-default")
 }
 
+val prepareOpenssl = rootProject.tasks.named("prepareOpenssl3", Sync::class)
+
+fun opensslLib(target: String) = prepareOpenssl.map {
+    it.destinationDir.resolve(target).resolve("lib")
+}
+
+tasks.withType<CInteropProcess>().configureEach {
+    dependsOn(prepareOpenssl)
+}
+
 val copyLibrariesForJvm by tasks.registering(Sync::class) {
-    from(rootDir.resolve("prebuilt/openssl3")) {
-        include("*/lib/dynamic/*crypto*")
-        //TODO: is it ok to filter symlinks in such way?
-        exclude("**/*3*")
+    dependsOn(prepareOpenssl)
+
+    fun fromLibraries(target: String, extension: String, action: CopySpec.() -> Unit = {}) = from(opensslLib(target)) {
+        into("libs/$target")
+        include("*crypto*.$extension")
+        action()
     }
+
+    // `*3*` is needed to filter symlinks
+    fromLibraries("macos-arm64", "dylib") { exclude("*3*") }
+    fromLibraries("macos-x64", "dylib") { exclude("*3*") }
+    fromLibraries("linux-x64", "so") { exclude("*3*") }
+    fromLibraries("windows-x64", "dll")
+
     into(layout.buildDirectory.dir("jvmLibraries"))
-    eachFile {
-        path = "libs/${path.substringBefore("/")}/$name"
-    }
 }
 
 kotlin {
@@ -19,7 +37,7 @@ kotlin {
         val main by compilations.getting {
             val static by cinterops.creating {
                 defFile("linking.def")
-                extraOpts("-libraryPath", rootDir.resolve("prebuilt/openssl3/macos-arm64/lib/static").absolutePath)
+                extraOpts("-libraryPath", opensslLib("macos-arm64").get())
             }
         }
     }

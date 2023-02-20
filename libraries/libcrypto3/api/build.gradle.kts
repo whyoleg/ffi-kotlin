@@ -1,5 +1,17 @@
+import org.jetbrains.kotlin.gradle.tasks.*
+
 plugins {
     id("buildx-multiplatform-default")
+}
+
+val prepareOpenssl = rootProject.tasks.named("prepareOpenssl3", Sync::class)
+
+fun opensslInclude(target: String) = prepareOpenssl.map {
+    it.destinationDir.resolve(target).resolve("include")
+}
+
+tasks.withType<CInteropProcess>().configureEach {
+    dependsOn(prepareOpenssl)
 }
 
 kotlin {
@@ -7,7 +19,7 @@ kotlin {
         val main by compilations.getting {
             val declarations by cinterops.creating {
                 defFile("declarations.def")
-                includeDirs(rootDir.resolve("prebuilt/openssl3/macos-arm64/include"))
+                includeDirs(opensslInclude("macos-arm64"))
             }
         }
     }

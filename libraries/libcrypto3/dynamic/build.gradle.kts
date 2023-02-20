@@ -1,15 +1,21 @@
+import org.jetbrains.kotlin.gradle.targets.jvm.*
+
 plugins {
     id("buildx-multiplatform-default")
 }
 
+val prepareOpenssl = rootProject.tasks.named("prepareOpenssl3", Sync::class)
+
+fun opensslLib(target: String) = prepareOpenssl.map {
+    it.destinationDir.resolve(target).resolve("lib")
+}
+
 kotlin {
-    jvm("jvmPanama") {
-        testRuns.all {
+    targets.all {
+        if (this is KotlinJvmTarget) testRuns.all {
             executionTask.configure {
-                environment(
-                    "DYLD_LIBRARY_PATH",
-                    rootDir.resolve("prebuilt/openssl3/macos-arm64/lib/dynamic").absolutePath
-                )
+                dependsOn(prepareOpenssl)
+                environment("DYLD_LIBRARY_PATH", opensslLib("macos-arm64").get())
             }
         }
     }
