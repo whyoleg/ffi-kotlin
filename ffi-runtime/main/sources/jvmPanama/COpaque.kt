@@ -6,4 +6,4 @@ public actual abstract class COpaque(segment: MemorySegment) : CPointed(segment)
 
 public fun COpaquePointer(segment: MemorySegment): CPointer<COpaque>? = CPointer(segment, ::COpaqueImpl)
 
-private class COpaqueImpl(segment: MemorySegment) : COpaque(segment)
+internal class COpaqueImpl(segment: MemorySegment) : COpaque(segment)

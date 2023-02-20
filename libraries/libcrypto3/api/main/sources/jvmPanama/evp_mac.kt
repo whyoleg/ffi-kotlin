@@ -6,8 +6,6 @@ import dev.whyoleg.ffi.*
 import java.lang.foreign.*
 import java.lang.invoke.*
 
-
-
 actual class EVP_MAC(segment: MemorySegment) : COpaque(segment)
 actual class EVP_MAC_CTX(segment: MemorySegment) : COpaque(segment)
 

@@ -74,4 +74,105 @@ abstract class LibCrypto3Test {
         }
         assertEquals("b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7", printHexBinary(signature))
     }
+
+
+    @Test
+    fun testEcdsa() {
+        val dataInput = "Hi There".encodeToByteArray()
+
+        val pkey = cInteropScope {
+            val context = checkNotNull(EVP_PKEY_CTX_new_from_name(null, alloc("EC"), null))
+            try {
+                checkError(EVP_PKEY_keygen_init(context))
+                checkError(
+                    EVP_PKEY_CTX_set_params(
+                        context, allocArrayOf(
+                            OSSL_PARAM_Type,
+                            OSSL_PARAM_construct_utf8_string(alloc("group"), alloc("P-521"), 0UL),
+                            OSSL_PARAM_construct_end()
+                        )
+                    )
+                )
+                val pkeyVar = allocPointerTo<EVP_PKEY>()
+                checkError(EVP_PKEY_generate(context, pkeyVar.pointer))
+                checkNotNull(pkeyVar.value)
+            } finally {
+                EVP_PKEY_CTX_free(context)
+            }
+        }
+
+        checkError(EVP_PKEY_up_ref(pkey))
+
+        val signatureInput = cInteropScope {
+            val context = checkNotNull(EVP_MD_CTX_new())
+            try {
+                checkError(
+                    EVP_DigestSignInit_ex(
+                        ctx = context,
+                        pctx = null,
+                        mdname = alloc("SHA256"),
+                        libctx = null,
+                        props = null,
+                        pkey = pkey,
+                        params = null
+                    )
+                )
+
+                dataInput.read { dataPointer, dataSize ->
+                    checkError(EVP_DigestSignUpdate(context, dataPointer, dataSize.toULong()))
+
+                    val siglen = alloc(CULongVariableType)
+                    checkError(EVP_DigestSignFinal(context, null, siglen.pointer))
+                    println(siglen.value)
+                    val signature = ByteArray(siglen.value.toInt())
+                    signature.write { signaturePointer, signatureSize ->
+                        checkError(EVP_DigestSignFinal(context, signaturePointer.toUByte(), siglen.pointer))
+                    }
+                    println(siglen.value)
+                    signature.copyOf(siglen.value.toInt())
+                }
+            } finally {
+                EVP_MD_CTX_free(context)
+            }
+        }
+
+        EVP_PKEY_free(pkey)
+
+        val result = cInteropScope {
+            val context = checkNotNull(EVP_MD_CTX_new())
+            try {
+                checkError(
+                    EVP_DigestVerifyInit_ex(
+                        ctx = context,
+                        pctx = null,
+                        mdname = alloc("SHA256"),
+                        libctx = null,
+                        props = null,
+                        pkey = pkey,
+                        params = null
+                    )
+                )
+                dataInput.read { dataPointer, dataSize ->
+                    checkError(EVP_DigestVerifyUpdate(context, dataPointer, dataSize.toULong()))
+
+                    val result = signatureInput.read { signaturePointer, signatureSize ->
+                        EVP_DigestVerifyFinal(context, signaturePointer.toUByte(), signatureSize.toULong())
+                    }
+                    // 0     - means verification failed
+                    // 1     - means verification succeeded
+                    // other - means error
+                    if (result != 0) checkError(result)
+                    result == 1
+                }
+            } finally {
+                EVP_MD_CTX_free(context)
+            }
+        }
+
+        EVP_PKEY_free(pkey)
+
+        assertTrue(EVP_PKEY_up_ref(pkey) == 0)
+
+        assertTrue(result)
+    }
 }

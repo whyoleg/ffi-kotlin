@@ -3,10 +3,16 @@ package dev.whyoleg.ffi
 //TODO: context receiver + extension functions
 //TODO: Name
 //TODO: rename alloc -> allocate
+//TODO: allocPointer semantics
 public expect class CInteropScope {
     //base
     public fun <T : CVariable> alloc(type: CVariableType<T>): T
     public fun <T : CVariable> alloc(type: CVariableType<T>, initialize: T.() -> Unit): T
+
+    //pointers
+    public fun allocPointer(): CPointerVariable<*>
+    public fun <T : COpaque> allocPointerTo(): CPointerVariable<T>
+    public fun <T : CVariable> allocPointerTo(type: CVariableType<T>): CPointerVariable<T>
 
     public fun <T : CVariable> allocPointerTo(value: CValue<T>): CPointer<T>
 

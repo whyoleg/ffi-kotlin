@@ -9,7 +9,14 @@ internal constructor(
 )
 
 public actual class CPointerVariable<T : CPointed>
-internal constructor(segment: MemorySegment) : CVariable(segment)
+internal constructor(
+    internal val wrap: (MemorySegment) -> T,
+    segment: MemorySegment,
+) : CVariable(segment)
+
+public actual var <T : CPointed> CPointerVariable<T>.value: CPointer<T>?
+    get() = CPointer(segment.get(ValueLayout.ADDRESS, 0), wrap)
+    set(value) = segment.set(ValueLayout.ADDRESS, 0, value.segment)
 
 public actual val <T : CPointed> T.pointer: CPointer<T>
     get() = CPointer(this)

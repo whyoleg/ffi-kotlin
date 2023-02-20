@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package dev.whyoleg.ffi
 
 import kotlinx.cinterop.*
@@ -7,12 +9,32 @@ public actual class CInteropScope
 internal constructor(
     private val memScope: MemScope,
 ) {
+
+    private fun <T> alloc(type: kotlinx.cinterop.CVariable.Type): T {
+        return interpretNullablePointed(memScope.alloc(type.size, type.align).rawPtr)!!
+    }
+
     public actual fun <T : CVariable> alloc(type: CVariableType<T>): T {
-        return interpretNullablePointed(memScope.alloc(type.type.size, type.type.align).rawPtr)!!
+        return alloc(type.type)
     }
 
     public actual fun <T : CVariable> alloc(type: CVariableType<T>, initialize: T.() -> Unit): T {
         return alloc(type).also(initialize)
+    }
+
+    @Suppress("ACTUAL_WITHOUT_EXPECT")
+    public actual fun allocPointer(): CPointerVariable<*> {
+        return alloc(CPointerVarOf)
+    }
+
+    @Suppress("ACTUAL_WITHOUT_EXPECT")
+    public actual fun <T : COpaque> allocPointerTo(): CPointerVariable<T> {
+        return alloc(CPointerVarOf)
+    }
+
+    @Suppress("ACTUAL_WITHOUT_EXPECT")
+    public actual fun <T : CVariable> allocPointerTo(type: CVariableType<T>): CPointerVariable<T> {
+        return alloc(CPointerVarOf)
     }
 
     public actual fun <T : CVariable> allocPointerTo(value: CValue<T>): CPointer<T> {
