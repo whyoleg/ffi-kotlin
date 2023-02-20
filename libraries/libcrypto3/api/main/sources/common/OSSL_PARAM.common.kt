@@ -13,3 +13,11 @@ expect var OSSL_PARAM.data_type: CUInt
 expect var OSSL_PARAM.data: CPointer<out CPointed>? //COpaque - but cinterop is different
 expect var OSSL_PARAM.data_size: CULong
 expect var OSSL_PARAM.return_size: CULong
+
+expect fun OSSL_PARAM_construct_utf8_string(
+    key: CString?,
+    buf: CString?,
+    bsize: CULong,
+): CValue<OSSL_PARAM>
+
+expect fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM>

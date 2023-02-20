@@ -25,3 +25,15 @@ actual var OSSL_PARAM.data_size: CULong
 actual var OSSL_PARAM.return_size: CULong
     get() = return_size
     set(value) = run { return_size = value }
+
+actual fun OSSL_PARAM_construct_utf8_string(
+    key: CString?,
+    buf: CString?,
+    bsize: CULong,
+): CValue<OSSL_PARAM> {
+    return dev.whyoleg.ffi.libcrypto3.cinterop.OSSL_PARAM_construct_utf8_string(key, buf, bsize)
+}
+
+actual fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM> {
+    return dev.whyoleg.ffi.libcrypto3.cinterop.OSSL_PARAM_construct_end()
+}

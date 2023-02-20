@@ -4,46 +4,10 @@ package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.*
 
-expect class OSSL_LIB_CTX : COpaque
-
-expect class EVP_MD : COpaque
-expect class EVP_MD_CTX : COpaque
-
 expect class EVP_MAC : COpaque
 expect class EVP_MAC_CTX : COpaque
 
 //TODO: scope?
-
-expect fun EVP_MD_fetch(
-    ctx: CPointer<OSSL_LIB_CTX>?,
-    algorithm: CString?,
-    properties: CString?,
-): CPointer<EVP_MD>?
-
-expect fun EVP_MD_CTX_new(): CPointer<EVP_MD_CTX>?
-
-expect fun EVP_MD_get_size(md: CPointer<EVP_MD>?): Int
-
-expect fun EVP_DigestInit(
-    ctx: CPointer<EVP_MD_CTX>?,
-    type: CPointer<EVP_MD>?,
-): Int
-
-expect fun EVP_DigestUpdate(
-    ctx: CPointer<EVP_MD_CTX>?,
-    d: CPointer<*>?,
-    cnt: CULong,
-): Int
-
-expect fun EVP_DigestFinal(
-    ctx: CPointer<EVP_MD_CTX>?,
-    md: CPointer<CUByteVariable>?,
-    s: CPointer<CUIntVariable>?,
-): Int
-
-expect fun EVP_MD_CTX_free(ctx: CPointer<EVP_MD_CTX>?)
-
-expect fun EVP_MD_free(ctx: CPointer<EVP_MD>?)
 
 expect fun EVP_MAC_fetch(
     libctx: CPointer<OSSL_LIB_CTX>?,
@@ -86,11 +50,3 @@ expect fun EVP_MAC_CTX_free(
 expect fun EVP_MAC_free(
     ctx: CPointer<EVP_MAC>?,
 )
-
-expect fun OSSL_PARAM_construct_utf8_string(
-    key: CString?,
-    buf: CString?,
-    bsize: CULong,
-): CValue<OSSL_PARAM>
-
-expect fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM>

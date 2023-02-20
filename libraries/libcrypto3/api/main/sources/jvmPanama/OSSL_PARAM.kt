@@ -4,6 +4,7 @@ package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.*
 import java.lang.foreign.*
+import java.lang.invoke.*
 
 private val layout = MemoryLayout.structLayout(
     ValueLayout.ADDRESS.withName("key"),
@@ -43,3 +44,35 @@ actual var OSSL_PARAM.data_size: CULong
 actual var OSSL_PARAM.return_size: CULong
     get() = (return_size_VH.get(segment) as Long).toULong()
     set(value) = return_size_VH.set(segment, value.toLong())
+
+private val OSSL_PARAM_construct_utf8_string_MH: MethodHandle = FFI.methodHandle(
+    name = "OSSL_PARAM_construct_utf8_string",
+    result = layout,
+    args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG)
+)
+
+actual fun OSSL_PARAM_construct_utf8_string(
+    key: CString?,
+    buf: CString?,
+    bsize: CULong,
+): CValue<OSSL_PARAM> = cValue(
+    OSSL_PARAM_Type,
+    OSSL_PARAM_construct_utf8_string_MH.invokeExact(
+        FFI.autoSegmentAllocator,
+        key.segment,
+        buf.segment,
+        bsize.toLong()
+    ) as MemorySegment
+)
+
+private val OSSL_PARAM_construct_end_MH: MethodHandle = FFI.methodHandle(
+    name = "OSSL_PARAM_construct_end",
+    result = layout
+)
+
+actual fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM> = cValue(
+    OSSL_PARAM_Type,
+    OSSL_PARAM_construct_end_MH.invokeExact(
+        FFI.autoSegmentAllocator
+    ) as MemorySegment
+)
