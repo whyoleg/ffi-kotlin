@@ -18,8 +18,8 @@ kotlin {
             val index = indexOfLast { it.isUpperCase() }
             take(index) to drop(index).lowercase()
         }
-        kotlin.setSrcDirs(listOf("$compilationName/sources/$targetName"))
-        resources.setSrcDirs(listOf("$compilationName/resources/$targetName"))
+        kotlin.setSrcDirs(listOf("$compilationName/$targetName/kotlin"))
+        resources.setSrcDirs(listOf("$compilationName/$targetName/resources"))
 
         languageSettings {
             progressiveMode = true

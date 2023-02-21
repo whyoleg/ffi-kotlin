@@ -18,7 +18,7 @@ kotlin {
     macosArm64("native") {
         val main by compilations.getting {
             val declarations by cinterops.creating {
-                defFile("declarations.def")
+                defFile("main/native/interop/declarations.def")
                 includeDirs(opensslInclude("macos-arm64"))
             }
         }

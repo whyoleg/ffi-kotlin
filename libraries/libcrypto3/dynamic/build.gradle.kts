@@ -22,7 +22,7 @@ kotlin {
     macosArm64("native") {
         val main by compilations.getting {
             val dynamic by cinterops.creating {
-                defFile("linking.def")
+                defFile("main/native/interop/linking.def")
             }
         }
     }

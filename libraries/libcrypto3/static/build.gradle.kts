@@ -36,7 +36,7 @@ kotlin {
     macosArm64("native") {
         val main by compilations.getting {
             val static by cinterops.creating {
-                defFile("linking.def")
+                defFile("main/native/interop/linking.def")
                 extraOpts("-libraryPath", opensslLib("macos-arm64").get())
             }
         }
