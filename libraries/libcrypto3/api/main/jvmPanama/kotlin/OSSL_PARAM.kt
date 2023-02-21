@@ -6,6 +6,7 @@ import dev.whyoleg.ffi.*
 import java.lang.foreign.*
 import java.lang.invoke.*
 
+//TODO: likely addresses should be layout.asUnbounded()
 private val layout = MemoryLayout.structLayout(
     ValueLayout.ADDRESS.withName("key"),
     ValueLayout.JAVA_INT.withName("data_type"),
@@ -26,7 +27,7 @@ actual object OSSL_PARAM_Type : CVariableType<OSSL_PARAM>(::OSSL_PARAM, layout)
 actual class OSSL_PARAM(segment: MemorySegment) : CStructVariable(segment)
 
 actual var OSSL_PARAM.key: CString?
-    get() = CPointer(key_VH.get(segment.also { println(it) }) as MemorySegment, ::CByteVariable)
+    get() = CString(key_VH.get(segment.also { println(it) }) as MemorySegment)
     set(value) = key_VH.set(segment, value.segment)
 
 actual var OSSL_PARAM.data_type: CUInt

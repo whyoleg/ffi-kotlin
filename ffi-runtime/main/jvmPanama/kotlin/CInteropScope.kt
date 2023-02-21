@@ -5,7 +5,7 @@ import java.lang.foreign.*
 public actual class CInteropScope
 @PublishedApi
 internal constructor(
-    public val arena: Arena,
+    private val arena: Arena,
 ) {
 
     public actual fun <T : CVariable> alloc(type: CVariableType<T>): T {

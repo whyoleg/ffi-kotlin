@@ -22,4 +22,4 @@ private val ERR_error_string_MH: MethodHandle = FFI.methodHandle(
 actual fun ERR_error_string(
     e: CULong,
     buf: CString?,
-): CString? = CPointer(ERR_error_string_MH.invokeExact(e.toLong(), buf.segment) as MemorySegment, ::CByteVariable)
+): CString? = CString(ERR_error_string_MH.invokeExact(e.toLong(), buf.segment) as MemorySegment)

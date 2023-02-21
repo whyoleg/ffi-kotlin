@@ -6,11 +6,13 @@ import kotlin.test.*
 
 abstract class LibCrypto3Test {
 
-//    @Test
-//    fun testVersion() {
-//        assertEquals(3, OpenSSL_version(OPENSSL_VERSION_STRING)?.toKString()!!.first().digitToInt())
-//        assertEquals(3, OPENSSL_version_major().toInt())
-//    }
+    @Test
+    fun testVersion() {
+        val version = OpenSSL_version(OPENSSL_VERSION_STRING)?.toKString()
+        println(version)
+        assertEquals(3, version!!.first().digitToInt())
+        assertEquals(3, OPENSSL_version_major().toInt())
+    }
 
     @Test
     fun testSha(): Unit = cInteropScope {
