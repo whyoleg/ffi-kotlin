@@ -2,20 +2,15 @@ import org.jetbrains.kotlin.gradle.targets.jvm.*
 
 plugins {
     id("buildx-multiplatform-default")
-}
-
-val prepareOpenssl = rootProject.tasks.named("prepareOpenssl3", Sync::class)
-
-fun opensslLib(target: String) = prepareOpenssl.map {
-    it.destinationDir.resolve(target).resolve("lib")
+    id("buildx-use-openssl")
 }
 
 kotlin {
     targets.all {
         if (this is KotlinJvmTarget) testRuns.all {
             executionTask.configure {
-                dependsOn(prepareOpenssl)
-                environment("DYLD_LIBRARY_PATH", opensslLib("macos-arm64").get())
+                dependsOn(openssl.prepareOpensslTaskProvider)
+                environment("DYLD_LIBRARY_PATH", openssl.libDir("macos-arm64").get())
             }
         }
     }

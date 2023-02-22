@@ -2,22 +2,15 @@ import org.jetbrains.kotlin.gradle.tasks.*
 
 plugins {
     id("buildx-multiplatform-default")
-}
-
-val prepareOpenssl = rootProject.tasks.named("prepareOpenssl3", Sync::class)
-
-fun opensslLib(target: String) = prepareOpenssl.map {
-    it.destinationDir.resolve(target).resolve("lib")
+    id("buildx-use-openssl")
 }
 
 tasks.withType<CInteropProcess>().configureEach {
-    dependsOn(prepareOpenssl)
+    dependsOn(openssl.prepareOpensslTaskProvider)
 }
 
 val copyLibrariesForJvm by tasks.registering(Sync::class) {
-    dependsOn(prepareOpenssl)
-
-    fun fromLibraries(target: String, extension: String, action: CopySpec.() -> Unit = {}) = from(opensslLib(target)) {
+    fun fromLibraries(target: String, extension: String, action: CopySpec.() -> Unit = {}) = from(openssl.libDir(target)) {
         into("libs/$target")
         include("*crypto*.$extension")
         action()
@@ -37,7 +30,7 @@ kotlin {
         val main by compilations.getting {
             val static by cinterops.creating {
                 defFile("main/native/interop/linking.def")
-                extraOpts("-libraryPath", opensslLib("macos-arm64").get())
+                extraOpts("-libraryPath", openssl.libDir("macos-arm64").get())
             }
         }
     }
