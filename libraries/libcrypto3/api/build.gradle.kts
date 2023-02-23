@@ -9,6 +9,18 @@ tasks.withType<CInteropProcess>().configureEach {
     dependsOn(openssl.prepareOpensslTaskProvider)
 }
 
+tasks.named<jni.BuildJni>("buildJni") {
+    linkLibraries.add("crypto")
+    linkPaths.addAll(
+        "/opt/homebrew/opt/openssl@3/lib",
+        "/usr/local/opt/openssl@3/lib",
+    )
+    includeDirs.add(
+        openssl.includeDir("macos-arm64").map { it.absolutePath }
+    )
+    outputFilePath.set("macos-arm64/libcrypto-jni.dylib")
+}
+
 kotlin {
     macosArm64("native") {
         val main by compilations.getting {

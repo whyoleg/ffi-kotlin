@@ -3,6 +3,7 @@ plugins {
 }
 
 kotlin {
+    //TODO: setup 20 toolchain only for panama compilation - is it possible?
     jvmToolchain(20) //for panama
 
     targets.all {
