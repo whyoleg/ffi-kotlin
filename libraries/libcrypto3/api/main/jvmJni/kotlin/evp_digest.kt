@@ -13,7 +13,15 @@ actual fun EVP_DigestSignInit_ex(
     pkey: CPointer<EVP_PKEY>?,
     params: CPointer<OSSL_PARAM>?,
 ): Int {
-    TODO()
+    return evpdigest.EVP_DigestSignInit_ex(
+        ctx.nativePointer,
+        pctx.nativePointer,
+        mdname.nativePointer,
+        libctx.nativePointer,
+        props.nativePointer,
+        pkey.nativePointer,
+        params.nativePointer,
+    )
 }
 
 actual fun EVP_DigestSignUpdate(
@@ -21,7 +29,7 @@ actual fun EVP_DigestSignUpdate(
     data: CPointer<*>?,
     dsize: CULong,
 ): Int {
-    TODO()
+    return evpdigest.EVP_DigestSignUpdate(ctx.nativePointer, data.nativePointer, dsize.toLong())
 }
 
 actual fun EVP_DigestSignFinal(
@@ -29,7 +37,7 @@ actual fun EVP_DigestSignFinal(
     sigret: CPointer<CUByteVariable>?,
     siglen: CPointer<CULongVariable>?,
 ): Int {
-    TODO()
+    return evpdigest.EVP_DigestSignFinal(ctx.nativePointer, sigret.nativePointer, siglen.nativePointer)
 }
 
 actual fun EVP_DigestVerifyInit_ex(
@@ -41,7 +49,15 @@ actual fun EVP_DigestVerifyInit_ex(
     pkey: CPointer<EVP_PKEY>?,
     params: CPointer<OSSL_PARAM>?,
 ): Int {
-    TODO()
+    return evpdigest.EVP_DigestVerifyInit_ex(
+        ctx.nativePointer,
+        pctx.nativePointer,
+        mdname.nativePointer,
+        libctx.nativePointer,
+        props.nativePointer,
+        pkey.nativePointer,
+        params.nativePointer,
+    )
 }
 
 actual fun EVP_DigestVerifyUpdate(
@@ -49,7 +65,7 @@ actual fun EVP_DigestVerifyUpdate(
     data: CPointer<*>?,
     dsize: CULong,
 ): Int {
-    TODO()
+    return evpdigest.EVP_DigestVerifyUpdate(ctx.nativePointer, data.nativePointer, dsize.toLong())
 }
 
 actual fun EVP_DigestVerifyFinal(
@@ -57,5 +73,46 @@ actual fun EVP_DigestVerifyFinal(
     sig: CPointer<CUByteVariable>?,
     siglen: CULong,
 ): Int {
-    TODO()
+    return evpdigest.EVP_DigestVerifyFinal(ctx.nativePointer, sig.nativePointer, siglen.toLong())
+}
+
+private object evpdigest {
+    init {
+        JNI
+    }
+
+    @JvmStatic
+    external fun EVP_DigestSignInit_ex(
+        ctx: Long,
+        pctx: Long,
+        mdname: Long,
+        libctx: Long,
+        props: Long,
+        pkey: Long,
+        params: Long,
+    ): Int
+
+    @JvmStatic
+    external fun EVP_DigestSignUpdate(ctx: Long, data: Long, dsize: Long): Int
+
+    @JvmStatic
+    external fun EVP_DigestSignFinal(ctx: Long, sigret: Long, siglen: Long): Int
+
+    @JvmStatic
+    external fun EVP_DigestVerifyInit_ex(
+        ctx: Long,
+        pctx: Long,
+        mdname: Long,
+        libctx: Long,
+        props: Long,
+        pkey: Long,
+        params: Long,
+    ): Int
+
+    @JvmStatic
+    external fun EVP_DigestVerifyUpdate(ctx: Long, data: Long, dsize: Long): Int
+
+    @JvmStatic
+    external fun EVP_DigestVerifyFinal(ctx: Long, sig: Long, siglen: Long): Int
+
 }

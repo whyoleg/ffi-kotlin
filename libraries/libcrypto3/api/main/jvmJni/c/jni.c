@@ -172,3 +172,130 @@ JNIEXPORT jlong JNICALL Java_dev_whyoleg_ffi_libcrypto3_err_ERR_1error_1string (
 }
 
 //err end
+
+//evppkey start
+
+JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evppkey_EVP_1PKEY_1keygen_1init (JNIEnv* env, jclass jclss,
+  jlong p_ctx
+) {
+    return (jint)EVP_PKEY_keygen_init((EVP_PKEY_CTX*)p_ctx);
+}
+
+JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evppkey_EVP_1PKEY_1generate (JNIEnv* env, jclass jclss,
+  jlong p_ctx,
+  jlong p_ppkey
+) {
+    return (jint)EVP_PKEY_generate((EVP_PKEY_CTX*)p_ctx, (EVP_PKEY**)p_ppkey);
+}
+
+JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evppkey_EVP_1PKEY_1up_1ref (JNIEnv* env, jclass jclss,
+  jlong p_pkey
+) {
+    return (jint)EVP_PKEY_up_ref((EVP_PKEY*)p_pkey);
+}
+
+JNIEXPORT void JNICALL Java_dev_whyoleg_ffi_libcrypto3_evppkey_EVP_1PKEY_1free (JNIEnv* env, jclass jclss,
+  jlong p_pkey
+) {
+    EVP_PKEY_free((EVP_PKEY*)p_pkey);
+}
+
+//evppkey end
+//evppkeyctx start
+
+JNIEXPORT jlong JNICALL Java_dev_whyoleg_ffi_libcrypto3_evppkeyctx_EVP_1PKEY_1CTX_1new_1from_1name (JNIEnv* env, jclass jclss,
+  jlong p_libctx,
+  jlong p_name,
+  jlong p_propquery
+) {
+    return (jlong)EVP_PKEY_CTX_new_from_name((OSSL_LIB_CTX*)p_libctx, (char*)p_name, (char*)p_propquery);
+}
+
+JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evppkeyctx_EVP_1PKEY_1CTX_1set_1params (JNIEnv* env, jclass jclss,
+  jlong p_ctx,
+  jlong p_params
+) {
+    return (jint)EVP_PKEY_CTX_set_params((EVP_PKEY_CTX*)p_ctx, (OSSL_PARAM*)p_params);
+}
+
+JNIEXPORT void JNICALL Java_dev_whyoleg_ffi_libcrypto3_evppkeyctx_EVP_1PKEY_1CTX_1free (JNIEnv* env, jclass jclss,
+  jlong p_ctx
+) {
+    EVP_PKEY_CTX_free((EVP_PKEY_CTX*)p_ctx);
+}
+
+//evppkeyctx end
+//evpdigest start
+
+JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpdigest_EVP_1DigestSignInit_1ex (JNIEnv* env, jclass jclss,
+  jlong p_ctx,
+  jlong p_pctx,
+  jlong p_mdname,
+  jlong p_libctx,
+  jlong p_props,
+  jlong p_pkey,
+  jlong p_params
+) {
+    return (jint)EVP_DigestSignInit_ex(
+        (EVP_MD_CTX*)p_ctx,
+        (EVP_PKEY_CTX**)p_pctx,
+        (char*)p_mdname,
+        (OSSL_LIB_CTX*)p_libctx,
+        (char*)p_props,
+        (EVP_PKEY*)p_pkey,
+        (OSSL_PARAM*)p_params
+    );
+}
+
+JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpdigest_EVP_1DigestSignUpdate (JNIEnv* env, jclass jclss,
+  jlong p_ctx,
+  jlong p_data,
+  jlong p_dsize
+) {
+    return (jint)EVP_DigestSignUpdate((EVP_MD_CTX*)p_ctx, (void*)p_data, p_dsize);
+}
+JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpdigest_EVP_1DigestSignFinal (JNIEnv* env, jclass jclss,
+  jlong p_ctx,
+  jlong p_sigret,
+  jlong p_siglen
+) {
+    return (jint)EVP_DigestSignFinal((EVP_MD_CTX*)p_ctx, (unsigned char*)p_sigret, (unsigned long*)p_siglen);
+}
+
+JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpdigest_EVP_1DigestVerifyInit_1ex (JNIEnv* env, jclass jclss,
+  jlong p_ctx,
+  jlong p_pctx,
+  jlong p_mdname,
+  jlong p_libctx,
+  jlong p_props,
+  jlong p_pkey,
+  jlong p_params
+) {
+    return (jint)EVP_DigestVerifyInit_ex(
+        (EVP_MD_CTX*)p_ctx,
+        (EVP_PKEY_CTX**)p_pctx,
+        (char*)p_mdname,
+        (OSSL_LIB_CTX*)p_libctx,
+        (char*)p_props,
+        (EVP_PKEY*)p_pkey,
+        (OSSL_PARAM*)p_params
+    );
+}
+
+JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpdigest_EVP_1DigestVerifyUpdate (JNIEnv* env, jclass jclss,
+  jlong p_ctx,
+  jlong p_data,
+  jlong p_dsize
+) {
+    return (jint)EVP_DigestVerifyUpdate((EVP_MD_CTX*)p_ctx, (void*)p_data, p_dsize);
+}
+JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpdigest_EVP_1DigestVerifyFinal (JNIEnv* env, jclass jclss,
+  jlong p_ctx,
+  jlong p_sig,
+  jlong p_siglen
+) {
+    return (jint)EVP_DigestVerifyFinal((EVP_MD_CTX*)p_ctx, (unsigned char*)p_sig, p_siglen);
+}
+
+
+//evpdigest end

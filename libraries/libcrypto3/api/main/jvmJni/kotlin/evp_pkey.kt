@@ -12,20 +12,38 @@ actual class EVP_PKEY(memory: NativeMemory) : COpaque(memory) {
 }
 
 actual fun EVP_PKEY_keygen_init(ctx: CPointer<EVP_PKEY_CTX>?): Int {
-    TODO()
+    return evppkey.EVP_PKEY_keygen_init(ctx.nativePointer)
 }
 
 actual fun EVP_PKEY_generate(
     ctx: CPointer<EVP_PKEY_CTX>?,
     ppkey: CPointer<CPointerVariable<EVP_PKEY>>?,
 ): Int {
-    TODO()
+    return evppkey.EVP_PKEY_generate(ctx.nativePointer, ppkey.nativePointer)
 }
 
 actual fun EVP_PKEY_up_ref(pkey: CPointer<EVP_PKEY>?): Int {
-    TODO()
+    return evppkey.EVP_PKEY_up_ref(pkey.nativePointer)
 }
 
 actual fun EVP_PKEY_free(pkey: CPointer<EVP_PKEY>?) {
-    TODO()
+    evppkey.EVP_PKEY_free(pkey.nativePointer)
+}
+
+private object evppkey {
+    init {
+        JNI
+    }
+
+    @JvmStatic
+    external fun EVP_PKEY_keygen_init(ctx: Long): Int
+
+    @JvmStatic
+    external fun EVP_PKEY_generate(ctx: Long, ppkey: Long): Int
+
+    @JvmStatic
+    external fun EVP_PKEY_up_ref(pkey: Long): Int
+
+    @JvmStatic
+    external fun EVP_PKEY_free(pkey: Long)
 }
