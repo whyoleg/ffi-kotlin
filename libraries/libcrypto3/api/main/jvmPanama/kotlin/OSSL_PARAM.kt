@@ -8,12 +8,12 @@ import java.lang.invoke.*
 
 //TODO: likely addresses should be layout.asUnbounded()
 private val layout = MemoryLayout.structLayout(
-    ValueLayout.ADDRESS.withName("key"),
-    ValueLayout.JAVA_INT.withName("data_type"),
-    MemoryLayout.paddingLayout(32), //TODO: how this works ? :)
-    ValueLayout.ADDRESS.withName("data"),
-    ValueLayout.JAVA_LONG.withName("data_size"),
-    ValueLayout.JAVA_LONG.withName("return_size"),
+    ValueLayout.ADDRESS.withName("key"), //8
+    ValueLayout.JAVA_INT.withName("data_type"), //4
+    MemoryLayout.paddingLayout(32), //TODO: how this works ? :) //4
+    ValueLayout.ADDRESS.withName("data"), //8
+    ValueLayout.JAVA_LONG.withName("data_size"), //8
+    ValueLayout.JAVA_LONG.withName("return_size"), //8
 ).withName("ossl_param_st")  //TODO: or OSSL_PARAM?
 
 private val key_VH = layout.varHandle(MemoryLayout.PathElement.groupElement("key"))

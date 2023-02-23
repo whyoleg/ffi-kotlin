@@ -1,13 +1,25 @@
 package dev.whyoleg.ffi
 
+import java.nio.file.*
 import java.util.*
+import kotlin.io.path.*
 
 //TODO: reuse more code after libssl bindings (dependent libs)
 public abstract class LibraryLoader {
     public abstract fun load()
 
-    internal companion object {
-        fun init() {
+    public companion object {
+        public fun loadFromResources(path: String, suffix: String) {
+            val tempFile = Files.createTempFile(path.substringAfterLast("/"), suffix)
+            LibraryLoader::class.java.getResourceAsStream(path)!!.use { libraryStream ->
+                tempFile.outputStream().use { tempStream ->
+                    libraryStream.copyTo(tempStream)
+                }
+            }
+            System.load(tempFile.toAbsolutePath().pathString)
+        }
+
+        internal fun init() {
             val cls = LibraryLoader::class.java
             val loader = ServiceLoader.load(cls, cls.classLoader)
             loader.forEach(LibraryLoader::load)
