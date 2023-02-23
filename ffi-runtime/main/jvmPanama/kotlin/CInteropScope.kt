@@ -77,7 +77,7 @@ internal constructor(
             val array = MemorySegment.ofArray(this).asSlice(index.toLong())
             val segment = it.allocate(pointedSize.toLong())
             if (copyBefore) segment.copyFrom(array)
-            val result = block(CPointer(CByteVariable(segment)), size)
+            val result = block(CPointer(CByteVariable(segment)), pointedSize)
             if (copyAfter) array.copyFrom(segment)
             result
         }
