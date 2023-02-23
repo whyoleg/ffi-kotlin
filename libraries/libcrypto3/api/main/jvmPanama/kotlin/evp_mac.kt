@@ -7,7 +7,9 @@ import java.lang.foreign.*
 import java.lang.invoke.*
 
 actual class EVP_MAC(segment: MemorySegment) : COpaque(segment)
+actual object EVP_MAC_Type : COpaqueType<EVP_MAC>(::EVP_MAC)
 actual class EVP_MAC_CTX(segment: MemorySegment) : COpaque(segment)
+actual object EVP_MAC_CTX_Type : COpaqueType<EVP_MAC_CTX>(::EVP_MAC_CTX)
 
 private val EVP_MAC_fetch_MH: MethodHandle = FFI.methodHandle(
     name = "EVP_MAC_fetch",
@@ -25,7 +27,7 @@ actual fun EVP_MAC_fetch(
         algorithm.segment,
         properties.segment,
     ) as MemorySegment,
-    ::EVP_MAC
+    EVP_MAC_Type
 )
 
 private val EVP_MAC_CTX_new_MH: MethodHandle = FFI.methodHandle(
@@ -37,7 +39,7 @@ private val EVP_MAC_CTX_new_MH: MethodHandle = FFI.methodHandle(
 actual fun EVP_MAC_CTX_new(
     mac: CPointer<EVP_MAC>?,
 ): CPointer<EVP_MAC_CTX>? {
-    return CPointer(EVP_MAC_CTX_new_MH.invokeExact(mac.segment) as MemorySegment, ::EVP_MAC_CTX)
+    return CPointer(EVP_MAC_CTX_new_MH.invokeExact(mac.segment) as MemorySegment, EVP_MAC_CTX_Type)
 }
 
 private val EVP_MAC_init_MH: MethodHandle = FFI.methodHandle(

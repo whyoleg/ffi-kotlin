@@ -3,7 +3,7 @@ package dev.whyoleg.ffi
 import java.lang.foreign.*
 
 public actual abstract class CValue<T : CVariable>(
-    public val type: CVariableType<T>,
+    public val type: CVariableType<T>, //TODO: drop?
     public val segment: MemorySegment,
 )
 

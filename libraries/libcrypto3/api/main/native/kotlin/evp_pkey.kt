@@ -9,6 +9,8 @@ import dev.whyoleg.ffi.*
 
 actual typealias EVP_PKEY = dev.whyoleg.ffi.libcrypto3.cinterop.EVP_PKEY
 
+actual object EVP_PKEY_Type : COpaqueType<EVP_PKEY>()
+
 actual fun EVP_PKEY_keygen_init(ctx: CPointer<EVP_PKEY_CTX>?): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_PKEY_keygen_init(ctx)
 }

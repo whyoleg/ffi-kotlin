@@ -23,17 +23,7 @@ internal constructor(
     }
 
     @Suppress("ACTUAL_WITHOUT_EXPECT")
-    public actual fun allocPointer(): CPointerVariable<*> {
-        return alloc(CPointerVarOf)
-    }
-
-    @Suppress("ACTUAL_WITHOUT_EXPECT")
-    public actual fun <T : COpaque> allocPointerTo(): CPointerVariable<T> {
-        return alloc(CPointerVarOf)
-    }
-
-    @Suppress("ACTUAL_WITHOUT_EXPECT")
-    public actual fun <T : CVariable> allocPointerTo(type: CVariableType<T>): CPointerVariable<T> {
+    public actual fun <T : CPointed> allocPointerTo(type: CPointedType<T>): CPointerVariable<T> {
         return alloc(CPointerVarOf)
     }
 

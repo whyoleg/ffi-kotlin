@@ -9,6 +9,8 @@ import dev.whyoleg.ffi.*
 
 actual typealias EVP_PKEY_CTX = dev.whyoleg.ffi.libcrypto3.cinterop.EVP_PKEY_CTX
 
+actual object EVP_PKEY_CTX_Type : COpaqueType<EVP_PKEY_CTX>()
+
 actual fun EVP_PKEY_CTX_new_from_name(
     libctx: CPointer<OSSL_LIB_CTX>?,
     name: CString?,

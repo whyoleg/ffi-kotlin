@@ -8,7 +8,11 @@ package dev.whyoleg.ffi.libcrypto3
 import dev.whyoleg.ffi.*
 
 actual typealias EVP_MD = dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MD
+
+actual object EVP_MD_Type : COpaqueType<EVP_MD>()
 actual typealias EVP_MD_CTX = dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MD_CTX
+
+actual object EVP_MD_CTX_Type : COpaqueType<EVP_MD_CTX>()
 
 actual fun EVP_MD_fetch(
     ctx: CPointer<OSSL_LIB_CTX>?,

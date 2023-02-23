@@ -16,16 +16,8 @@ internal constructor(
         return alloc(type).apply(initialize)
     }
 
-    public actual fun allocPointer(): CPointerVariable<*> {
-        return allocPointerTo<COpaque>()
-    }
-
-    public actual fun <T : COpaque> allocPointerTo(): CPointerVariable<T> {
-        return CPointerVariable(::COpaqueImpl, arena.allocate(ValueLayout.ADDRESS)) as CPointerVariable<T>
-    }
-
-    public actual fun <T : CVariable> allocPointerTo(type: CVariableType<T>): CPointerVariable<T> {
-        return CPointerVariable(type.wrap, arena.allocate(ValueLayout.ADDRESS))
+    public actual fun <T : CPointed> allocPointerTo(type: CPointedType<T>): CPointerVariable<T> {
+        return CPointerVariable(arena.allocate(ValueLayout.ADDRESS), type)
     }
 
     public actual fun <T : CVariable> allocPointerTo(value: CValue<T>): CPointer<T> {

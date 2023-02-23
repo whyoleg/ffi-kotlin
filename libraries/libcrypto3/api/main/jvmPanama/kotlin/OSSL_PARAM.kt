@@ -35,7 +35,7 @@ actual var OSSL_PARAM.data_type: CUInt
     set(value) = data_type_VH.set(segment, value.toInt())
 
 actual var OSSL_PARAM.data: CPointer<out CPointed>?
-    get() = COpaquePointer(data_VH.get(segment) as MemorySegment)
+    get() = CPointer(data_VH.get(segment) as MemorySegment)
     set(value) = data_VH.set(segment, value.segment)
 
 actual var OSSL_PARAM.data_size: CULong

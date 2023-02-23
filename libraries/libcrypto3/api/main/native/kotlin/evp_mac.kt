@@ -8,7 +8,10 @@ package dev.whyoleg.ffi.libcrypto3
 import dev.whyoleg.ffi.*
 
 actual typealias EVP_MAC = dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC
+actual object EVP_MAC_Type : COpaqueType<EVP_MAC>()
 actual typealias EVP_MAC_CTX = dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC_CTX
+
+actual object EVP_MAC_CTX_Type : COpaqueType<EVP_MAC_CTX>()
 
 actual fun EVP_MAC_fetch(
     libctx: CPointer<OSSL_LIB_CTX>?,

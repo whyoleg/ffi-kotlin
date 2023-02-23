@@ -5,7 +5,9 @@ package dev.whyoleg.ffi.libcrypto3
 import dev.whyoleg.ffi.*
 
 expect class EVP_MAC : COpaque
+expect object EVP_MAC_Type : COpaqueType<EVP_MAC>
 expect class EVP_MAC_CTX : COpaque
+expect object EVP_MAC_CTX_Type : COpaqueType<EVP_MAC_CTX>
 
 //TODO: scope?
 

@@ -9,11 +9,8 @@ public expect class CInteropScope {
     public fun <T : CVariable> alloc(type: CVariableType<T>): T
     public fun <T : CVariable> alloc(type: CVariableType<T>, initialize: T.() -> Unit): T
 
-    //pointers
-    public fun allocPointer(): CPointerVariable<*>
-    public fun <T : COpaque> allocPointerTo(): CPointerVariable<T>
-    public fun <T : CVariable> allocPointerTo(type: CVariableType<T>): CPointerVariable<T>
-
+    //pointers: TODO: naming...
+    public fun <T : CPointed> allocPointerTo(type: CPointedType<T>): CPointerVariable<T>
     public fun <T : CVariable> allocPointerTo(value: CValue<T>): CPointer<T>
 
     //base array

@@ -7,7 +7,9 @@ import java.lang.foreign.*
 import java.lang.invoke.*
 
 actual class EVP_MD(segment: MemorySegment) : COpaque(segment)
+actual object EVP_MD_Type : COpaqueType<EVP_MD>(::EVP_MD)
 actual class EVP_MD_CTX(segment: MemorySegment) : COpaque(segment)
+actual object EVP_MD_CTX_Type : COpaqueType<EVP_MD_CTX>(::EVP_MD_CTX)
 
 private val EVP_MD_fetch_MH: MethodHandle = FFI.methodHandle(
     name = "EVP_MD_fetch",
@@ -25,7 +27,7 @@ actual fun EVP_MD_fetch(
         algorithm.segment,
         properties.segment,
     ) as MemorySegment,
-    ::EVP_MD
+    EVP_MD_Type
 )
 
 private val EVP_MD_CTX_new_MH: MethodHandle = FFI.methodHandle(
@@ -34,7 +36,7 @@ private val EVP_MD_CTX_new_MH: MethodHandle = FFI.methodHandle(
 )
 
 actual fun EVP_MD_CTX_new(): CPointer<EVP_MD_CTX>? {
-    return CPointer(EVP_MD_CTX_new_MH.invokeExact() as MemorySegment, ::EVP_MD_CTX)
+    return CPointer(EVP_MD_CTX_new_MH.invokeExact() as MemorySegment, EVP_MD_CTX_Type)
 }
 
 private val EVP_MD_get_size_MH: MethodHandle = FFI.methodHandle(

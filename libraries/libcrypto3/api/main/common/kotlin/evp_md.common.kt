@@ -5,7 +5,9 @@ package dev.whyoleg.ffi.libcrypto3
 import dev.whyoleg.ffi.*
 
 expect class EVP_MD : COpaque
+expect object EVP_MD_Type : COpaqueType<EVP_MD>
 expect class EVP_MD_CTX : COpaque
+expect object EVP_MD_CTX_Type : COpaqueType<EVP_MD_CTX>
 
 expect fun EVP_MD_fetch(
     ctx: CPointer<OSSL_LIB_CTX>?,

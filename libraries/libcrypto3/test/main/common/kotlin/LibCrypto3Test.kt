@@ -95,7 +95,7 @@ abstract class LibCrypto3Test {
                         )
                     )
                 )
-                val pkeyVar = allocPointerTo<EVP_PKEY>()
+                val pkeyVar = allocPointerTo(EVP_PKEY_Type)
                 checkError(EVP_PKEY_generate(context, pkeyVar.pointer))
                 checkNotNull(pkeyVar.value)
             } finally {

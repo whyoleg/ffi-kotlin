@@ -9,6 +9,7 @@ import java.lang.foreign.*
 import java.lang.invoke.*
 
 actual class EVP_PKEY(segment: MemorySegment) : COpaque(segment)
+actual object EVP_PKEY_Type : COpaqueType<EVP_PKEY>(::EVP_PKEY)
 
 private val EVP_PKEY_keygen_init: MethodHandle = FFI.methodHandle(
     name = "EVP_PKEY_keygen_init",

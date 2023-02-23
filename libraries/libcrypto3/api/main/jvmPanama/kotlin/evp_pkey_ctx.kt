@@ -9,6 +9,7 @@ import java.lang.foreign.*
 import java.lang.invoke.*
 
 actual class EVP_PKEY_CTX(segment: MemorySegment) : COpaque(segment)
+actual object EVP_PKEY_CTX_Type : COpaqueType<EVP_PKEY_CTX>(::EVP_PKEY_CTX)
 
 private val EVP_PKEY_CTX_new_from_name: MethodHandle = FFI.methodHandle(
     name = "EVP_PKEY_CTX_new_from_name",
@@ -26,7 +27,7 @@ actual fun EVP_PKEY_CTX_new_from_name(
         name.segment,
         propquery.segment
     ) as MemorySegment,
-    ::EVP_PKEY_CTX
+    EVP_PKEY_CTX_Type
 )
 
 private val EVP_PKEY_CTX_set_params: MethodHandle = FFI.methodHandle(
