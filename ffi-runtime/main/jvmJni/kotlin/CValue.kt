@@ -6,10 +6,11 @@ public actual abstract class CValue<T : CVariable>(
     public val memory: NativeMemory,
 )
 
-public fun <T : CVariable> cValue(
-    type: CVariableType<T>,
-    memory: NativeMemory,
-): CValue<T> = CValueImpl(type, memory.asReadOnly())
+public fun <T : CVariable> CValue(type: CVariableType<T>, block: (pointer: NativePointer) -> Unit): CValue<T> {
+    val memory = JNI.autoAllocator.allocate(type.byteSize)
+    block(memory.pointer)
+    return CValueImpl(type, memory)
+}
 
 private class CValueImpl<T : CVariable>(
     type: CVariableType<T>,

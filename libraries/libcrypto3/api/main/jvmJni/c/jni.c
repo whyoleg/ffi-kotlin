@@ -1,7 +1,9 @@
+#include <string.h>
 #include <jni.h>
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>
 #include <openssl/evp.h>
+#include <openssl/err.h>
 
 JNIEXPORT jlong JNICALL Java_dev_whyoleg_ffi_libcrypto3_opensslv_OpenSSL_1version (JNIEnv* env, jclass jclss,
   jint p_type
@@ -69,3 +71,104 @@ JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpmd_EVP_1DigestFinal (J
 }
 
 //evpmd end
+
+//osslparam start
+
+JNIEXPORT void JNICALL Java_dev_whyoleg_ffi_libcrypto3_osslparam_OSSL_1PARAM_1construct_1utf8_1string (JNIEnv* env, jclass jclss,
+  jlong p_key,
+  jlong p_buf,
+  jlong p_bsize,
+  jlong p_returnPointer
+) {
+    OSSL_PARAM returnStruct = OSSL_PARAM_construct_utf8_string((char*)p_key, (char*)p_buf, p_bsize);
+    memcpy((void*)p_returnPointer, &returnStruct, sizeof(returnStruct));
+}
+
+JNIEXPORT void JNICALL Java_dev_whyoleg_ffi_libcrypto3_osslparam_OSSL_1PARAM_1construct_1end (JNIEnv* env, jclass jclss,
+  jlong p_returnPointer
+) {
+    OSSL_PARAM returnStruct = OSSL_PARAM_construct_end();
+    memcpy((void*)p_returnPointer, &returnStruct, sizeof(returnStruct));
+}
+
+//osslparam end
+
+//evpmac start
+
+
+JNIEXPORT jlong JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpmac_EVP_1MAC_1fetch (JNIEnv* env, jclass jclss,
+  jlong p_ctx,
+  jlong p_algorithm,
+  jlong p_properties
+) {
+    return (jlong)EVP_MAC_fetch((OSSL_LIB_CTX*)p_ctx, (char*)p_algorithm, (char*)p_properties);
+}
+
+JNIEXPORT jlong JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpmac_EVP_1MAC_1CTX_1new (JNIEnv* env, jclass jclss,
+  jlong p_ctx
+) {
+    return (jlong)EVP_MAC_CTX_new((EVP_MAC*)p_ctx);
+}
+
+JNIEXPORT jlong JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpmac_EVP_1MAC_1CTX_1get_1mac_1size (JNIEnv* env, jclass jclss,
+  jlong p_ctx
+) {
+    return (jlong)EVP_MAC_CTX_get_mac_size((EVP_MAC_CTX*)p_ctx);
+}
+
+JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpmac_EVP_1MAC_1init (JNIEnv* env, jclass jclss,
+  jlong p_ctx,
+  jlong p_key,
+  jlong p_keylen,
+  jlong p_params
+) {
+    return (jint)EVP_MAC_init((EVP_MAC_CTX*)p_ctx, (unsigned char*)p_key, p_keylen, (OSSL_PARAM*)p_params);
+}
+
+JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpmac_EVP_1MAC_1update (JNIEnv* env, jclass jclss,
+  jlong p_ctx,
+  jlong p_data,
+  jlong p_datalen
+) {
+    return (jint)EVP_MAC_update((EVP_MAC_CTX*)p_ctx, (unsigned char*)p_data, p_datalen);
+}
+
+JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpmac_EVP_1MAC_1final (JNIEnv* env, jclass jclss,
+  jlong p_ctx,
+  jlong p_out,
+  jlong p_outl,
+  jlong p_outsize
+) {
+    return (jint)EVP_MAC_final((EVP_MAC_CTX*)p_ctx, (unsigned char*)p_out, (unsigned long*)p_outl, p_outsize);
+//    return (jlong)(*(unsigned long*)p_outl);
+}
+
+JNIEXPORT void JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpmac_EVP_1MAC_1CTX_1free (JNIEnv* env, jclass jclss,
+  jlong p_ctx
+) {
+    EVP_MAC_CTX_free((EVP_MAC_CTX*)p_ctx);
+}
+
+JNIEXPORT void JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpmac_EVP_1MAC_1free (JNIEnv* env, jclass jclss,
+  jlong p_ctx
+) {
+    EVP_MAC_free((EVP_MAC*)p_ctx);
+}
+
+//evpmac end
+
+//err start
+
+
+JNIEXPORT jlong JNICALL Java_dev_whyoleg_ffi_libcrypto3_err_ERR_1get_1error (JNIEnv* env, jclass jclss) {
+    return (jlong)ERR_get_error();
+}
+
+JNIEXPORT jlong JNICALL Java_dev_whyoleg_ffi_libcrypto3_err_ERR_1error_1string (JNIEnv* env, jclass jclss,
+  jlong p_e,
+  jlong p_buf
+) {
+    return (jlong)ERR_error_string(p_e, (char*)p_buf);
+}
+
+//err end

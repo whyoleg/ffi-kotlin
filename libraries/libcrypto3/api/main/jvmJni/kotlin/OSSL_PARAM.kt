@@ -31,10 +31,22 @@ actual fun OSSL_PARAM_construct_utf8_string(
     key: CString?,
     buf: CString?,
     bsize: CULong,
-): CValue<OSSL_PARAM> {
-    TODO()
+): CValue<OSSL_PARAM> = CValue(OSSL_PARAM_Type) { pointer ->
+    osslparam.OSSL_PARAM_construct_utf8_string(key.nativePointer, buf.nativePointer, bsize.toLong(), pointer.value)
 }
 
-actual fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM> {
-    TODO()
+actual fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM> = CValue(OSSL_PARAM_Type) { pointer ->
+    osslparam.OSSL_PARAM_construct_end(pointer.value)
+}
+
+private object osslparam {
+    init {
+        JNI
+    }
+
+    @JvmStatic
+    external fun OSSL_PARAM_construct_utf8_string(key: Long, buf: Long, bsize: Long, returnPointer: Long)
+
+    @JvmStatic
+    external fun OSSL_PARAM_construct_end(returnPointer: Long)
 }

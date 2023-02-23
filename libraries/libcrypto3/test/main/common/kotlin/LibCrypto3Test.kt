@@ -9,9 +9,43 @@ abstract class LibCrypto3Test {
     @Test
     fun testVersion() {
         val version = OpenSSL_version(OPENSSL_VERSION_STRING)?.toKString()
-        println(version)
         assertEquals(3, version!!.first().digitToInt())
         assertEquals(3, OPENSSL_version_major().toInt())
+        assertEquals("3.0.8", version)
+    }
+
+    @Test
+    fun testError(): Unit = cInteropScope {
+        val mac = checkNotNull(EVP_MAC_fetch(null, alloc("HMAC"), null))
+        try {
+            val context = checkNotNull(EVP_MAC_CTX_new(mac))
+            try {
+                ByteArray(1).read { keyPointer, keySize ->
+                    val message = assertFailsWith<OpensslException> {
+                        checkError(
+                            EVP_MAC_init(
+                                ctx = context,
+                                key = keyPointer.toUByte(),
+                                keylen = keySize.toULong(),
+                                params = allocArrayOf(
+                                    OSSL_PARAM_Type,
+                                    OSSL_PARAM_construct_utf8_string(alloc("digest"), alloc("UNKNOWN"), 0UL),
+                                    OSSL_PARAM_construct_end()
+                                )
+                            )
+                        )
+                    }.message
+                    assertEquals(
+                        "OPENSSL failure [result: 0, code: 50856204]: error:0308010C:digital envelope routines::unsupported",
+                        message
+                    )
+                }
+            } finally {
+                EVP_MAC_CTX_free(context)
+            }
+        } finally {
+            EVP_MAC_free(mac)
+        }
     }
 
     @Test
@@ -59,10 +93,17 @@ abstract class LibCrypto3Test {
                             )
                         )
                         val signature = ByteArray(checkError(EVP_MAC_CTX_get_mac_size(context).toInt()))
+                        assertEquals(32, signature.size)
                         signature.write { signaturePointer, signatureSize ->
                             checkError(EVP_MAC_update(context, dataPointer.toUByte(), dataSize.toULong()))
                             val out = alloc(CULongVariableType)
+
+                            println(out.value)
+                            out.value = 10UL
+                            println(out.value)
+
                             checkError(EVP_MAC_final(context, signaturePointer.toUByte(), out.pointer, signatureSize.toULong()))
+                            assertEquals(32UL, out.value)
                             println(out.value)
                         }
                         signature
@@ -125,12 +166,12 @@ abstract class LibCrypto3Test {
 
                     val siglen = alloc(CULongVariableType)
                     checkError(EVP_DigestSignFinal(context, null, siglen.pointer))
-                    println(siglen.value)
+                    assertContains(130..140, siglen.value.toInt())
                     val signature = ByteArray(siglen.value.toInt())
                     signature.write { signaturePointer, signatureSize ->
                         checkError(EVP_DigestSignFinal(context, signaturePointer.toUByte(), siglen.pointer))
                     }
-                    println(siglen.value)
+                    assertContains(130..140, siglen.value.toInt())
                     signature.copyOf(siglen.value.toInt())
                 }
             } finally {

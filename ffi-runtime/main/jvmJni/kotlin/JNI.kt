@@ -19,4 +19,6 @@ public object JNI {
     @JvmStatic
     @JvmName("getStringFromPointer")
     internal external fun getStringFromPointer(pointer: Long): String?
+
+    internal val autoAllocator: NativeAllocator get() = NativeAllocator.Default
 }

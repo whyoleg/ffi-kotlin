@@ -13,5 +13,7 @@ private fun fail(result: Int): Nothing {
     val code = ERR_get_error()
     println("[result: $result, code: $code]")
     val message = ERR_error_string(code, null)?.toKString()
-    error("OPENSSL failure [result: $result, code: $code]: $message")
+    throw OpensslException("OPENSSL failure [result: $result, code: $code]: $message")
 }
+
+class OpensslException(message: String) : Throwable(message)

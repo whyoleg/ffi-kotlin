@@ -4,9 +4,21 @@ package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.*
 
-actual fun ERR_get_error(): CULong = TODO()
+actual fun ERR_get_error(): CULong = err.ERR_get_error().toULong()
 
 actual fun ERR_error_string(
     e: CULong,
     buf: CString?,
-): CString? = TODO()
+): CString? = CString(NativePointer(err.ERR_error_string(e.toLong(), buf.nativePointer)))
+
+private object err {
+    init {
+        JNI
+    }
+
+    @JvmStatic
+    external fun ERR_get_error(): Long
+
+    @JvmStatic
+    external fun ERR_error_string(e: Long, buf: Long): Long
+}

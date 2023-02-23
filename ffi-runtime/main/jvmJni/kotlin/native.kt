@@ -28,6 +28,11 @@ public value class NativeMemory
 internal constructor(
     private val buffer: ByteBuffer,
 ) {
+    init {
+        check(buffer.isDirect)
+        buffer.order(ByteOrder.nativeOrder())
+    }
+
     public val pointer: NativePointer get() = NativePointer(JNI.getPointerFromByteBuffer(buffer))
     public val size: Int get() = buffer.capacity()
 

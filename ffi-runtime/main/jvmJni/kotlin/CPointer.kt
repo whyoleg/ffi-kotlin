@@ -23,6 +23,7 @@ public actual val <T : CPointed> T.pointer: CPointer<T>
 public actual val <T : CPointed> CPointer<T>.pointed: T
     get() = type.wrap(memory)
 
+//change args order
 public fun <T : CPointed> CPointer(pointer: NativePointer, type: CPointedType<T>): CPointer<T>? {
     return NativeMemory(pointer, 0)?.let { CPointer(it, type) }
 }
