@@ -51,3 +51,38 @@ kotlin {
         }
     }
 }
+
+val linkWasm by tasks.registering(wasm.DefaultLinkWasm::class) {
+    linkLibraries.addAll("crypto", "z")
+    linkPaths.add(
+        openssl.libDir("wasm").map { it.absolutePath }
+    )
+    includeDirs.add(
+        openssl.includeDir("wasm").map { it.absolutePath }
+    )
+    outputLibraryName.set("crypto")
+}
+
+val generateWasmTestRunner by tasks.registering(wasm.DefaultGenerateWasmTestRunner::class) {
+    dependsOn("wasmTestTestDevelopmentExecutableCompileSync")//TODO
+    dependsOn(linkWasm)
+    inputLibraryName.set("crypto")
+    inputLibraryFile.set(linkWasm.flatMap { it.producedLibraryFile })
+}
+
+kotlin {
+    js {
+        nodejs()
+    }
+    wasm {
+        nodejs {
+            testTask {
+                dependsOn(generateWasmTestRunner)
+                val originalPath = inputFileProperty.get().asFile.absolutePath.replace(".mjs", ".uninstantiated.mjs")
+                //TODO: what to do here???
+                generateWasmTestRunner.get().instantiateFile.set(originalPath)
+                inputFileProperty.set(generateWasmTestRunner.flatMap { it.testRunnerFile })
+            }
+        }
+    }
+}

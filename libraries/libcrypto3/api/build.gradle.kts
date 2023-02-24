@@ -38,3 +38,12 @@ kotlin {
         }
     }
 }
+
+kotlin {
+    wasm {
+        nodejs()
+    }
+    js {
+        nodejs()
+    }
+}
