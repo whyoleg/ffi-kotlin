@@ -140,7 +140,6 @@ JNIEXPORT jint JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpmac_EVP_1MAC_1final (J
   jlong p_outsize
 ) {
     return (jint)EVP_MAC_final((EVP_MAC_CTX*)p_ctx, (unsigned char*)p_out, (unsigned long*)p_outl, p_outsize);
-//    return (jlong)(*(unsigned long*)p_outl);
 }
 
 JNIEXPORT void JNICALL Java_dev_whyoleg_ffi_libcrypto3_evpmac_EVP_1MAC_1CTX_1free (JNIEnv* env, jclass jclss,

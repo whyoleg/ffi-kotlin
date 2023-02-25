@@ -5,6 +5,7 @@
 package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.*
+import kotlin.wasm.*
 
 actual object EVP_PKEY_Type : COpaqueType<EVP_PKEY>(::EVP_PKEY)
 actual class EVP_PKEY(memory: NativeMemory) : COpaque(memory) {
@@ -12,42 +13,32 @@ actual class EVP_PKEY(memory: NativeMemory) : COpaque(memory) {
 }
 
 actual fun EVP_PKEY_keygen_init(ctx: CPointer<EVP_PKEY_CTX>?): Int {
-    TODO()
-//    return evppkey.EVP_PKEY_keygen_init(ctx.nativePointer)
+    return ffi_EVP_PKEY_keygen_init(ctx.nativePointer)
 }
 
 actual fun EVP_PKEY_generate(
     ctx: CPointer<EVP_PKEY_CTX>?,
     ppkey: CPointer<CPointerVariable<EVP_PKEY>>?,
 ): Int {
-    TODO()
-//    return evppkey.EVP_PKEY_generate(ctx.nativePointer, ppkey.nativePointer)
+    return ffi_EVP_PKEY_generate(ctx.nativePointer, ppkey.nativePointer)
 }
 
 actual fun EVP_PKEY_up_ref(pkey: CPointer<EVP_PKEY>?): Int {
-    TODO()
-//    return evppkey.EVP_PKEY_up_ref(pkey.nativePointer)
+    return ffi_EVP_PKEY_up_ref(pkey.nativePointer)
 }
 
 actual fun EVP_PKEY_free(pkey: CPointer<EVP_PKEY>?) {
-    TODO()
-//    evppkey.EVP_PKEY_free(pkey.nativePointer)
+    ffi_EVP_PKEY_free(pkey.nativePointer)
 }
 
-//private object evppkey {
-//    init {
-//        JNI
-//    }
-//
-//    @JvmStatic
-//    external fun EVP_PKEY_keygen_init(ctx: Long): Int
-//
-//    @JvmStatic
-//    external fun EVP_PKEY_generate(ctx: Long, ppkey: Long): Int
-//
-//    @JvmStatic
-//    external fun EVP_PKEY_up_ref(pkey: Long): Int
-//
-//    @JvmStatic
-//    external fun EVP_PKEY_free(pkey: Long)
-//}
+@WasmImport("crypto", "ffi_EVP_PKEY_keygen_init")
+private external fun ffi_EVP_PKEY_keygen_init(ctx: Int): Int
+
+@WasmImport("crypto", "ffi_EVP_PKEY_generate")
+private external fun ffi_EVP_PKEY_generate(ctx: Int, ppkey: Int): Int
+
+@WasmImport("crypto", "ffi_EVP_PKEY_up_ref")
+private external fun ffi_EVP_PKEY_up_ref(pkey: Int): Int
+
+@WasmImport("crypto", "ffi_EVP_PKEY_free")
+private external fun ffi_EVP_PKEY_free(pkey: Int)

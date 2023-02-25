@@ -97,14 +97,8 @@ abstract class LibCrypto3Test {
                         signature.write { signaturePointer, signatureSize ->
                             checkError(EVP_MAC_update(context, dataPointer.toUByte(), dataSize.toULong()))
                             val out = alloc(CULongVariableType)
-
-                            println(out.value)
-                            out.value = 10UL
-                            println(out.value)
-
                             checkError(EVP_MAC_final(context, signaturePointer.toUByte(), out.pointer, signatureSize.toULong()))
                             assertEquals(32UL, out.value)
-                            println(out.value)
                         }
                         signature
                     }

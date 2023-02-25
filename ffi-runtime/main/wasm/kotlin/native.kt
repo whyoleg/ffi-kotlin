@@ -26,18 +26,12 @@ internal constructor(
 
     public fun loadByte(index: Int): Byte = getU8(pointer.value + index)
     public fun storeByte(index: Int, value: Byte): Unit = setU8(pointer.value + index, value)
-    public fun loadInt(index: Int): Int = getU32(pointer.value + index)
-    public fun storeInt(index: Int, value: Int): Unit = setU32(pointer.value + index, value)
-    public fun loadLong(index: Int): Long {
-        val b1 = getU32(pointer.value + index)
-        val b2 = getU32(pointer.value + index + 4)
-        return b1.toLong().shl(32) + b2
-    }
+    public fun loadInt(index: Int): Int = getU32((pointer.value + index) / Int.SIZE_BYTES)
+    public fun storeInt(index: Int, value: Int): Unit = setU32((pointer.value + index) / Int.SIZE_BYTES, value)
 
-    public fun storeLong(index: Int, value: Long) {
-        setU32(pointer.value + index, value.shr(32).toInt())
-        setU32(pointer.value + index + 4, value.toInt())
-    }
+    //TODO: proper long support
+    public fun loadLong(index: Int): Long = loadInt(index).toLong()
+    public fun storeLong(index: Int, value: Long): Unit = storeInt(index, value.toInt())
 
     public fun loadByteArray(
         index: Int,

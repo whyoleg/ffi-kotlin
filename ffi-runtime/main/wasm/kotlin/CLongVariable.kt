@@ -5,7 +5,8 @@ internal constructor(memory: NativeMemory) : CVariable(memory) {
     override val type: CLongVariableType get() = CLongVariableType
 }
 
-public actual object CLongVariableType : CVariableType<CLongVariable>(::CLongVariable, 8)
+//TODO: proper long support
+public actual object CLongVariableType : CVariableType<CLongVariable>(::CLongVariable, Int.SIZE_BYTES)
 
 public actual var CLongVariable.value: CLong
     get() = memory.loadLong(0)

@@ -5,6 +5,7 @@
 package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.*
+import kotlin.wasm.*
 
 actual object EVP_PKEY_CTX_Type : COpaqueType<EVP_PKEY_CTX>(::EVP_PKEY_CTX)
 actual class EVP_PKEY_CTX(memory: NativeMemory) : COpaque(memory) {
@@ -17,8 +18,7 @@ actual fun EVP_PKEY_CTX_new_from_name(
     propquery: CString?,
 ): CPointer<EVP_PKEY_CTX>? = CPointer(
     NativePointer(
-        TODO()
-//        evppkeyctx.EVP_PKEY_CTX_new_from_name(libctx.nativePointer, name.nativePointer, propquery.nativePointer)
+        ffi_EVP_PKEY_CTX_new_from_name(libctx.nativePointer, name.nativePointer, propquery.nativePointer)
     ),
     EVP_PKEY_CTX_Type
 )
@@ -27,26 +27,18 @@ actual fun EVP_PKEY_CTX_set_params(
     ctx: CPointer<EVP_PKEY_CTX>?,
     params: CPointer<OSSL_PARAM>?,
 ): Int {
-    TODO()
-//    return evppkeyctx.EVP_PKEY_CTX_set_params(ctx.nativePointer, params.nativePointer)
+    return ffi_EVP_PKEY_CTX_set_params(ctx.nativePointer, params.nativePointer)
 }
 
 actual fun EVP_PKEY_CTX_free(ctx: CPointer<EVP_PKEY_CTX>?) {
-    TODO()
-//    evppkeyctx.EVP_PKEY_CTX_free(ctx.nativePointer)
+    ffi_EVP_PKEY_CTX_free(ctx.nativePointer)
 }
 
-//private object evppkeyctx {
-//    init {
-//        JNI
-//    }
-//
-//    @JvmStatic
-//    external fun EVP_PKEY_CTX_new_from_name(libctx: Long, name: Long, propquery: Long): Long
-//
-//    @JvmStatic
-//    external fun EVP_PKEY_CTX_set_params(ctx: Long, params: Long): Int
-//
-//    @JvmStatic
-//    external fun EVP_PKEY_CTX_free(ctx: Long)
-//}
+@WasmImport("crypto", "ffi_EVP_PKEY_CTX_new_from_name")
+private external fun ffi_EVP_PKEY_CTX_new_from_name(libctx: Int, name: Int, propquery: Int): Int
+
+@WasmImport("crypto", "ffi_EVP_PKEY_CTX_set_params")
+private external fun ffi_EVP_PKEY_CTX_set_params(ctx: Int, params: Int): Int
+
+@WasmImport("crypto", "ffi_EVP_PKEY_CTX_free")
+private external fun ffi_EVP_PKEY_CTX_free(ctx: Int)

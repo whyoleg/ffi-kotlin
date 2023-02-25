@@ -5,7 +5,8 @@ internal constructor(memory: NativeMemory) : CVariable(memory) {
     override val type: CPointedType<*> get() = CULongVariableType
 }
 
-public actual object CULongVariableType : CVariableType<CULongVariable>(::CULongVariable, 8)
+//TODO: proper long support
+public actual object CULongVariableType : CVariableType<CULongVariable>(::CULongVariable, Int.SIZE_BYTES)
 
 public actual var CULongVariable.value: CULong
     get() = memory.loadLong(0).toULong()

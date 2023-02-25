@@ -3,6 +3,7 @@
 package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.*
+import kotlin.wasm.*
 
 actual fun EVP_DigestSignInit_ex(
     ctx: CPointer<EVP_MD_CTX>?,
@@ -13,16 +14,15 @@ actual fun EVP_DigestSignInit_ex(
     pkey: CPointer<EVP_PKEY>?,
     params: CPointer<OSSL_PARAM>?,
 ): Int {
-    TODO()
-//    return evpdigest.EVP_DigestSignInit_ex(
-//        ctx.nativePointer,
-//        pctx.nativePointer,
-//        mdname.nativePointer,
-//        libctx.nativePointer,
-//        props.nativePointer,
-//        pkey.nativePointer,
-//        params.nativePointer,
-//    )
+    return ffi_EVP_DigestSignInit_ex(
+        ctx.nativePointer,
+        pctx.nativePointer,
+        mdname.nativePointer,
+        libctx.nativePointer,
+        props.nativePointer,
+        pkey.nativePointer,
+        params.nativePointer,
+    )
 }
 
 actual fun EVP_DigestSignUpdate(
@@ -30,8 +30,7 @@ actual fun EVP_DigestSignUpdate(
     data: CPointer<*>?,
     dsize: CULong,
 ): Int {
-    TODO()
-//    return evpdigest.EVP_DigestSignUpdate(ctx.nativePointer, data.nativePointer, dsize.toLong())
+    return ffi_EVP_DigestSignUpdate(ctx.nativePointer, data.nativePointer, dsize.toInt())
 }
 
 actual fun EVP_DigestSignFinal(
@@ -39,8 +38,7 @@ actual fun EVP_DigestSignFinal(
     sigret: CPointer<CUByteVariable>?,
     siglen: CPointer<CULongVariable>?,
 ): Int {
-    TODO()
-//    return evpdigest.EVP_DigestSignFinal(ctx.nativePointer, sigret.nativePointer, siglen.nativePointer)
+    return ffi_EVP_DigestSignFinal(ctx.nativePointer, sigret.nativePointer, siglen.nativePointer)
 }
 
 actual fun EVP_DigestVerifyInit_ex(
@@ -52,16 +50,15 @@ actual fun EVP_DigestVerifyInit_ex(
     pkey: CPointer<EVP_PKEY>?,
     params: CPointer<OSSL_PARAM>?,
 ): Int {
-    TODO()
-//    return evpdigest.EVP_DigestVerifyInit_ex(
-//        ctx.nativePointer,
-//        pctx.nativePointer,
-//        mdname.nativePointer,
-//        libctx.nativePointer,
-//        props.nativePointer,
-//        pkey.nativePointer,
-//        params.nativePointer,
-//    )
+    return ffi_EVP_DigestVerifyInit_ex(
+        ctx.nativePointer,
+        pctx.nativePointer,
+        mdname.nativePointer,
+        libctx.nativePointer,
+        props.nativePointer,
+        pkey.nativePointer,
+        params.nativePointer,
+    )
 }
 
 actual fun EVP_DigestVerifyUpdate(
@@ -69,8 +66,7 @@ actual fun EVP_DigestVerifyUpdate(
     data: CPointer<*>?,
     dsize: CULong,
 ): Int {
-    TODO()
-//    return evpdigest.EVP_DigestVerifyUpdate(ctx.nativePointer, data.nativePointer, dsize.toLong())
+    return ffi_EVP_DigestVerifyUpdate(ctx.nativePointer, data.nativePointer, dsize.toInt())
 }
 
 actual fun EVP_DigestVerifyFinal(
@@ -78,47 +74,41 @@ actual fun EVP_DigestVerifyFinal(
     sig: CPointer<CUByteVariable>?,
     siglen: CULong,
 ): Int {
-    TODO()
-//    return evpdigest.EVP_DigestVerifyFinal(ctx.nativePointer, sig.nativePointer, siglen.toLong())
+    return ffi_EVP_DigestVerifyFinal(ctx.nativePointer, sig.nativePointer, siglen.toInt())
 }
 
-//private object evpdigest {
-//    init {
-//        JNI
-//    }
-//
-//    @JvmStatic
-//    external fun EVP_DigestSignInit_ex(
-//        ctx: Long,
-//        pctx: Long,
-//        mdname: Long,
-//        libctx: Long,
-//        props: Long,
-//        pkey: Long,
-//        params: Long,
-//    ): Int
-//
-//    @JvmStatic
-//    external fun EVP_DigestSignUpdate(ctx: Long, data: Long, dsize: Long): Int
-//
-//    @JvmStatic
-//    external fun EVP_DigestSignFinal(ctx: Long, sigret: Long, siglen: Long): Int
-//
-//    @JvmStatic
-//    external fun EVP_DigestVerifyInit_ex(
-//        ctx: Long,
-//        pctx: Long,
-//        mdname: Long,
-//        libctx: Long,
-//        props: Long,
-//        pkey: Long,
-//        params: Long,
-//    ): Int
-//
-//    @JvmStatic
-//    external fun EVP_DigestVerifyUpdate(ctx: Long, data: Long, dsize: Long): Int
-//
-//    @JvmStatic
-//    external fun EVP_DigestVerifyFinal(ctx: Long, sig: Long, siglen: Long): Int
-//
-//}
+
+@WasmImport("crypto", "ffi_EVP_DigestSignInit_ex")
+private external fun ffi_EVP_DigestSignInit_ex(
+    ctx: Int,
+    pctx: Int,
+    mdname: Int,
+    libctx: Int,
+    props: Int,
+    pkey: Int,
+    params: Int,
+): Int
+
+@WasmImport("crypto", "ffi_EVP_DigestSignUpdate")
+private external fun ffi_EVP_DigestSignUpdate(ctx: Int, data: Int, dsize: Int): Int
+
+@WasmImport("crypto", "ffi_EVP_DigestSignFinal")
+private external fun ffi_EVP_DigestSignFinal(ctx: Int, sigret: Int, siglen: Int): Int
+
+@WasmImport("crypto", "ffi_EVP_DigestVerifyInit_ex")
+private external fun ffi_EVP_DigestVerifyInit_ex(
+    ctx: Int,
+    pctx: Int,
+    mdname: Int,
+    libctx: Int,
+    props: Int,
+    pkey: Int,
+    params: Int,
+): Int
+
+@WasmImport("crypto", "ffi_EVP_DigestVerifyUpdate")
+private external fun ffi_EVP_DigestVerifyUpdate(ctx: Int, data: Int, dsize: Int): Int
+
+@WasmImport("crypto", "ffi_EVP_DigestVerifyFinal")
+private external fun ffi_EVP_DigestVerifyFinal(ctx: Int, sig: Int, siglen: Int): Int
+

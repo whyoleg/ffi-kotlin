@@ -5,6 +5,7 @@
 package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.*
+import kotlin.wasm.*
 
 actual object OSSL_PARAM_Type : CVariableType<OSSL_PARAM>(::OSSL_PARAM, 40/*TODO!!!*/)
 actual class OSSL_PARAM(memory: NativeMemory) : CStructVariable(memory) {
@@ -32,23 +33,16 @@ actual fun OSSL_PARAM_construct_utf8_string(
     buf: CString?,
     bsize: CULong,
 ): CValue<OSSL_PARAM> = CValue(OSSL_PARAM_Type) { pointer ->
-    TODO()
-//    osslparam.OSSL_PARAM_construct_utf8_string(key.nativePointer, buf.nativePointer, bsize.toLong(), pointer.value)
+    ffi_OSSL_PARAM_construct_utf8_string(key.nativePointer, buf.nativePointer, bsize.toInt(), pointer.value)
 }
 
 actual fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM> = CValue(OSSL_PARAM_Type) { pointer ->
-    TODO()
-//    osslparam.OSSL_PARAM_construct_end(pointer.value)
+    ffi_OSSL_PARAM_construct_end(pointer.value)
 }
 
-//private object osslparam {
-//    init {
-//        JNI
-//    }
-//
-//    @JvmStatic
-//    external fun OSSL_PARAM_construct_utf8_string(key: Long, buf: Long, bsize: Long, returnPointer: Long)
-//
-//    @JvmStatic
-//    external fun OSSL_PARAM_construct_end(returnPointer: Long)
-//}
+@WasmImport("crypto", "ffi_OSSL_PARAM_construct_utf8_string")
+private external fun ffi_OSSL_PARAM_construct_utf8_string(key: Int, buf: Int, bsize: Int, returnPointer: Int)
+
+@WasmImport("crypto", "ffi_OSSL_PARAM_construct_end")
+private external fun ffi_OSSL_PARAM_construct_end(returnPointer: Int)
+
