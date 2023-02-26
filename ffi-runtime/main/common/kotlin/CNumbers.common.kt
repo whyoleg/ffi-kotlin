@@ -40,3 +40,21 @@ public expect class ULongVariable : CVariable
 public expect object ULongVariableType : CVariableType<ULongVariable>
 
 public expect var ULongVariable.value: ULong
+
+
+//TODO: hard to introduce because of current native structure...
+//jvm - Long
+//wasm/js - Int
+//native - Int/Long (mostly Long, but based on target)
+//public expect class PlatformInt : Number, Comparable<PlatformInt>
+//public expect class PlatformIntVariable : CVariable
+//public expect object PlatformIntVariableType : CVariableType<PlatformIntVariable>
+//
+//public expect var PlatformIntVariable.value: PlatformInt
+//
+//@JvmInline
+//public expect value class PlatformUInt internal constructor(internal val value: PlatformInt) : Comparable<PlatformUInt>
+//public expect class PlatformUIntVariable : CVariable
+//public expect object PlatformUIntVariableType : CVariableType<PlatformUIntVariable>
+//
+//public expect var PlatformUIntVariable.value: PlatformUInt
