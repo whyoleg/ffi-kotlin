@@ -43,29 +43,29 @@ internal constructor(
         return array
     }
 
-    public actual fun alloc(value: Byte): CByteVariable {
-        return alloc(CByteVariableType) { this.value = value }
+    public actual fun alloc(value: Byte): ByteVariable {
+        return alloc(ByteVariableType) { this.value = value }
     }
 
-    public actual fun alloc(value: ULong): CULongVariable {
-        return alloc(CULongVariableType) { this.value = value }
+    public actual fun alloc(value: ULong): ULongVariable {
+        return alloc(ULongVariableType) { this.value = value }
     }
 
     public actual fun alloc(value: String): CString {
         return value.cstr.getPointer(memScope)
     }
 
-    public actual fun allocArrayOf(elements: ByteArray): CArrayPointer<CByteVariable> {
+    public actual fun allocArrayOf(elements: ByteArray): CArrayPointer<ByteVariable> {
         return memScope.allocArrayOf(elements)
     }
 
-    public actual fun <T> ByteArray.read(index: Int, block: (pointer: CArrayPointer<CByteVariable>, size: Int) -> T): T =
+    public actual fun <T> ByteArray.read(index: Int, block: (pointer: CArrayPointer<ByteVariable>, size: Int) -> T): T =
         pointed(index, block)
 
-    public actual fun <T> ByteArray.write(index: Int, block: (pointer: CArrayPointer<CByteVariable>, size: Int) -> T): T =
+    public actual fun <T> ByteArray.write(index: Int, block: (pointer: CArrayPointer<ByteVariable>, size: Int) -> T): T =
         pointed(index, block)
 
-    public actual fun <T> ByteArray.pointed(index: Int, block: (pointer: CArrayPointer<CByteVariable>, size: Int) -> T): T {
+    public actual fun <T> ByteArray.pointed(index: Int, block: (pointer: CArrayPointer<ByteVariable>, size: Int) -> T): T {
         val pointedSize = size - index
         check(pointedSize >= 0)
         return usePinned {

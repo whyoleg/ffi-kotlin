@@ -50,8 +50,8 @@ private val EVP_MAC_init_MH: MethodHandle = FFI.methodHandle(
 
 actual fun EVP_MAC_init(
     ctx: CPointer<EVP_MAC_CTX>?,
-    key: CPointer<CUByteVariable>?,
-    keylen: CULong,
+    key: CPointer<UByteVariable>?,
+    keylen: ULong,
     params: CPointer<OSSL_PARAM>?,
 ): Int {
     return EVP_MAC_init_MH.invokeExact(
@@ -70,7 +70,7 @@ private val EVP_MAC_CTX_get_mac_size_MH: MethodHandle = FFI.methodHandle(
 
 actual fun EVP_MAC_CTX_get_mac_size(
     ctx: CPointer<EVP_MAC_CTX>?,
-): CULong {
+): ULong {
     return (EVP_MAC_CTX_get_mac_size_MH.invokeExact(ctx.segment) as Long).toULong()
 }
 
@@ -82,8 +82,8 @@ private val EVP_MAC_update_MH: MethodHandle = FFI.methodHandle(
 
 actual fun EVP_MAC_update(
     ctx: CPointer<EVP_MAC_CTX>?,
-    data: CPointer<CUByteVariable>?,
-    datalen: CULong,
+    data: CPointer<UByteVariable>?,
+    datalen: ULong,
 ): Int {
     return EVP_MAC_update_MH.invokeExact(
         ctx.segment,
@@ -100,9 +100,9 @@ private val EVP_MAC_final_MH: MethodHandle = FFI.methodHandle(
 
 actual fun EVP_MAC_final(
     ctx: CPointer<EVP_MAC_CTX>?,
-    out: CPointer<CUByteVariable>?,
-    outl: CPointer<CULongVariable>?,
-    outsize: CULong,
+    out: CPointer<UByteVariable>?,
+    outl: CPointer<ULongVariable>?,
+    outsize: ULong,
 ): Int {
     return EVP_MAC_final_MH.invokeExact(
         ctx.segment,

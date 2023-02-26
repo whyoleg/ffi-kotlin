@@ -14,23 +14,23 @@ actual class OSSL_PARAM(memory: NativeMemory) : CStructVariable(memory) {
 actual var OSSL_PARAM.key: CString?
     get() = TODO()
     set(value) = TODO()
-actual var OSSL_PARAM.data_type: CUInt
+actual var OSSL_PARAM.data_type: UInt
     get() = TODO()
     set(value) = TODO()
 actual var OSSL_PARAM.data: CPointer<out CPointed>?
     get() = TODO()
     set(value) = TODO()
-actual var OSSL_PARAM.data_size: CULong
+actual var OSSL_PARAM.data_size: ULong
     get() = TODO()
     set(value) = TODO()
-actual var OSSL_PARAM.return_size: CULong
+actual var OSSL_PARAM.return_size: ULong
     get() = TODO()
     set(value) = TODO()
 
 actual fun OSSL_PARAM_construct_utf8_string(
     key: CString?,
     buf: CString?,
-    bsize: CULong,
+    bsize: ULong,
 ): CValue<OSSL_PARAM> = CValue(OSSL_PARAM_Type) { pointer ->
     osslparam.OSSL_PARAM_construct_utf8_string(key.nativePointer, buf.nativePointer, bsize.toLong(), pointer.value)
 }

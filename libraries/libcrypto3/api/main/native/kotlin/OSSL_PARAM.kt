@@ -13,23 +13,23 @@ actual typealias OSSL_PARAM = dev.whyoleg.ffi.libcrypto3.cinterop.OSSL_PARAM
 actual var OSSL_PARAM.key: CString?
     get() = key
     set(value) = run { key = value }
-actual var OSSL_PARAM.data_type: CUInt
+actual var OSSL_PARAM.data_type: UInt
     get() = data_type
     set(value) = run { data_type = value }
 actual var OSSL_PARAM.data: CPointer<out CPointed>?
     get() = data
     set(value) = run { data = value }
-actual var OSSL_PARAM.data_size: CULong
+actual var OSSL_PARAM.data_size: ULong
     get() = data_size
     set(value) = run { data_size = value }
-actual var OSSL_PARAM.return_size: CULong
+actual var OSSL_PARAM.return_size: ULong
     get() = return_size
     set(value) = run { return_size = value }
 
 actual fun OSSL_PARAM_construct_utf8_string(
     key: CString?,
     buf: CString?,
-    bsize: CULong,
+    bsize: ULong,
 ): CValue<OSSL_PARAM> {
     return dev.whyoleg.ffi.libcrypto3.cinterop.OSSL_PARAM_construct_utf8_string(key, buf, bsize)
 }

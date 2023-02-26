@@ -96,7 +96,7 @@ abstract class LibCrypto3Test {
                         assertEquals(32, signature.size)
                         signature.write { signaturePointer, signatureSize ->
                             checkError(EVP_MAC_update(context, dataPointer.toUByte(), dataSize.toULong()))
-                            val out = alloc(CULongVariableType)
+                            val out = alloc(ULongVariableType)
                             checkError(EVP_MAC_final(context, signaturePointer.toUByte(), out.pointer, signatureSize.toULong()))
                             assertEquals(32UL, out.value)
                         }
@@ -158,7 +158,7 @@ abstract class LibCrypto3Test {
                 dataInput.read { dataPointer, dataSize ->
                     checkError(EVP_DigestSignUpdate(context, dataPointer, dataSize.toULong()))
 
-                    val siglen = alloc(CULongVariableType)
+                    val siglen = alloc(ULongVariableType)
                     checkError(EVP_DigestSignFinal(context, null, siglen.pointer))
                     assertContains(130..140, siglen.value.toInt())
                     val signature = ByteArray(siglen.value.toInt())

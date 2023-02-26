@@ -27,13 +27,13 @@ expect fun EVP_DigestInit(
 expect fun EVP_DigestUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     d: CPointer<*>?,
-    cnt: CULong,
+    cnt: ULong,
 ): Int
 
 expect fun EVP_DigestFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    md: CPointer<CUByteVariable>?,
-    s: CPointer<CUIntVariable>?,
+    md: CPointer<UByteVariable>?,
+    s: CPointer<UIntVariable>?,
 ): Int
 
 expect fun EVP_MD_CTX_free(ctx: CPointer<EVP_MD_CTX>?)

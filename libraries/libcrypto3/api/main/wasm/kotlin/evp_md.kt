@@ -49,15 +49,15 @@ actual fun EVP_DigestInit(
 actual fun EVP_DigestUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     d: CPointer<*>?,
-    cnt: CULong,
+    cnt: ULong,
 ): Int {
     return ffi_EVP_DigestUpdate(ctx.nativePointer, d.nativePointer, cnt.toInt())
 }
 
 actual fun EVP_DigestFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    md: CPointer<CUByteVariable>?,
-    s: CPointer<CUIntVariable>?,
+    md: CPointer<UByteVariable>?,
+    s: CPointer<UIntVariable>?,
 ): Int {
     return ffi_EVP_DigestFinal(ctx.nativePointer, md.nativePointer, s.nativePointer)
 }

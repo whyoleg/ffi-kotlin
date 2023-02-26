@@ -9,15 +9,15 @@ expect class OSSL_PARAM : CStructVariable
 
 //Subclasses of NativePointed cannot have properties with backing fields - but there is no backing fields...
 expect var OSSL_PARAM.key: CString?
-expect var OSSL_PARAM.data_type: CUInt
+expect var OSSL_PARAM.data_type: UInt
 expect var OSSL_PARAM.data: CPointer<out CPointed>? //COpaque - but cinterop is different
-expect var OSSL_PARAM.data_size: CULong
-expect var OSSL_PARAM.return_size: CULong
+expect var OSSL_PARAM.data_size: ULong
+expect var OSSL_PARAM.return_size: ULong
 
 expect fun OSSL_PARAM_construct_utf8_string(
     key: CString?,
     buf: CString?,
-    bsize: CULong,
+    bsize: ULong,
 ): CValue<OSSL_PARAM>
 
 expect fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM>

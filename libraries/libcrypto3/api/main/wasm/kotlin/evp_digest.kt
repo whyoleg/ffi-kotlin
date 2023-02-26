@@ -28,15 +28,15 @@ actual fun EVP_DigestSignInit_ex(
 actual fun EVP_DigestSignUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     data: CPointer<*>?,
-    dsize: CULong,
+    dsize: ULong,
 ): Int {
     return ffi_EVP_DigestSignUpdate(ctx.nativePointer, data.nativePointer, dsize.toInt())
 }
 
 actual fun EVP_DigestSignFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    sigret: CPointer<CUByteVariable>?,
-    siglen: CPointer<CULongVariable>?,
+    sigret: CPointer<UByteVariable>?,
+    siglen: CPointer<ULongVariable>?,
 ): Int {
     return ffi_EVP_DigestSignFinal(ctx.nativePointer, sigret.nativePointer, siglen.nativePointer)
 }
@@ -64,15 +64,15 @@ actual fun EVP_DigestVerifyInit_ex(
 actual fun EVP_DigestVerifyUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     data: CPointer<*>?,
-    dsize: CULong,
+    dsize: ULong,
 ): Int {
     return ffi_EVP_DigestVerifyUpdate(ctx.nativePointer, data.nativePointer, dsize.toInt())
 }
 
 actual fun EVP_DigestVerifyFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    sig: CPointer<CUByteVariable>?,
-    siglen: CULong,
+    sig: CPointer<UByteVariable>?,
+    siglen: ULong,
 ): Int {
     return ffi_EVP_DigestVerifyFinal(ctx.nativePointer, sig.nativePointer, siglen.toInt())
 }

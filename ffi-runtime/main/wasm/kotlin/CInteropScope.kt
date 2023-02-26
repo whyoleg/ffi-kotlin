@@ -34,12 +34,12 @@ internal constructor(
         return array
     }
 
-    public actual fun alloc(value: Byte): CByteVariable {
-        return alloc(CByteVariableType) { this.value = value }
+    public actual fun alloc(value: Byte): ByteVariable {
+        return alloc(ByteVariableType) { this.value = value }
     }
 
-    public actual fun alloc(value: ULong): CULongVariable {
-        return alloc(CULongVariableType) { this.value = value }
+    public actual fun alloc(value: ULong): ULongVariable {
+        return alloc(ULongVariableType) { this.value = value }
     }
 
     public actual fun alloc(value: String): CString {
@@ -47,33 +47,33 @@ internal constructor(
         return CPointer(allocator.allocate(bytes.size + 1).also {
             it.storeByteArray(0, bytes)
             it.storeByte(bytes.size, 0)
-        }, CByteVariableType)
+        }, ByteVariableType)
     }
 
-    public actual fun allocArrayOf(elements: ByteArray): CArrayPointer<CByteVariable> {
-        return CPointer(allocator.allocate(elements.size).also { it.storeByteArray(0, elements) }, CByteVariableType)
+    public actual fun allocArrayOf(elements: ByteArray): CArrayPointer<ByteVariable> {
+        return CPointer(allocator.allocate(elements.size).also { it.storeByteArray(0, elements) }, ByteVariableType)
     }
 
-    public actual fun <T> ByteArray.read(index: Int, block: (pointer: CArrayPointer<CByteVariable>, size: Int) -> T): T =
+    public actual fun <T> ByteArray.read(index: Int, block: (pointer: CArrayPointer<ByteVariable>, size: Int) -> T): T =
         use(index, copyBefore = true, block = block)
 
-    public actual fun <T> ByteArray.write(index: Int, block: (pointer: CArrayPointer<CByteVariable>, size: Int) -> T): T =
+    public actual fun <T> ByteArray.write(index: Int, block: (pointer: CArrayPointer<ByteVariable>, size: Int) -> T): T =
         use(index, copyAfter = true, block = block)
 
-    public actual fun <T> ByteArray.pointed(index: Int, block: (pointer: CArrayPointer<CByteVariable>, size: Int) -> T): T =
+    public actual fun <T> ByteArray.pointed(index: Int, block: (pointer: CArrayPointer<ByteVariable>, size: Int) -> T): T =
         use(index, copyBefore = true, copyAfter = true, block = block)
 
     private fun <T> ByteArray.use(
         index: Int,
         copyBefore: Boolean = false,
         copyAfter: Boolean = false,
-        block: (pointer: CPointer<CByteVariable>, size: Int) -> T,
+        block: (pointer: CPointer<ByteVariable>, size: Int) -> T,
     ): T {
         val pointedSize = size - index
         check(pointedSize >= 0)
         val memory = allocator.allocate(pointedSize)
         if (copyBefore) memory.storeByteArray(0, this, index, pointedSize)
-        val result = block(CPointer(memory, CByteVariableType), pointedSize)
+        val result = block(CPointer(memory, ByteVariableType), pointedSize)
         if (copyAfter) memory.loadByteArray(0, this, index, pointedSize)
         return result
     }

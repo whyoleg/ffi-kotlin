@@ -18,17 +18,17 @@ public expect class CInteropScope {
     public fun <T : CVariable> allocArrayOf(type: CVariableType<T>, vararg elements: CValue<T>): CArrayPointer<T>
 
     //typed
-    public fun alloc(value: Byte): CByteVariable
-    public fun alloc(value: ULong): CULongVariable
+    public fun alloc(value: Byte): ByteVariable
+    public fun alloc(value: ULong): ULongVariable
     public fun alloc(value: String): CString
 
     //typed array - !COPY! array
-    public fun allocArrayOf(elements: ByteArray): CArrayPointer<CByteVariable>
+    public fun allocArrayOf(elements: ByteArray): CArrayPointer<ByteVariable>
 
     //ByteArray helpers
-    public fun <T> ByteArray.read(index: Int = 0, block: (pointer: CArrayPointer<CByteVariable>, size: Int) -> T): T
-    public fun <T> ByteArray.write(index: Int = 0, block: (pointer: CArrayPointer<CByteVariable>, size: Int) -> T): T
-    public fun <T> ByteArray.pointed(index: Int = 0, block: (pointer: CArrayPointer<CByteVariable>, size: Int) -> T): T
+    public fun <T> ByteArray.read(index: Int = 0, block: (pointer: CArrayPointer<ByteVariable>, size: Int) -> T): T
+    public fun <T> ByteArray.write(index: Int = 0, block: (pointer: CArrayPointer<ByteVariable>, size: Int) -> T): T
+    public fun <T> ByteArray.pointed(index: Int = 0, block: (pointer: CArrayPointer<ByteVariable>, size: Int) -> T): T
 }
 
 public expect inline fun <T> cInteropScope(block: CInteropScope.() -> T): T

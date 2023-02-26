@@ -10,4 +10,4 @@ public actual fun CString.toKString(): String {
     return ByteArray(length) { this.memory.loadByte(it) }.decodeToString()
 }
 
-public fun CString(pointer: NativePointer): CString? = CPointer(pointer, CByteVariableType)
+public fun CString(pointer: NativePointer): CString? = CPointer(pointer, ByteVariableType)

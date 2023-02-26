@@ -23,26 +23,26 @@ expect fun EVP_MAC_CTX_new(
 
 expect fun EVP_MAC_init(
     ctx: CPointer<EVP_MAC_CTX>?,
-    key: CPointer<CUByteVariable>?,
-    keylen: CULong,
+    key: CPointer<UByteVariable>?,
+    keylen: ULong,
     params: CPointer<OSSL_PARAM>?,
 ): Int
 
 expect fun EVP_MAC_CTX_get_mac_size(
     ctx: CPointer<EVP_MAC_CTX>?,
-): CULong
+): ULong
 
 expect fun EVP_MAC_update(
     ctx: CPointer<EVP_MAC_CTX>?,
-    data: CPointer<CUByteVariable>?,
-    datalen: CULong,
+    data: CPointer<UByteVariable>?,
+    datalen: ULong,
 ): Int
 
 expect fun EVP_MAC_final(
     ctx: CPointer<EVP_MAC_CTX>?,
-    out: CPointer<CUByteVariable>?,
-    outl: CPointer<CULongVariable>?,
-    outsize: CULong,
+    out: CPointer<UByteVariable>?,
+    outl: CPointer<ULongVariable>?,
+    outsize: ULong,
 ): Int
 
 expect fun EVP_MAC_CTX_free(

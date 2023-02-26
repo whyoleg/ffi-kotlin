@@ -5,10 +5,10 @@ package dev.whyoleg.ffi.libcrypto3
 import dev.whyoleg.ffi.*
 import kotlin.wasm.*
 
-actual fun ERR_get_error(): CULong = ffi_ERR_get_error().toULong()
+actual fun ERR_get_error(): ULong = ffi_ERR_get_error().toULong()
 
 actual fun ERR_error_string(
-    e: CULong,
+    e: ULong,
     buf: CString?,
 ): CString? = CString(NativePointer(ffi_ERR_error_string(e.toInt(), buf.nativePointer)))
 

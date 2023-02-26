@@ -33,8 +33,8 @@ actual fun EVP_MAC_CTX_new(mac: CPointer<EVP_MAC>?): CPointer<EVP_MAC_CTX>? {
 
 actual fun EVP_MAC_init(
     ctx: CPointer<EVP_MAC_CTX>?,
-    key: CPointer<CUByteVariable>?,
-    keylen: CULong,
+    key: CPointer<UByteVariable>?,
+    keylen: ULong,
     params: CPointer<OSSL_PARAM>?,
 ): Int {
     return ffi_EVP_MAC_init(ctx.nativePointer, key.nativePointer, keylen.toInt(), params.nativePointer)
@@ -42,23 +42,23 @@ actual fun EVP_MAC_init(
 
 actual fun EVP_MAC_CTX_get_mac_size(
     ctx: CPointer<EVP_MAC_CTX>?,
-): CULong {
+): ULong {
     return ffi_EVP_MAC_CTX_get_mac_size(ctx.nativePointer).toULong()
 }
 
 actual fun EVP_MAC_update(
     ctx: CPointer<EVP_MAC_CTX>?,
-    data: CPointer<CUByteVariable>?,
-    datalen: CULong,
+    data: CPointer<UByteVariable>?,
+    datalen: ULong,
 ): Int {
     return ffi_EVP_MAC_update(ctx.nativePointer, data.nativePointer, datalen.toInt())
 }
 
 actual fun EVP_MAC_final(
     ctx: CPointer<EVP_MAC_CTX>?,
-    out: CPointer<CUByteVariable>?,
-    outl: CPointer<CULongVariable>?,
-    outsize: CULong,
+    out: CPointer<UByteVariable>?,
+    outl: CPointer<ULongVariable>?,
+    outsize: ULong,
 ): Int {
     return ffi_EVP_MAC_final(ctx.nativePointer, out.nativePointer, outl.nativePointer, outsize.toInt())
 }

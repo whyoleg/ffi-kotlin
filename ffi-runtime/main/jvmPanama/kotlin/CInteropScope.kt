@@ -39,36 +39,36 @@ internal constructor(
         return array
     }
 
-    public actual fun alloc(value: Byte): CByteVariable {
-        return alloc(CByteVariableType) { this.value = value }
+    public actual fun alloc(value: Byte): ByteVariable {
+        return alloc(ByteVariableType) { this.value = value }
     }
 
-    public actual fun alloc(value: ULong): CULongVariable {
-        return alloc(CULongVariableType) { this.value = value }
+    public actual fun alloc(value: ULong): ULongVariable {
+        return alloc(ULongVariableType) { this.value = value }
     }
 
     public actual fun alloc(value: String): CString {
-        return CPointer(CByteVariable(arena.allocateUtf8String(value)))
+        return CPointer(ByteVariable(arena.allocateUtf8String(value)))
     }
 
-    public actual fun allocArrayOf(elements: ByteArray): CArrayPointer<CByteVariable> {
-        return CPointer(CByteVariable(arena.allocateArray(ValueLayout.JAVA_BYTE, *elements)))
+    public actual fun allocArrayOf(elements: ByteArray): CArrayPointer<ByteVariable> {
+        return CPointer(ByteVariable(arena.allocateArray(ValueLayout.JAVA_BYTE, *elements)))
     }
 
-    public actual fun <T> ByteArray.read(index: Int, block: (pointer: CArrayPointer<CByteVariable>, size: Int) -> T): T =
+    public actual fun <T> ByteArray.read(index: Int, block: (pointer: CArrayPointer<ByteVariable>, size: Int) -> T): T =
         use(index, copyBefore = true, block = block)
 
-    public actual fun <T> ByteArray.write(index: Int, block: (pointer: CArrayPointer<CByteVariable>, size: Int) -> T): T =
+    public actual fun <T> ByteArray.write(index: Int, block: (pointer: CArrayPointer<ByteVariable>, size: Int) -> T): T =
         use(index, copyAfter = true, block = block)
 
-    public actual fun <T> ByteArray.pointed(index: Int, block: (pointer: CArrayPointer<CByteVariable>, size: Int) -> T): T =
+    public actual fun <T> ByteArray.pointed(index: Int, block: (pointer: CArrayPointer<ByteVariable>, size: Int) -> T): T =
         use(index, copyBefore = true, copyAfter = true, block = block)
 
     private fun <T> ByteArray.use(
         index: Int,
         copyBefore: Boolean = false,
         copyAfter: Boolean = false,
-        block: (pointer: CPointer<CByteVariable>, size: Int) -> T,
+        block: (pointer: CPointer<ByteVariable>, size: Int) -> T,
     ): T {
         val pointedSize = size - index
         check(pointedSize >= 0)
@@ -77,7 +77,7 @@ internal constructor(
             val array = MemorySegment.ofArray(this).asSlice(index.toLong())
             val segment = it.allocate(pointedSize.toLong())
             if (copyBefore) segment.copyFrom(array)
-            val result = block(CPointer(CByteVariable(segment)), pointedSize)
+            val result = block(CPointer(ByteVariable(segment)), pointedSize)
             if (copyAfter) array.copyFrom(segment)
             result
         }
