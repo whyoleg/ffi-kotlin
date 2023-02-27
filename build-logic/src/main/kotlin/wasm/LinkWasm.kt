@@ -40,7 +40,7 @@ open class DefaultLinkWasm : LinkWasm, AbstractExecTask<DefaultLinkWasm>(Default
     override val linkLibraries: ListProperty<String> = objectFactory.listProperty()
     override val includeDirs: ListProperty<String> = objectFactory.listProperty()
     override val inputFiles: ListProperty<RegularFile> = objectFactory.listProperty<RegularFile>().convention(
-        listOf(project.layout.projectDirectory.file("main/wasm/c/interop.c"))
+        listOf(project.layout.projectDirectory.file("src/wasmMain/c/interop.c"))
     )
     override val outputLibraryName: Property<String> = objectFactory.property()
     override val outputDirectory: DirectoryProperty = objectFactory.directoryProperty().convention(

@@ -41,7 +41,6 @@ open class DefaultGenerateWasmTestRunner @Inject constructor(
 
     @TaskAction
     fun generate() {
-        println("GENERATE")
         val libraryName = inputLibraryName.get()
         testRunnerFile.get().asFile.run {
             parentFile.mkdirs()
