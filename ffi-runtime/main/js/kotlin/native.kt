@@ -1,5 +1,7 @@
 package dev.whyoleg.ffi
 
+import org.khronos.webgl.*
+
 internal const val pointerSize = 4 //32 bits
 
 //public only for interop - hide it somehow
@@ -24,10 +26,10 @@ internal constructor(
 ) {
     public fun asReadOnly(): NativeMemory = this
 
-    public fun loadByte(index: Int): Byte = getU8(pointer.value + index)
-    public fun storeByte(index: Int, value: Byte): Unit = setU8(pointer.value + index, value)
-    public fun loadInt(index: Int): Int = getU32((pointer.value + index) / Int.SIZE_BYTES)
-    public fun storeInt(index: Int, value: Int): Unit = setU32((pointer.value + index) / Int.SIZE_BYTES, value)
+    public fun loadByte(index: Int): Byte = FFI.HEAPU8[pointer.value + index]
+    public fun storeByte(index: Int, value: Byte): Unit = run { FFI.HEAPU8[pointer.value + index] = value }
+    public fun loadInt(index: Int): Int = FFI.HEAPU32[(pointer.value + index) / Int.SIZE_BYTES]
+    public fun storeInt(index: Int, value: Int): Unit = run { FFI.HEAPU32[(pointer.value + index) / Int.SIZE_BYTES] = value }
 
     //TODO: proper long support
     public fun loadLong(index: Int): Long = loadInt(index).toLong()
@@ -81,20 +83,20 @@ internal abstract class NativeAllocator {
     class Default : NativeAllocator() {
         private val pointers = ArrayDeque<Int>()
         override fun allocate(size: Int): NativeMemory {
-            val pointer = malloc(size)
+            val pointer = FFI.asm.malloc(size)
             pointers.addLast(pointer)
             return NativeMemory(size, NativePointer(pointer))
         }
 
         override fun close() {
-            while (true) free(pointers.removeFirstOrNull() ?: return)
+            while (true) FFI.asm.free(pointers.removeFirstOrNull() ?: return)
         }
     }
 
     //TODO
     object Auto : NativeAllocator() {
         override fun allocate(size: Int): NativeMemory {
-            val pointer = malloc(size)
+            val pointer = FFI.asm.malloc(size)
             return NativeMemory(size, NativePointer(pointer))
         }
 
@@ -104,24 +106,17 @@ internal abstract class NativeAllocator {
     }
 }
 
-//TODO: those are really super dependent - need to check on how to provide it better
-@JsFun("(index) => imports.Module.HEAPU8[index]")
-private external fun getU8(index: Int): Byte
+//TODO how to do it for work with everything???
+@JsModule("ffi-libcrypto")
+@JsNonModule
+@JsName("Module")
+private external object FFI {
+    val HEAPU8: Uint8Array
+    val HEAPU16: Uint16Array
+    val HEAPU32: Uint32Array
 
-@JsFun("(index, value) => imports.Module.HEAPU8[index] = value")
-private external fun setU8(index: Int, value: Byte)
-
-@JsFun("(index) => imports.Module.HEAPU16[index]")
-private external fun getU16(index: Int): Short
-
-@JsFun("(index) => imports.Module.HEAPU32[index]")
-private external fun getU32(index: Int): Int
-
-@JsFun("(index, value) => imports.Module.HEAPU32[index] = value")
-private external fun setU32(index: Int, value: Int)
-
-@JsFun("(size) => imports.Module.asm.malloc(size)")
-private external fun malloc(size: Int): Int
-
-@JsFun("(pointer) => imports.Module.asm.free(pointer)")
-private external fun free(pointer: Int)
+    object asm {
+        fun malloc(size: Int): Int
+        fun free(pointer: Int)
+    }
+}

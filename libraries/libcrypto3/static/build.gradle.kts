@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.*
+import wasm.*
 
 plugins {
     id("buildx-multiplatform-default")
@@ -52,6 +53,8 @@ kotlin {
     }
 }
 
+val libname = "ffi-libcrypto"
+
 val linkWasm by tasks.registering(wasm.DefaultLinkWasm::class) {
     linkLibraries.addAll("crypto", "z")
     linkPaths.add(
@@ -60,14 +63,20 @@ val linkWasm by tasks.registering(wasm.DefaultLinkWasm::class) {
     includeDirs.add(
         openssl.includeDir("wasm").map { it.absolutePath }
     )
-    outputLibraryName.set("crypto")
+    outputLibraryName.set(libname)
 }
 
 val generateWasmTestRunner by tasks.registering(wasm.DefaultGenerateWasmTestRunner::class) {
     dependsOn("wasmTestTestDevelopmentExecutableCompileSync")//TODO
     dependsOn(linkWasm)
-    inputLibraryName.set("crypto")
+    inputLibraryName.set(libname)
     inputLibraryFile.set(linkWasm.flatMap { it.producedLibraryFile })
+}
+
+val generateWasmNpmModule = tasks.registerGenerateWasmNpmModuleTask {
+    dependsOn(linkWasm)
+    inputLibraryDirectory.set(linkWasm.flatMap { it.outputDirectory })
+    inputLibraryName.set(linkWasm.flatMap { it.producedLibraryFile }.map { it.asFile.name })
 }
 
 kotlin {
@@ -85,4 +94,18 @@ kotlin {
             }
         }
     }
+
+    sourceSets {
+        val jsMain by getting {
+            dependencies {
+                api(generateWasmNpmModule.map {
+                    npm(libname, it.outputDirectory.get().asFile)
+                })
+            }
+        }
+    }
 }
+
+//TODO: hack to resolve dependencies
+tasks.maybeCreate("prepareKotlinIdeaImport").dependsOn(generateWasmNpmModule)
+tasks.named("compileKotlinJs") { dependsOn(generateWasmNpmModule) }

@@ -40,10 +40,10 @@ kotlin {
 }
 
 kotlin {
-    wasm {
+    js {
         nodejs()
     }
-    js {
+    wasm {
         nodejs()
     }
 }

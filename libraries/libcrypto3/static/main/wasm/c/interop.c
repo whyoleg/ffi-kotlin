@@ -145,7 +145,7 @@ EMSCRIPTEN_KEEPALIVE int ffi_EVP_MAC_update (
 EMSCRIPTEN_KEEPALIVE int ffi_EVP_MAC_final (
   EVP_MAC_CTX* p_ctx,
   unsigned char* p_out,
-  unsigned int* p_outl,
+  unsigned long* p_outl,
   unsigned int p_outsize
 ) {
     return EVP_MAC_final(p_ctx, p_out, p_outl, p_outsize);

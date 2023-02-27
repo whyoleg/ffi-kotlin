@@ -46,6 +46,14 @@ To use such bindings we need:
 3. build WASM binary using emscripten (can be run on any OS)
 4. somehow package it (still not sure how)
 
+TODO:
+
+* how to set up packaging, so it will work all time?
+* JS uses hardcoded emscripten library name in external declarations - how to avoid it?
+* how to publish wasm+js with kotlin library so it will be consumable?
+* a lot of hacks to attach prebuilt dependency...
+* setup testing in browser
+
 #### Native
 
 nothing interesting, just mapping for cinterop (though tested for now only with macos-arm64)
