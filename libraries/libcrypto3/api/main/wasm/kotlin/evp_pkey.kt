@@ -31,14 +31,14 @@ actual fun EVP_PKEY_free(pkey: CPointer<EVP_PKEY>?) {
     ffi_EVP_PKEY_free(pkey.nativePointer)
 }
 
-@WasmImport("crypto", "ffi_EVP_PKEY_keygen_init")
+@WasmImport("ffi-libcrypto", "ffi_EVP_PKEY_keygen_init")
 private external fun ffi_EVP_PKEY_keygen_init(ctx: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_PKEY_generate")
+@WasmImport("ffi-libcrypto", "ffi_EVP_PKEY_generate")
 private external fun ffi_EVP_PKEY_generate(ctx: Int, ppkey: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_PKEY_up_ref")
+@WasmImport("ffi-libcrypto", "ffi_EVP_PKEY_up_ref")
 private external fun ffi_EVP_PKEY_up_ref(pkey: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_PKEY_free")
+@WasmImport("ffi-libcrypto", "ffi_EVP_PKEY_free")
 private external fun ffi_EVP_PKEY_free(pkey: Int)

@@ -11,8 +11,8 @@ actual fun OpenSSL_version(type: Int): CString? = CString(NativePointer(ffi_Open
 
 actual fun OPENSSL_version_major(): UInt = ffi_OPENSSL_version_major().toUInt()
 
-@WasmImport("crypto", "ffi_OpenSSL_version")
+@WasmImport("ffi-libcrypto", "ffi_OpenSSL_version")
 private external fun ffi_OpenSSL_version(type: Int): Int
 
-@WasmImport("crypto", "ffi_OPENSSL_version_major")
+@WasmImport("ffi-libcrypto", "ffi_OPENSSL_version_major")
 private external fun ffi_OPENSSL_version_major(): Int

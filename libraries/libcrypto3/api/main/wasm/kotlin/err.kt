@@ -12,8 +12,8 @@ actual fun ERR_error_string(
     buf: CString?,
 ): CString? = CString(NativePointer(ffi_ERR_error_string(e.toInt(), buf.nativePointer)))
 
-@WasmImport("crypto", "ffi_ERR_get_error")
+@WasmImport("ffi-libcrypto", "ffi_ERR_get_error")
 private external fun ffi_ERR_get_error(): Int
 
-@WasmImport("crypto", "ffi_ERR_error_string")
+@WasmImport("ffi-libcrypto", "ffi_ERR_error_string")
 private external fun ffi_ERR_error_string(e: Int, buf: Int): Int

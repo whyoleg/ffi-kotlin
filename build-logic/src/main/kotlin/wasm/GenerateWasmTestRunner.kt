@@ -55,7 +55,7 @@ open class DefaultGenerateWasmTestRunner @Inject constructor(
                    |    };
                    |});
                    |await wasmSetup;
-                   |export default (await instantiate({ $libraryName: Module['asm'], Module })).exports;
+                   |export default (await instantiate({ '$libraryName': Module['asm'], Module })).exports;
                    |""".trimMargin()
             )
         }

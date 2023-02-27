@@ -34,11 +34,11 @@ actual fun EVP_PKEY_CTX_free(ctx: CPointer<EVP_PKEY_CTX>?) {
     ffi_EVP_PKEY_CTX_free(ctx.nativePointer)
 }
 
-@WasmImport("crypto", "ffi_EVP_PKEY_CTX_new_from_name")
+@WasmImport("ffi-libcrypto", "ffi_EVP_PKEY_CTX_new_from_name")
 private external fun ffi_EVP_PKEY_CTX_new_from_name(libctx: Int, name: Int, propquery: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_PKEY_CTX_set_params")
+@WasmImport("ffi-libcrypto", "ffi_EVP_PKEY_CTX_set_params")
 private external fun ffi_EVP_PKEY_CTX_set_params(ctx: Int, params: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_PKEY_CTX_free")
+@WasmImport("ffi-libcrypto", "ffi_EVP_PKEY_CTX_free")
 private external fun ffi_EVP_PKEY_CTX_free(ctx: Int)

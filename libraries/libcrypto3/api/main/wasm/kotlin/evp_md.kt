@@ -70,26 +70,26 @@ actual fun EVP_MD_free(ctx: CPointer<EVP_MD>?) {
     ffi_EVP_MD_free(ctx.nativePointer)
 }
 
-@WasmImport("crypto", "ffi_EVP_MD_fetch")
+@WasmImport("ffi-libcrypto", "ffi_EVP_MD_fetch")
 private external fun ffi_EVP_MD_fetch(ctx: Int, algorithm: Int, properties: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_MD_free")
+@WasmImport("ffi-libcrypto", "ffi_EVP_MD_free")
 private external fun ffi_EVP_MD_free(md: Int)
 
-@WasmImport("crypto", "ffi_EVP_MD_get_size")
+@WasmImport("ffi-libcrypto", "ffi_EVP_MD_get_size")
 private external fun ffi_EVP_MD_get_size(md: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_MD_CTX_new")
+@WasmImport("ffi-libcrypto", "ffi_EVP_MD_CTX_new")
 private external fun ffi_EVP_MD_CTX_new(): Int
 
-@WasmImport("crypto", "ffi_EVP_MD_CTX_free")
+@WasmImport("ffi-libcrypto", "ffi_EVP_MD_CTX_free")
 private external fun ffi_EVP_MD_CTX_free(ctx: Int)
 
-@WasmImport("crypto", "ffi_EVP_DigestInit")
+@WasmImport("ffi-libcrypto", "ffi_EVP_DigestInit")
 private external fun ffi_EVP_DigestInit(ctx: Int, type: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_DigestUpdate")
+@WasmImport("ffi-libcrypto", "ffi_EVP_DigestUpdate")
 private external fun ffi_EVP_DigestUpdate(ctx: Int, d: Int, cnt: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_DigestFinal")
+@WasmImport("ffi-libcrypto", "ffi_EVP_DigestFinal")
 private external fun ffi_EVP_DigestFinal(ctx: Int, md: Int, s: Int): Int

@@ -78,7 +78,7 @@ actual fun EVP_DigestVerifyFinal(
 }
 
 
-@WasmImport("crypto", "ffi_EVP_DigestSignInit_ex")
+@WasmImport("ffi-libcrypto", "ffi_EVP_DigestSignInit_ex")
 private external fun ffi_EVP_DigestSignInit_ex(
     ctx: Int,
     pctx: Int,
@@ -89,13 +89,13 @@ private external fun ffi_EVP_DigestSignInit_ex(
     params: Int,
 ): Int
 
-@WasmImport("crypto", "ffi_EVP_DigestSignUpdate")
+@WasmImport("ffi-libcrypto", "ffi_EVP_DigestSignUpdate")
 private external fun ffi_EVP_DigestSignUpdate(ctx: Int, data: Int, dsize: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_DigestSignFinal")
+@WasmImport("ffi-libcrypto", "ffi_EVP_DigestSignFinal")
 private external fun ffi_EVP_DigestSignFinal(ctx: Int, sigret: Int, siglen: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_DigestVerifyInit_ex")
+@WasmImport("ffi-libcrypto", "ffi_EVP_DigestVerifyInit_ex")
 private external fun ffi_EVP_DigestVerifyInit_ex(
     ctx: Int,
     pctx: Int,
@@ -106,9 +106,9 @@ private external fun ffi_EVP_DigestVerifyInit_ex(
     params: Int,
 ): Int
 
-@WasmImport("crypto", "ffi_EVP_DigestVerifyUpdate")
+@WasmImport("ffi-libcrypto", "ffi_EVP_DigestVerifyUpdate")
 private external fun ffi_EVP_DigestVerifyUpdate(ctx: Int, data: Int, dsize: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_DigestVerifyFinal")
+@WasmImport("ffi-libcrypto", "ffi_EVP_DigestVerifyFinal")
 private external fun ffi_EVP_DigestVerifyFinal(ctx: Int, sig: Int, siglen: Int): Int
 

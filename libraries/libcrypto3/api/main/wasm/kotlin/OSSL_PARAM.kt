@@ -40,9 +40,9 @@ actual fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM> = CValue(OSSL_PARAM_Ty
     ffi_OSSL_PARAM_construct_end(pointer.value)
 }
 
-@WasmImport("crypto", "ffi_OSSL_PARAM_construct_utf8_string")
+@WasmImport("ffi-libcrypto", "ffi_OSSL_PARAM_construct_utf8_string")
 private external fun ffi_OSSL_PARAM_construct_utf8_string(key: Int, buf: Int, bsize: Int, returnPointer: Int)
 
-@WasmImport("crypto", "ffi_OSSL_PARAM_construct_end")
+@WasmImport("ffi-libcrypto", "ffi_OSSL_PARAM_construct_end")
 private external fun ffi_OSSL_PARAM_construct_end(returnPointer: Int)
 

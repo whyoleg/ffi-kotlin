@@ -71,27 +71,27 @@ actual fun EVP_MAC_free(ctx: CPointer<EVP_MAC>?) {
     ffi_EVP_MAC_free(ctx.nativePointer)
 }
 
-@WasmImport("crypto", "ffi_EVP_MAC_fetch")
+@WasmImport("ffi-libcrypto", "ffi_EVP_MAC_fetch")
 private external fun ffi_EVP_MAC_fetch(libctx: Int, algorithm: Int, properties: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_MAC_free")
+@WasmImport("ffi-libcrypto", "ffi_EVP_MAC_free")
 private external fun ffi_EVP_MAC_free(ctx: Int)
 
-@WasmImport("crypto", "ffi_EVP_MAC_init")
+@WasmImport("ffi-libcrypto", "ffi_EVP_MAC_init")
 private external fun ffi_EVP_MAC_init(ctx: Int, key: Int, keylen: Int, params: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_MAC_update")
+@WasmImport("ffi-libcrypto", "ffi_EVP_MAC_update")
 private external fun ffi_EVP_MAC_update(ctx: Int, data: Int, datalen: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_MAC_final")
+@WasmImport("ffi-libcrypto", "ffi_EVP_MAC_final")
 private external fun ffi_EVP_MAC_final(ctx: Int, out: Int, outl: Int, outsize: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_MAC_CTX_new")
+@WasmImport("ffi-libcrypto", "ffi_EVP_MAC_CTX_new")
 private external fun ffi_EVP_MAC_CTX_new(mac: Int): Int
 
-@WasmImport("crypto", "ffi_EVP_MAC_CTX_free")
+@WasmImport("ffi-libcrypto", "ffi_EVP_MAC_CTX_free")
 private external fun ffi_EVP_MAC_CTX_free(ctx: Int)
 
-@WasmImport("crypto", "ffi_EVP_MAC_CTX_get_mac_size")
+@WasmImport("ffi-libcrypto", "ffi_EVP_MAC_CTX_get_mac_size")
 private external fun ffi_EVP_MAC_CTX_get_mac_size(ctx: Int): Int
 
