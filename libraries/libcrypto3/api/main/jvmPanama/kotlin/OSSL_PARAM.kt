@@ -8,7 +8,7 @@ import java.lang.invoke.*
 
 //TODO: likely addresses should be layout.asUnbounded()
 private val layout = MemoryLayout.structLayout(
-    ValueLayout.ADDRESS.withName("key"), //8
+    ValueLayout.ADDRESS.withName("key").asUnbounded(), //8
     ValueLayout.JAVA_INT.withName("data_type"), //4
     MemoryLayout.paddingLayout(32), //TODO: how this works ? :) //4
     ValueLayout.ADDRESS.withName("data"), //8
@@ -27,11 +27,11 @@ actual object OSSL_PARAM_Type : CVariableType<OSSL_PARAM>(::OSSL_PARAM, layout)
 actual class OSSL_PARAM(segment: MemorySegment) : CStructVariable(segment)
 
 actual var OSSL_PARAM.key: CString?
-    get() = CString(key_VH.get(segment.also { println(it) }) as MemorySegment)
+    get() = CString(key_VH.get(segment) as MemorySegment)
     set(value) = key_VH.set(segment, value.segment)
 
 actual var OSSL_PARAM.data_type: UInt
-    get() = (data_type_VH.get(segment.also { println(it) }) as Int).toUInt()
+    get() = (data_type_VH.get(segment) as Int).toUInt()
     set(value) = data_type_VH.set(segment, value.toInt())
 
 actual var OSSL_PARAM.data: CPointer<out CPointed>?

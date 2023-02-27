@@ -15,6 +15,18 @@ abstract class LibCrypto3Test {
     }
 
     @Test
+    fun testOsslParam(): Unit = cInteropScope {
+        val param = OSSL_PARAM_construct_utf8_string(alloc("digest"), alloc("ALGORITHM"), 0UL)
+
+        val p1 = allocPointerTo(param).pointed
+        assertEquals(4U, p1.data_type)
+        assertEquals(9UL, p1.data_size)
+        assertEquals("digest", p1.key!!.toKString())
+        p1.data_type = 32U
+        assertEquals(32U, p1.data_type)
+    }
+
+    @Test
     fun testError(): Unit = cInteropScope {
         val mac = checkNotNull(EVP_MAC_fetch(null, alloc("HMAC"), null))
         try {

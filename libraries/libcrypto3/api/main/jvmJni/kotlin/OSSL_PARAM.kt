@@ -12,20 +12,20 @@ actual class OSSL_PARAM(memory: NativeMemory) : CStructVariable(memory) {
 }
 
 actual var OSSL_PARAM.key: CString?
-    get() = TODO()
-    set(value) = TODO()
+    get() = CString(NativePointer(memory.loadLong(0)))
+    set(value) = memory.storeLong(0, value.nativePointer)
 actual var OSSL_PARAM.data_type: UInt
-    get() = TODO()
-    set(value) = TODO()
-actual var OSSL_PARAM.data: CPointer<out CPointed>?
+    get() = memory.loadInt(8).toUInt()
+    set(value) = memory.storeInt(8, value.toInt())
+actual var OSSL_PARAM.data: CPointer<out CPointed>? // TODO: support opaque pointers and reinterpret
     get() = TODO()
     set(value) = TODO()
 actual var OSSL_PARAM.data_size: ULong
-    get() = TODO()
-    set(value) = TODO()
+    get() = memory.loadLong(24).toULong()
+    set(value) = memory.storeLong(24, value.toLong())
 actual var OSSL_PARAM.return_size: ULong
-    get() = TODO()
-    set(value) = TODO()
+    get() = memory.loadLong(32).toULong()
+    set(value) = memory.storeLong(32, value.toLong())
 
 actual fun OSSL_PARAM_construct_utf8_string(
     key: CString?,
