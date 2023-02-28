@@ -6,8 +6,7 @@ plugins {
 }
 
 android {
-    //TODO drop static/X
-    namespace = "${project.group}.${project.name.replace("-", ".")}X"
+    namespace = "${project.group}.${project.name.replace("-", ".")}"
     compileSdk = 33
     defaultConfig {
         minSdk = 21

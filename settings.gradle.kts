@@ -36,7 +36,7 @@ rootProject.name = "ffi-kotlin"
 include("ffi-c")
 
 fun includeLibrary(name: String) {
-    listOf("api", "static", "dynamic", "test").forEach { submodule ->
+    listOf("api", "shared", "prebuilt", "test").forEach { submodule ->
         include("libraries:$name:$name-$submodule")
         project(":libraries:$name:$name-$submodule").projectDir = file("libraries/$name/$submodule")
     }
