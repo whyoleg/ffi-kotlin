@@ -18,27 +18,41 @@ kotlin {
                     block(it.target)
         }
     }
+
+    fun KotlinTargetHierarchyBuilder.withWasm() {
+        withPlatform(KotlinPlatformType.wasm)
+    }
+
+    //TODO: what is a better way if not by name of target?
+    fun KotlinTargetHierarchyBuilder.withJvmJni() {
+        withPlatform(KotlinPlatformType.jvm) { it.name.contains("jni", ignoreCase = true) }
+    }
+
+    fun KotlinTargetHierarchyBuilder.withJvmPanama() {
+        withPlatform(KotlinPlatformType.jvm) { it.name.contains("panama", ignoreCase = true) }
+    }
     //TODO: replace later with full-blown hierarchy based on `default` when more native targets will be added
     targetHierarchy.custom {
         common {
+            group("jni") {
+                withAndroid()
+                withJvmJni()
+            }
             group("jvm") {
-                group("jni") {
-                    withAndroid()
-                    //TODO: what is a better way if not by name of target?
-                    withPlatform(KotlinPlatformType.jvm) { it.name.contains("jni", ignoreCase = true) }
-                }
-                withPlatform(KotlinPlatformType.jvm) { it.name.contains("panama", ignoreCase = true) }
+                withJvmJni()
+                withJvmPanama()
             }
             group("web") {
                 withJs()
-                withPlatform(KotlinPlatformType.wasm)
+                withWasm()
             }
 
             //group, on which jni and web depends on -> no native, no panama, raw memory access
-            group("raw") {
-                group("jni")
-                group("web")
-            }
+            //TODO: work on it later
+//            group("raw") {
+//                group("jni")
+//                group("web")
+//            }
         }
     }
 
