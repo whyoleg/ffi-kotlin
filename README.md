@@ -54,6 +54,10 @@ but building and packaging is not a problem
 as NDK is able to cross-compile
 and AAR format supports distributing shared libraries for multiple architectures
 
+TODO:
+
+* somehow fix duplicating service in resources for android
+
 #### WASM/JS
 
 Uses emscripten to generate WASM binary from C library

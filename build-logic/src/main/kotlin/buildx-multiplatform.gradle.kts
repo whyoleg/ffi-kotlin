@@ -34,13 +34,18 @@ kotlin {
     //TODO: replace later with full-blown hierarchy based on `default` when more native targets will be added
     targetHierarchy.custom {
         common {
-            group("jni") {
-                withAndroid()
-                withJvmJni()
-            }
-            group("jvm") {
-                withJvmJni()
-                withJvmPanama()
+            //shares library loading mechanism
+            group("jvmAndAndroid") {
+                //shared JNI declarations mechanism
+                group("jni") {
+                    withAndroid()
+                    withJvmJni()
+                }
+
+                //shares library loading from jar or from system
+                group("jvm") {
+                    withJvm()
+                }
             }
             group("web") {
                 withJs()

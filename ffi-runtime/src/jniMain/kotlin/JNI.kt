@@ -4,8 +4,8 @@ import java.nio.*
 
 public object JNI {
     init {
-        LibraryLoader.loadFromResources("/libs/macos-arm64/libffi-jni.dylib", "dylib")
-        LibraryLoader.init()
+        EmbeddedLibraryLoader.Current.loadLibrary("ffi-jni")
+        loadLibraries()
     }
 
     @JvmStatic

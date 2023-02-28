@@ -2,8 +2,9 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
-        gradlePluginPortal()
+        google()
         mavenCentral()
+        gradlePluginPortal()
     }
     includeBuild("build-logic")
     includeBuild("build-parameters")
@@ -18,6 +19,7 @@ plugins {
 
 dependencyResolutionManagement {
     repositories {
+        google()
         mavenCentral()
     }
 }

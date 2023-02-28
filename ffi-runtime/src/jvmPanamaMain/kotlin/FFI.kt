@@ -10,7 +10,7 @@ public object FFI {
     private val lookup = SymbolLookup { loaderLookup.find(it).or { defaultLookup.find(it) } }
 
     init {
-        LibraryLoader.init()
+        loadLibraries()
     }
 
     public fun methodHandle(name: String, result: MemoryLayout, args: Array<MemoryLayout> = emptyArray()): MethodHandle =

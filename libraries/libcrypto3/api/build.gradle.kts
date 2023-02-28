@@ -1,3 +1,4 @@
+import com.android.build.gradle.tasks.*
 import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import org.jetbrains.kotlin.gradle.tasks.*
 import org.jetbrains.kotlin.konan.target.*
@@ -5,10 +6,12 @@ import org.jetbrains.kotlin.konan.target.*
 plugins {
     id("buildx-multiplatform") //-library
 
+    id("buildx-target-android")
     id("buildx-target-web")
     id("buildx-target-native-all")
     id("buildx-target-jvm-all")
 
+    id("buildx-use-android-jni")
     id("buildx-use-jvm-jni")
     id("buildx-use-openssl")
 }
@@ -26,8 +29,39 @@ tasks.named<jni.BuildJni>("buildJni") {
     includeDirs.add(
         openssl.includeDir("macos-arm64").map { it.absolutePath }
     )
-    outputFilePath.set("macos-arm64/libcrypto-jni.dylib")
+    outputFilePath.set("macos-arm64/libcrypto-ffi-jni.dylib")
 }
+
+val copyLibrariesForAndroid by tasks.registering(Sync::class) {
+    listOf(
+        "android-arm64" to "arm64-v8a",
+        "android-x64" to "x86_64",
+    ).forEach { (opensslTarget, androidAbi) ->
+        from(openssl.libDir(opensslTarget)) {
+            into(androidAbi)
+            include("libcrypto.so")
+        }
+    }
+    into(layout.buildDirectory.dir("androidLibraries"))
+}
+
+val copyHeadersForAndroid by tasks.registering(Sync::class) {
+    listOf(
+        "android-arm64" to "arm64-v8a",
+        "android-x64" to "x86_64",
+    ).forEach { (opensslTarget, androidAbi) ->
+        from(openssl.includeDir(opensslTarget)) {
+            into("$androidAbi/include")
+        }
+    }
+    into(layout.buildDirectory.dir("androidHeaders"))
+}
+
+tasks.withType<ExternalNativeBuildTask>().configureEach {
+    dependsOn(copyHeadersForAndroid, copyLibrariesForAndroid)
+}
+
+tasks.maybeCreate("prepareKotlinIdeaImport").dependsOn(copyHeadersForAndroid, copyLibrariesForAndroid)
 
 kotlin {
     sourceSets {

@@ -1,3 +1,4 @@
+import com.android.build.gradle.tasks.*
 import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import org.jetbrains.kotlin.gradle.tasks.*
 import org.jetbrains.kotlin.konan.target.*
@@ -6,6 +7,7 @@ import wasm.*
 plugins {
     id("buildx-multiplatform-library")
 
+    id("buildx-target-android")
     id("buildx-target-web")
     id("buildx-target-native-all")
     id("buildx-target-jvm-all")
@@ -33,6 +35,19 @@ val copyLibrariesForJvm by tasks.registering(Sync::class) {
     into(layout.buildDirectory.dir("jvmLibraries"))
 }
 
+val copyLibrariesForAndroid by tasks.registering(Sync::class) {
+    listOf(
+        "android-arm64" to "arm64-v8a",
+        "android-x64" to "x86_64",
+    ).forEach { (opensslTarget, androidAbi) ->
+        from(openssl.libDir(opensslTarget)) {
+            into(androidAbi)
+            include("libcrypto.so")
+        }
+    }
+    into(layout.buildDirectory.dir("androidLibraries"))
+}
+
 val libname = "ffi-libcrypto"
 
 val linkWasm by tasks.registering(wasm.DefaultLinkWasm::class) {
@@ -57,6 +72,17 @@ val generateWasmNpmModule = tasks.registerGenerateWasmNpmModuleTask {
     dependsOn(linkWasm)
     inputLibraryDirectory.set(linkWasm.flatMap { it.outputDirectory })
     inputLibraryName.set(linkWasm.flatMap { it.producedLibraryFile }.map { it.asFile.name })
+}
+
+tasks.withType<MergeSourceSetFolders>().configureEach {
+    //TODO: should only depend for JNI folder
+    dependsOn(copyLibrariesForAndroid)
+}
+
+android {
+    val main by sourceSets.getting {
+        jniLibs.srcDir(copyLibrariesForAndroid.map { it.destinationDir })
+    }
 }
 
 kotlin {

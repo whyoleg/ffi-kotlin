@@ -6,12 +6,7 @@ plugins {
     id("build-parameters")
 
     alias(kotlinLibs.plugins.multiplatform) apply false
-}
-
-buildscript {
-    dependencies {
-        classpath("de.undercouch:gradle-download-task:5.3.0")
-    }
+    id("com.android.library") version "7.3.0" apply false //TODO move to version catalog
 }
 
 plugins.withType<YarnPlugin> {
