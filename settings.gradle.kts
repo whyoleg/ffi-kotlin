@@ -33,7 +33,7 @@ gradleEnterprise {
 
 rootProject.name = "ffi-kotlin"
 
-include("ffi-runtime")
+include("ffi-c")
 
 fun includeLibrary(name: String) {
     listOf("api", "static", "dynamic", "test").forEach { submodule ->
