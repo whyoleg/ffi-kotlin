@@ -1,10 +1,10 @@
-# ffi-kotlin - kotlinx.cinterop but multiplatform
+# ffi-kotlin
 
-**EXPERIMENT** for providing Kotlin Multiplatform Foreign Function Interface
+> **EXPERIMENT** for providing Kotlin Multiplatform Foreign Function Interface
 
-Supports all kotlin platforms:
+Support for all kotlin platforms:
 
-* JVM via JNI (min JDK 8) and Panama (min JDK 20)
+* JVM via JNI (min JDK 8) and via Panama (min JDK 20)
 * Android via JNI (minSdk 21)
 * Native via cinterop
 * WASM via emscripten
@@ -12,11 +12,12 @@ Supports all kotlin platforms:
 
 ### Structure
 
-* ffi-runtime - kotlinx.cinterop package adapted for multiplatform
+* ffi-c - kotlinx.cinterop package adapted for multiplatform
 * libraries
     * libcrypto3
         * api - expect/actual declarations for some part of OpenSSL libcrypto API
-        * dynamic/static - linking
+        * shared - dynamically linked artifacts - only native and jvm desktop targets
+        * prebuilt - library is embedded and no additional configuration is needed
         * test - some basic tests which tests, that everything REALLY works
 
 ### Implementation details
@@ -39,10 +40,12 @@ To use such bindings we need:
    (not sure, what is the best workflow here regarding portability and cross-compilation)
 4. somehow package it - both per OS+ARCH and single artifact for all OSs
 
-Questions:
+TODO:
 
-* requires compiler to build JNI library - how to set up it properly to support os?
+* requires compiler to build JNI library - how to set up it properly to support different OSs?
 * is it possible to use K/N provided clang with cross-compile possibilities here?
+* replace ByteBuffers with Unsafe but with safe fallback to ByteBuffers if Unsafe is not available
+  (similar to how netty handles it)
 
 #### Android+JNI
 
@@ -61,7 +64,7 @@ To use such bindings we need:
 3. build WASM binary using emscripten (`emcc` can be run on any supported OS)
 4. somehow package it (still not sure how)
 
-Questions:
+TODO:
 
 * how to set up packaging, so it will work all time?
 * JS uses hardcoded emscripten library name in external declarations - how to avoid it?
@@ -83,3 +86,7 @@ As first step, the idea is using original cinterop to generate declarations for 
 write minimal generator that will work for libcrypto3 sample and clang index.
 Then generate declarations and continue work with JVM (faster dev cycle) while still using common code
 (at least to be able to run it later in K/N - why? just why not)
+
+### Future ideas
+
+* integration with https://conan.io for providing/building native libraries
