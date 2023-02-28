@@ -2,19 +2,22 @@
 
 **EXPERIMENT** for providing Kotlin Multiplatform Foreign Function Interface
 
-Supports:
+Supports all kotlin platforms:
 
-* JVM via JNI and Panama (JDK 20)
+* JVM via JNI (min JDK 8) and Panama (min JDK 20)
+* Android via JNI (minSdk 21)
 * Native via cinterop
-* WASM/JS via emscripten
+* WASM via emscripten
+* JS via emscripten
 
 ### Structure
 
 * ffi-runtime - kotlinx.cinterop package adapted for multiplatform
-* libraries/libcrypto3
-    * api - expect/actual declarations for some part of OpenSSL libcrypto API
-    * dynamic/static - linking
-    * test - some basic tests which tests, that everything REALLY works
+* libraries
+    * libcrypto3
+        * api - expect/actual declarations for some part of OpenSSL libcrypto API
+        * dynamic/static - linking
+        * test - some basic tests which tests, that everything REALLY works
 
 ### Implementation details
 
@@ -23,7 +26,7 @@ For future auto-generated bindings we need to keep in mind platform details
 #### JVM+Panama
 
 Uses similar code, that could generate jextract but using some kotlin specifics.
-Only Kotlin codegen and JDK 20-ea is needed.
+Only Kotlin codegen and JDK 20 is needed.
 
 #### JVM+JNI
 
@@ -32,31 +35,46 @@ To use such bindings we need:
 
 1. generate Kotlin code
 2. generate C code
-3. build JNI C library using some compiler for each OS (not sure, what is the best workflow here)
-4. somehow package it
+3. build JNI C library using some compiler for each OS
+   (not sure, what is the best workflow here regarding portability and cross-compilation)
+4. somehow package it - both per OS+ARCH and single artifact for all OSs
+
+Questions:
+
+* requires compiler to build JNI library - how to set up it properly to support os?
+* is it possible to use K/N provided clang with cross-compile possibilities here?
+
+#### Android+JNI
+
+Same as JVM+JNI,
+but building and packaging is not a problem
+as NDK is able to cross-compile
+and AAR format supports distributing shared libraries for multiple architectures
 
 #### WASM/JS
 
 Uses emscripten to generate WASM binary from C library
-and some hacks to be able to run tests with it :)
 To use such bindings we need:
 
 1. generate Kotlin code
 2. generate C code
-3. build WASM binary using emscripten (can be run on any OS)
+3. build WASM binary using emscripten (`emcc` can be run on any supported OS)
 4. somehow package it (still not sure how)
 
-TODO:
+Questions:
 
 * how to set up packaging, so it will work all time?
 * JS uses hardcoded emscripten library name in external declarations - how to avoid it?
-* how to publish wasm+js with kotlin library so it will be consumable?
+* how to support memory sharing between different libraries?
+* how to publish wasm+js with kotlin library, so it will be consumable?
 * a lot of hacks to attach prebuilt dependency...
 * setup testing in browser
+* Pointer is Int, native Long mapped to Int for now via hack
+* WASM for now require JS to launch, need to support WASI in future somehow
 
 #### Native
 
-nothing interesting, just mapping for cinterop (though tested for now only with macos-arm64)
+Nothing interesting, just mapping for cinterop (though tested for now only with macos-arm64)
 
 ### Auto-generation like in cinterop
 
