@@ -1,8 +1,15 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import org.jetbrains.kotlin.gradle.tasks.*
+import org.jetbrains.kotlin.konan.target.*
 import wasm.*
 
 plugins {
-    id("buildx-multiplatform-default")
+    id("buildx-multiplatform-library")
+
+    id("buildx-target-web")
+    id("buildx-target-native-all")
+    id("buildx-target-jvm-all")
+
     id("buildx-use-openssl")
 }
 
@@ -24,33 +31,6 @@ val copyLibrariesForJvm by tasks.registering(Sync::class) {
     fromLibraries("windows-x64", "dll")
 
     into(layout.buildDirectory.dir("jvmLibraries"))
-}
-
-kotlin {
-    macosArm64("native") {
-        val main by compilations.getting {
-            val static by cinterops.creating {
-                defFile("src/nativeMain/interop/linking.def")
-                extraOpts("-libraryPath", openssl.libDir("macos-arm64").get())
-            }
-        }
-    }
-
-    sourceSets {
-        commonMain {
-            dependencies {
-                api(projects.libraries.libcrypto3.libcrypto3Api)
-            }
-        }
-        commonTest {
-            dependencies {
-                api(projects.libraries.libcrypto3.libcrypto3Test)
-            }
-        }
-        jvmMain {
-            resources.srcDir(copyLibrariesForJvm.map { it.destinationDir })
-        }
-    }
 }
 
 val libname = "ffi-libcrypto"
@@ -80,8 +60,38 @@ val generateWasmNpmModule = tasks.registerGenerateWasmNpmModuleTask {
 }
 
 kotlin {
-    js {
-        nodejs()
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(projects.libraries.libcrypto3.libcrypto3Api)
+            }
+        }
+        commonTest {
+            dependencies {
+                api(projects.libraries.libcrypto3.libcrypto3Test)
+            }
+        }
+        jvmMain {
+            resources.srcDir(copyLibrariesForJvm.map { it.destinationDir })
+        }
+        jsMain {
+            dependencies {
+                api(generateWasmNpmModule.map {
+                    npm(libname, it.outputDirectory.get().asFile)
+                })
+            }
+        }
+    }
+    targets.all {
+        if (this is KotlinNativeTarget) {
+            check(this.konanTarget == KonanTarget.MACOS_ARM64)
+            val main by compilations.getting {
+                val static by cinterops.creating {
+                    defFile("src/nativeMain/interop/linking.def")
+                    extraOpts("-libraryPath", openssl.libDir("macos-arm64").get())
+                }
+            }
+        }
     }
     wasm {
         nodejs {
@@ -91,16 +101,6 @@ kotlin {
                 //TODO: what to do here???
                 generateWasmTestRunner.get().instantiateFile.set(originalPath)
                 inputFileProperty.set(generateWasmTestRunner.flatMap { it.testRunnerFile })
-            }
-        }
-    }
-
-    sourceSets {
-        val jsMain by getting {
-            dependencies {
-                api(generateWasmNpmModule.map {
-                    npm(libname, it.outputDirectory.get().asFile)
-                })
             }
         }
     }

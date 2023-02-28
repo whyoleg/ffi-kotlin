@@ -43,16 +43,12 @@ open class DefaultBuildJni @Inject constructor(
     override val inputFiles: ListProperty<RegularFile> = objectFactory.listProperty<RegularFile>().convention(
         listOf(project.layout.projectDirectory.file("src/jvmJniMain/c/jni.c"))
     )
-    override val outputFilePath: Property<String> = objectFactory.property<String>()
+    override val outputFilePath: Property<String> = objectFactory.property()
     override val outputDirectory: DirectoryProperty = objectFactory.directoryProperty().convention(
         project.layout.buildDirectory.dir("jniLibraries")
     )
 
     override fun exec() {
-        if (!outputFilePath.isPresent) {
-            logger.lifecycle("Skip jni build")
-            return
-        }
         executable(compiler.get())
         args("-shared", "-fPIC")
 

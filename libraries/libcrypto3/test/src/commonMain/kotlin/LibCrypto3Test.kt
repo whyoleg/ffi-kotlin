@@ -68,7 +68,7 @@ abstract class LibCrypto3Test {
             try {
                 "Hello World".encodeToByteArray().read { dataPointer, dataSize ->
                     val digest = ByteArray(checkError(EVP_MD_get_size(md)))
-                    digest.write { digestPointer, digestSize ->
+                    digest.write { digestPointer, _ ->
                         checkError(EVP_DigestInit(context, md))
                         checkError(EVP_DigestUpdate(context, dataPointer, dataSize.toULong()))
                         checkError(EVP_DigestFinal(context, digestPointer.toUByte(), null))
@@ -174,7 +174,7 @@ abstract class LibCrypto3Test {
                     checkError(EVP_DigestSignFinal(context, null, siglen.pointer))
                     assertContains(130..140, siglen.value.toInt())
                     val signature = ByteArray(siglen.value.toInt())
-                    signature.write { signaturePointer, signatureSize ->
+                    signature.write { signaturePointer, _ ->
                         checkError(EVP_DigestSignFinal(context, signaturePointer.toUByte(), siglen.pointer))
                     }
                     assertContains(130..140, siglen.value.toInt())

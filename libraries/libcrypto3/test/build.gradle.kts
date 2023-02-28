@@ -1,5 +1,9 @@
 plugins {
-    id("buildx-multiplatform-default")
+    id("buildx-multiplatform")
+
+    id("buildx-target-web")
+    id("buildx-target-native-all")
+    id("buildx-target-jvm-all")
 }
 
 kotlin {
@@ -15,14 +19,5 @@ kotlin {
                 api(kotlin("test-junit"))
             }
         }
-    }
-}
-
-kotlin {
-    wasm {
-        nodejs()
-    }
-    js {
-        nodejs()
     }
 }

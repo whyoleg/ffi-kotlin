@@ -1,7 +1,15 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import org.jetbrains.kotlin.gradle.tasks.*
+import org.jetbrains.kotlin.konan.target.*
 
 plugins {
-    id("buildx-multiplatform-default")
+    id("buildx-multiplatform") //-library
+
+    id("buildx-target-web")
+    id("buildx-target-native-all")
+    id("buildx-target-jvm-all")
+
+    id("buildx-use-jvm-jni")
     id("buildx-use-openssl")
 }
 
@@ -22,14 +30,6 @@ tasks.named<jni.BuildJni>("buildJni") {
 }
 
 kotlin {
-    macosArm64("native") {
-        val main by compilations.getting {
-            val declarations by cinterops.creating {
-                defFile("src/nativeMain/interop/declarations.def")
-                includeDirs(openssl.includeDir("macos-arm64"))
-            }
-        }
-    }
     sourceSets {
         commonMain {
             dependencies {
@@ -37,13 +37,15 @@ kotlin {
             }
         }
     }
-}
-
-kotlin {
-    js {
-        nodejs()
-    }
-    wasm {
-        nodejs()
+    targets.all {
+        if (this is KotlinNativeTarget) {
+            check(this.konanTarget == KonanTarget.MACOS_ARM64)
+            val main by compilations.getting {
+                val declarations by cinterops.creating {
+                    defFile("src/nativeMain/interop/declarations.def")
+                    includeDirs(openssl.includeDir("macos-arm64"))
+                }
+            }
+        }
     }
 }

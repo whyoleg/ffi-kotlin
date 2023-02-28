@@ -21,6 +21,7 @@ public actual var <T : CPointed> CPointerVariable<T>.value: CPointer<T>?
     get() = CPointer(NativePointer(memory.loadInt(0)), type)
     set(value) = run { memory.storeInt(0, value?.memory?.pointer?.value ?: 0) }
 
+@Suppress("UNCHECKED_CAST")
 public actual val <T : CPointed> T.pointer: CPointer<T>
     get() = CPointer(memory, type) as CPointer<T>
 

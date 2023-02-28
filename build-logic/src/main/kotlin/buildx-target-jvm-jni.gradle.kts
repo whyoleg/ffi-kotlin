@@ -4,8 +4,6 @@ plugins {
     id("buildx-multiplatform")
 }
 
-val buildJni by tasks.registering(jni.DefaultBuildJni::class)
-
 kotlin {
     jvm("jvmJni") {
         attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
@@ -21,11 +19,6 @@ kotlin {
                     languageVersion.set(JavaLanguageVersion.of(8))
                 })
             }
-        }
-    }
-    sourceSets {
-        val jvmJniMain by getting {
-            resources.srcDir(buildJni.map { it.outputDirectory })
         }
     }
 }
