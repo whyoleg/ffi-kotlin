@@ -76,7 +76,6 @@ TODO:
 * how to publish wasm+js with kotlin library, so it will be consumable?
 * a lot of hacks to attach prebuilt dependency...
 * setup testing in browser
-* Pointer is Int, native Long mapped to Int for now via hack
 * WASM for now require JS to launch, need to support WASI in future somehow
 
 #### Native
