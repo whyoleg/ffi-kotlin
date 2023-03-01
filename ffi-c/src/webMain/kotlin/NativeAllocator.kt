@@ -1,4 +1,4 @@
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 @PublishedApi
 internal abstract class NativeAllocator {

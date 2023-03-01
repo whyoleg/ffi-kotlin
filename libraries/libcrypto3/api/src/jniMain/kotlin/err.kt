@@ -2,7 +2,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 actual fun ERR_get_error(): PlatformDependentUInt = err.ERR_get_error().toULong()
 

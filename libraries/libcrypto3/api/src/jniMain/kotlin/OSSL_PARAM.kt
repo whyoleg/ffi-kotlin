@@ -4,7 +4,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 actual object OSSL_PARAM_Type : CVariableType<OSSL_PARAM>(::OSSL_PARAM, 40/*TODO!!!*/)
 actual class OSSL_PARAM(memory: NativeMemory) : CStructVariable(memory) {

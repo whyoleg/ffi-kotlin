@@ -1,8 +1,11 @@
-@file:Suppress("PrivatePropertyName", "FunctionName", "ClassName", "SpellCheckingInspection")
+@file:Suppress(
+    "PrivatePropertyName", "FunctionName", "ClassName", "SpellCheckingInspection",
+    "EXTENSION_SHADOWED_BY_MEMBER"
+)
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 expect object OSSL_PARAM_Type : CVariableType<OSSL_PARAM>
 expect class OSSL_PARAM : CStructVariable

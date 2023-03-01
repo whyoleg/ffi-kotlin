@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 import kotlinx.cinterop.*
 

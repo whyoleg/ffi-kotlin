@@ -1,6 +1,6 @@
 package dev.whyoleg.ffi.libcrypto3.prebuilt
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 internal class PrebuiltLibcrypto3Loader : LibraryLoader {
     override val key: String get() = "crypto"

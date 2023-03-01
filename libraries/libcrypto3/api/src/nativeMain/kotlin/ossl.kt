@@ -5,7 +5,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 actual typealias OSSL_LIB_CTX = dev.whyoleg.ffi.libcrypto3.cinterop.OSSL_LIB_CTX
 

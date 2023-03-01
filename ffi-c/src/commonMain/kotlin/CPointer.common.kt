@@ -1,6 +1,6 @@
 @file:Suppress("NO_ACTUAL_FOR_EXPECT")
 
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 //TODO: add CArrayPointer.plus/get(index)/set(index)
 public typealias CArrayPointer<T> = CPointer<T>

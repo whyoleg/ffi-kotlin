@@ -2,7 +2,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 import kotlin.wasm.*
 
 actual fun EVP_DigestSignInit_ex(

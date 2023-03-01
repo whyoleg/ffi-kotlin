@@ -2,7 +2,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 import kotlin.wasm.*
 
 actual const val OPENSSL_VERSION_STRING: Int = 6 //magic :)

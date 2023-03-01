@@ -1,6 +1,6 @@
 @file:Suppress("FunctionName")
 
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 internal actual object FFI {
     actual fun malloc(size: Int): Int = _malloc(size)

@@ -1,4 +1,4 @@
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 public actual abstract class CPointed internal constructor(public val memory: NativeMemory) {
     public abstract val type: CPointedType<*>

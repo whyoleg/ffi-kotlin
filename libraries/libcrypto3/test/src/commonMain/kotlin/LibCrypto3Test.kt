@@ -1,6 +1,6 @@
 package dev.whyoleg.ffi.libcrypto3.test
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 import dev.whyoleg.ffi.libcrypto3.*
 import kotlin.test.*
 

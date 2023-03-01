@@ -1,4 +1,4 @@
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 public actual fun CString.toKString(): String {
     var length = 0

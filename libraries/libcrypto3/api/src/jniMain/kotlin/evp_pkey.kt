@@ -4,7 +4,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 actual object EVP_PKEY_Type : COpaqueType<EVP_PKEY>(::EVP_PKEY)
 actual class EVP_PKEY(memory: NativeMemory) : COpaque(memory) {

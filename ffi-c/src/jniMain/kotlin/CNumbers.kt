@@ -1,4 +1,4 @@
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 //Byte
 public actual class ByteVariable(memory: NativeMemory) : CVariable(memory) {

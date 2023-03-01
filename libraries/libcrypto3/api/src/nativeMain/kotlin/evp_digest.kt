@@ -2,7 +2,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 @Suppress("ACTUAL_WITHOUT_EXPECT")
 actual fun EVP_DigestSignInit_ex(

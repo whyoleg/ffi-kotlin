@@ -2,7 +2,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 expect class EVP_PKEY_CTX : COpaque
 expect object EVP_PKEY_CTX_Type : COpaqueType<EVP_PKEY_CTX>

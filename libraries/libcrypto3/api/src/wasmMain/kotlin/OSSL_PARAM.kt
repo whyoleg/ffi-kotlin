@@ -4,7 +4,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 import kotlin.wasm.*
 
 actual object OSSL_PARAM_Type : CVariableType<OSSL_PARAM>(::OSSL_PARAM, 20/*TODO!!!*/)
@@ -21,7 +21,7 @@ actual var OSSL_PARAM.data_type: UInt
 actual var OSSL_PARAM.data: CPointer<out CPointed>? //8 - TODO: support opaque pointers and reinterpret
     get() = TODO()
     set(value) = TODO()
-actual var OSSL_PARAM.data_size: PlatformDependentUInt //16
+actual var OSSL_PARAM.data_size: PlatformDependentUInt //12
     get() = memory.loadInt(12).toUInt()
     set(value) = memory.storeInt(12, value.toInt())
 actual var OSSL_PARAM.return_size: PlatformDependentUInt //16

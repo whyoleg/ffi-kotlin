@@ -1,6 +1,6 @@
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 internal class JniLibcrypto3Loader : LibraryLoader {
     override val key: String get() = "crypto-ffi-jni"

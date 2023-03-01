@@ -3,7 +3,7 @@
     "ACTUAL_TYPE_ALIAS_NOT_TO_CLASS",
 )
 
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 import kotlinx.cinterop.*
 import kotlinx.cinterop.value as kxvalue

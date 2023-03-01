@@ -2,7 +2,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 import kotlin.wasm.*
 
 actual fun ERR_get_error(): PlatformDependentUInt = ffi_ERR_get_error().toUInt()

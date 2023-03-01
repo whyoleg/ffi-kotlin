@@ -2,7 +2,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 import java.lang.foreign.*
 
 actual class OSSL_LIB_CTX(segment: MemorySegment) : COpaque(segment)

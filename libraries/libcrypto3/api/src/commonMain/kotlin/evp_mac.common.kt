@@ -2,7 +2,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 expect class EVP_MAC : COpaque
 expect object EVP_MAC_Type : COpaqueType<EVP_MAC>

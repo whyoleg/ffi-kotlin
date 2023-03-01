@@ -1,4 +1,4 @@
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 internal expect object FFI {
     fun malloc(size: Int): Int

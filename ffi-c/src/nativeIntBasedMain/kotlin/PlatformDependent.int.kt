@@ -3,7 +3,7 @@
     "ACTUAL_TYPE_ALIAS_NOT_TO_CLASS",
 )
 
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 public actual typealias PlatformDependentIntVariableType = IntVariableType
 public actual typealias PlatformDependentUIntVariableType = UIntVariableType

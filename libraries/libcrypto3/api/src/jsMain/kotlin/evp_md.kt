@@ -4,7 +4,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 actual object EVP_MD_Type : COpaqueType<EVP_MD>(::EVP_MD)
 actual class EVP_MD(memory: NativeMemory) : COpaque(memory) {

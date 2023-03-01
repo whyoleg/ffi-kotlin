@@ -4,7 +4,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 actual object EVP_MAC_Type : COpaqueType<EVP_MAC>(::EVP_MAC)
 actual class EVP_MAC(memory: NativeMemory) : COpaque(memory) {

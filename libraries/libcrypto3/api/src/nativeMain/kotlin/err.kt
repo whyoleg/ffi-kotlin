@@ -2,7 +2,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 import kotlinx.cinterop.*
 
 actual fun ERR_get_error(): PlatformDependentUInt = dev.whyoleg.ffi.libcrypto3.cinterop.ERR_get_error().convert()

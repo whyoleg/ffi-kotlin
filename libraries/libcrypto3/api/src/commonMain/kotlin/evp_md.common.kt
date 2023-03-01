@@ -2,7 +2,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 expect class EVP_MD : COpaque
 expect object EVP_MD_Type : COpaqueType<EVP_MD>

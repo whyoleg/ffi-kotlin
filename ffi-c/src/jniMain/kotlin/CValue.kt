@@ -1,4 +1,4 @@
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 //TODO: should be address, not buffer?
 public actual abstract class CValue<T : CVariable>(

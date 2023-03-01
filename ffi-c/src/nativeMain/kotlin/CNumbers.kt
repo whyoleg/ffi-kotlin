@@ -4,7 +4,7 @@
     "DEPRECATION"
 )
 
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 import kotlinx.cinterop.*
 import platform.posix.*

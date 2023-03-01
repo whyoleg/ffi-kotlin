@@ -5,7 +5,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 actual typealias EVP_MAC = dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC
 actual object EVP_MAC_Type : COpaqueType<EVP_MAC>()

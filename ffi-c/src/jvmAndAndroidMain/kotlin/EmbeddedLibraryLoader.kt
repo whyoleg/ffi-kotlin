@@ -1,4 +1,4 @@
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 import java.nio.file.*
 import kotlin.io.path.*
@@ -9,10 +9,10 @@ public sealed interface EmbeddedLibraryLoader {
     public companion object {
         public val Current: EmbeddedLibraryLoader
             get() {
-                if (System.getProperty("java.vendor").contains("android", ignoreCase = true)) return Android
+                if (System.getProperty("java.vendor")!!.contains("android", ignoreCase = true)) return Android
 
-                val os = System.getProperty("os.name").lowercase()
-                val arch = System.getProperty("os.arch").lowercase()
+                val os = System.getProperty("os.name")!!.lowercase()
+                val arch = System.getProperty("os.arch")!!.lowercase()
                 return when {
                     os.contains("mac") && arch.contains("aarch64")                 -> JVM.MACOS_ARM64
                     os.contains("win")                                             -> JVM.WINDOWS_X64

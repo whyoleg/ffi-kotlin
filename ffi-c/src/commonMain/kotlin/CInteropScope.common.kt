@@ -1,4 +1,4 @@
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 //TODO: context receiver + extension functions
 //TODO: Name

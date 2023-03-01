@@ -5,7 +5,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 actual object OSSL_PARAM_Type : CVariableType<OSSL_PARAM>(OSSL_PARAM)
 actual typealias OSSL_PARAM = dev.whyoleg.ffi.libcrypto3.cinterop.OSSL_PARAM

@@ -5,7 +5,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.*
+import dev.whyoleg.ffi.c.*
 
 actual typealias EVP_PKEY = dev.whyoleg.ffi.libcrypto3.cinterop.EVP_PKEY
 

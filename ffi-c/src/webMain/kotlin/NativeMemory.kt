@@ -1,4 +1,4 @@
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 internal const val pointerSize = 4 //32 bits
 
@@ -21,7 +21,7 @@ internal constructor(
     public fun loadInt(index: Int): Int = FFI.getInt((pointer.value + index) / Int.SIZE_BYTES)
     public fun storeInt(index: Int, value: Int): Unit = FFI.setInt((pointer.value + index) / Int.SIZE_BYTES, value)
 
-    //TODO: proper long support
+    //TODO: proper long support (wasm is little-endian)
     public fun loadLong(index: Int): Long = TODO("proper long support")
     public fun storeLong(index: Int, value: Long): Unit = TODO("proper long support")
 

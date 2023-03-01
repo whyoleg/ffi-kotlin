@@ -1,4 +1,4 @@
-package dev.whyoleg.ffi
+package dev.whyoleg.ffi.c
 
 public actual typealias CPointed = kotlinx.cinterop.CPointed
 
