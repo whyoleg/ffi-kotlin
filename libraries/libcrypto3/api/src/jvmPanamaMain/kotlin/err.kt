@@ -11,7 +11,7 @@ private val ERR_get_error_MH: MethodHandle = FFI.methodHandle(
     result = ValueLayout.JAVA_LONG
 )
 
-actual fun ERR_get_error(): ULong = (ERR_get_error_MH.invokeExact() as Long).toULong()
+actual fun ERR_get_error(): PlatformDependentUInt = (ERR_get_error_MH.invokeExact() as Long).toULong()
 
 private val ERR_error_string_MH: MethodHandle = FFI.methodHandle(
     name = "ERR_error_string",
@@ -20,6 +20,6 @@ private val ERR_error_string_MH: MethodHandle = FFI.methodHandle(
 )
 
 actual fun ERR_error_string(
-    e: ULong,
+    e: PlatformDependentUInt,
     buf: CString?,
 ): CString? = CString(ERR_error_string_MH.invokeExact(e.toLong(), buf.segment) as MemorySegment)

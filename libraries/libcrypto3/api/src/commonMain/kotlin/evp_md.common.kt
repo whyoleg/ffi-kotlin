@@ -27,7 +27,7 @@ expect fun EVP_DigestInit(
 expect fun EVP_DigestUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     d: CPointer<*>?,
-    cnt: ULong,
+    cnt: PlatformDependentUInt,
 ): Int
 
 expect fun EVP_DigestFinal(

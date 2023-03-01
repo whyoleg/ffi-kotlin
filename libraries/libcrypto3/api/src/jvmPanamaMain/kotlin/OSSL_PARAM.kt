@@ -38,11 +38,11 @@ actual var OSSL_PARAM.data: CPointer<out CPointed>?
     get() = CPointer(data_VH.get(segment) as MemorySegment)
     set(value) = data_VH.set(segment, value.segment)
 
-actual var OSSL_PARAM.data_size: ULong
+actual var OSSL_PARAM.data_size: PlatformDependentUInt
     get() = (data_size_VH.get(segment) as Long).toULong()
     set(value) = data_size_VH.set(segment, value.toLong())
 
-actual var OSSL_PARAM.return_size: ULong
+actual var OSSL_PARAM.return_size: PlatformDependentUInt
     get() = (return_size_VH.get(segment) as Long).toULong()
     set(value) = return_size_VH.set(segment, value.toLong())
 
@@ -55,7 +55,7 @@ private val OSSL_PARAM_construct_utf8_string_MH: MethodHandle = FFI.methodHandle
 actual fun OSSL_PARAM_construct_utf8_string(
     key: CString?,
     buf: CString?,
-    bsize: ULong,
+    bsize: PlatformDependentUInt,
 ): CValue<OSSL_PARAM> = cValue(
     OSSL_PARAM_Type,
     OSSL_PARAM_construct_utf8_string_MH.invokeExact(

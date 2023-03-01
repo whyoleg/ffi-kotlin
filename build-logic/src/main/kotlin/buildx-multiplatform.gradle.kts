@@ -3,6 +3,8 @@
 import org.jetbrains.kotlin.gradle.*
 import org.jetbrains.kotlin.gradle.dsl.*
 import org.jetbrains.kotlin.gradle.plugin.*
+import org.jetbrains.kotlin.gradle.plugin.mpp.*
+import org.jetbrains.kotlin.konan.target.*
 
 plugins {
     kotlin("multiplatform")
@@ -31,7 +33,6 @@ kotlin {
     fun KotlinTargetHierarchyBuilder.withJvmPanama() {
         withPlatform(KotlinPlatformType.jvm) { it.name.contains("panama", ignoreCase = true) }
     }
-    //TODO: replace later with full-blown hierarchy based on `default` when more native targets will be added
     targetHierarchy.custom {
         common {
             //shares library loading mechanism
@@ -50,6 +51,16 @@ kotlin {
             group("web") {
                 withJs()
                 withWasm()
+            }
+            group("native") {
+                group("nativeIntBased") {
+                    withIosArm32()
+                }
+                group("nativeLongBased") {
+                    withPlatform(KotlinPlatformType.native) {
+                        (it as KotlinNativeTarget).konanTarget != KonanTarget.IOS_ARM32
+                    }
+                }
             }
 
             //group, on which jni and web depends on -> no native, no panama, raw memory access

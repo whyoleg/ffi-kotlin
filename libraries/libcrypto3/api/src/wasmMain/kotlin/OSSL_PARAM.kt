@@ -13,25 +13,25 @@ actual class OSSL_PARAM(memory: NativeMemory) : CStructVariable(memory) {
 }
 
 actual var OSSL_PARAM.key: CString?
-    get() = CString(NativePointer(memory.loadLong(0).toInt()))
-    set(value) = memory.storeLong(0, value.nativePointer.toLong())
+    get() = CString(NativePointer(memory.loadInt(0)))
+    set(value) = memory.storeInt(0, value.nativePointer)
 actual var OSSL_PARAM.data_type: UInt
     get() = memory.loadInt(4).toUInt()
     set(value) = memory.storeInt(4, value.toInt())
 actual var OSSL_PARAM.data: CPointer<out CPointed>? //8 - TODO: support opaque pointers and reinterpret
     get() = TODO()
     set(value) = TODO()
-actual var OSSL_PARAM.data_size: ULong //16
-    get() = memory.loadLong(12).toULong()
-    set(value) = memory.storeLong(12, value.toLong())
-actual var OSSL_PARAM.return_size: ULong //16
-    get() = memory.loadLong(16).toULong()
-    set(value) = memory.storeLong(16, value.toLong())
+actual var OSSL_PARAM.data_size: PlatformDependentUInt //16
+    get() = memory.loadInt(12).toUInt()
+    set(value) = memory.storeInt(12, value.toInt())
+actual var OSSL_PARAM.return_size: PlatformDependentUInt //16
+    get() = memory.loadInt(16).toUInt()
+    set(value) = memory.storeInt(16, value.toInt())
 
 actual fun OSSL_PARAM_construct_utf8_string(
     key: CString?,
     buf: CString?,
-    bsize: ULong,
+    bsize: PlatformDependentUInt,
 ): CValue<OSSL_PARAM> = CValue(OSSL_PARAM_Type) { pointer ->
     ffi_OSSL_PARAM_construct_utf8_string(key.nativePointer, buf.nativePointer, bsize.toInt(), pointer.value)
 }

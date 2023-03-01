@@ -71,7 +71,7 @@ private val EVP_DigestUpdate_MH: MethodHandle = FFI.methodHandle(
 actual fun EVP_DigestUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     d: CPointer<*>?,
-    cnt: ULong,
+    cnt: PlatformDependentUInt,
 ): Int {
     return EVP_DigestUpdate_MH.invokeExact(ctx.segment, d.segment, cnt.toLong()) as Int
 }

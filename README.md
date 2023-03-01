@@ -81,7 +81,7 @@ TODO:
 
 #### Native
 
-Nothing interesting, just mapping for cinterop (though tested for now only with macos-arm64)
+Nothing interesting, just mapping for cinterop
 
 ### Auto-generation like in cinterop
 

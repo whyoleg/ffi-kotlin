@@ -22,8 +22,8 @@ internal constructor(
     public fun storeInt(index: Int, value: Int): Unit = FFI.setInt((pointer.value + index) / Int.SIZE_BYTES, value)
 
     //TODO: proper long support
-    public fun loadLong(index: Int): Long = loadInt(index).toLong()
-    public fun storeLong(index: Int, value: Long): Unit = storeInt(index, value.toInt())
+    public fun loadLong(index: Int): Long = TODO("proper long support")
+    public fun storeLong(index: Int, value: Long): Unit = TODO("proper long support")
 
     public fun loadByteArray(
         index: Int,

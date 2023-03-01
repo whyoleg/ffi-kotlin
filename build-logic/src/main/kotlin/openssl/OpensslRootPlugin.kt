@@ -10,7 +10,7 @@ class OpensslRootPlugin : Plugin<Project> {
         check(this == rootProject)
 
         val downloadOpenssl by tasks.registering(Download::class) {
-            src("https://github.com/whyoleg/openssl-builds/releases/download/3.0.8-build-1/openssl3-all.zip")
+            src("https://github.com/whyoleg/openssl-builds/releases/download/3.0.8-build-2/openssl3-all.zip")
             onlyIfModified(true)
             dest(layout.buildDirectory.file("openssl/prebuilt.zip"))
         }

@@ -4,10 +4,10 @@ package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.*
 
-actual fun ERR_get_error(): ULong = err.ERR_get_error().toULong()
+actual fun ERR_get_error(): PlatformDependentUInt = err.ERR_get_error().toULong()
 
 actual fun ERR_error_string(
-    e: ULong,
+    e: PlatformDependentUInt,
     buf: CString?,
 ): CString? = CString(NativePointer(err.ERR_error_string(e.toLong(), buf.nativePointer)))
 

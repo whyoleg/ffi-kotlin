@@ -1,6 +1,5 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import org.jetbrains.kotlin.gradle.targets.jvm.*
-import org.jetbrains.kotlin.konan.target.*
 
 plugins {
     id("buildx-multiplatform-library")
@@ -31,7 +30,6 @@ kotlin {
                 environment("DYLD_LIBRARY_PATH", openssl.libDir("macos-arm64").get())
             }
         } else if (this is KotlinNativeTarget) {
-            check(this.konanTarget == KonanTarget.MACOS_ARM64)
             val main by compilations.getting {
                 val shared by cinterops.creating {
                     defFile("src/nativeMain/interop/linking.def")

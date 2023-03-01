@@ -26,6 +26,18 @@ public actual var UByteVariable.value: UByte
 public actual fun CPointer<ByteVariable>.toUByte(): CPointer<UByteVariable> = CPointer(memory, UByteVariableType)
 public actual fun CPointer<UByteVariable>.toByte(): CPointer<ByteVariable> = CPointer(memory, ByteVariableType)
 
+//Int
+public actual class IntVariable
+internal constructor(memory: NativeMemory) : CVariable(memory) {
+    override val type: IntVariableType get() = IntVariableType
+}
+
+public actual object IntVariableType : CVariableType<IntVariable>(::IntVariable, Int.SIZE_BYTES)
+
+public actual var IntVariable.value: Int
+    get() = memory.loadInt(0)
+    set(value) = run { memory.storeInt(0, value) }
+
 //UInt
 public actual class UIntVariable
 internal constructor(memory: NativeMemory) : CVariable(memory) {

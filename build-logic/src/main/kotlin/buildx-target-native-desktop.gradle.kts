@@ -3,6 +3,8 @@ plugins {
 }
 
 kotlin {
-    //replace later with full-blown hierarchy
-    macosArm64("native")
+    macosArm64()
+    macosX64()
+    linuxX64()
+    mingwX64()
 }

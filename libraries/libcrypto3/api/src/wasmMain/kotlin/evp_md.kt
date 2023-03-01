@@ -49,7 +49,7 @@ actual fun EVP_DigestInit(
 actual fun EVP_DigestUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     d: CPointer<*>?,
-    cnt: ULong,
+    cnt: PlatformDependentUInt,
 ): Int {
     return ffi_EVP_DigestUpdate(ctx.nativePointer, d.nativePointer, cnt.toInt())
 }

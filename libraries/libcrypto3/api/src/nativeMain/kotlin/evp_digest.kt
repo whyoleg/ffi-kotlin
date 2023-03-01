@@ -28,7 +28,7 @@ actual fun EVP_DigestSignInit_ex(
 actual fun EVP_DigestSignUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     data: CPointer<*>?,
-    dsize: ULong,
+    dsize: PlatformDependentUInt,
 ): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_DigestSignUpdate(ctx, data, dsize)
 }
@@ -36,7 +36,7 @@ actual fun EVP_DigestSignUpdate(
 actual fun EVP_DigestSignFinal(
     ctx: CPointer<EVP_MD_CTX>?,
     sigret: CPointer<UByteVariable>?,
-    siglen: CPointer<ULongVariable>?,
+    siglen: CPointer<PlatformDependentUIntVariable>?,
 ): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_DigestSignFinal(ctx, sigret, siglen)
 }
@@ -65,7 +65,7 @@ actual fun EVP_DigestVerifyInit_ex(
 actual fun EVP_DigestVerifyUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     data: CPointer<*>?,
-    dsize: ULong,
+    dsize: PlatformDependentUInt,
 ): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_DigestVerifyUpdate(ctx, data, dsize)
 }
@@ -73,7 +73,7 @@ actual fun EVP_DigestVerifyUpdate(
 actual fun EVP_DigestVerifyFinal(
     ctx: CPointer<EVP_MD_CTX>?,
     sig: CPointer<UByteVariable>?,
-    siglen: ULong,
+    siglen: PlatformDependentUInt,
 ): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_DigestVerifyFinal(ctx, sig, siglen)
 }

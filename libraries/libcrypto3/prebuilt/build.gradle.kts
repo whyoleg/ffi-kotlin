@@ -1,7 +1,7 @@
 import com.android.build.gradle.tasks.*
+import openssl.*
 import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import org.jetbrains.kotlin.gradle.tasks.*
-import org.jetbrains.kotlin.konan.target.*
 import wasm.*
 
 plugins {
@@ -50,7 +50,7 @@ val copyLibrariesForAndroid by tasks.registering(Sync::class) {
 
 val libname = "ffi-libcrypto"
 
-val linkWasm by tasks.registering(wasm.DefaultLinkWasm::class) {
+val linkWasm by tasks.registering(DefaultLinkWasm::class) {
     linkLibraries.addAll("crypto", "z")
     linkPaths.add(
         openssl.libDir("wasm").map { it.absolutePath }
@@ -61,7 +61,7 @@ val linkWasm by tasks.registering(wasm.DefaultLinkWasm::class) {
     outputLibraryName.set(libname)
 }
 
-val generateWasmTestRunner by tasks.registering(wasm.DefaultGenerateWasmTestRunner::class) {
+val generateWasmTestRunner by tasks.registering(DefaultGenerateWasmTestRunner::class) {
     dependsOn("wasmTestTestDevelopmentExecutableCompileSync")//TODO
     dependsOn(linkWasm)
     inputLibraryName.set(libname)
@@ -110,11 +110,10 @@ kotlin {
     }
     targets.all {
         if (this is KotlinNativeTarget) {
-            check(this.konanTarget == KonanTarget.MACOS_ARM64)
             val main by compilations.getting {
                 val prebuilt by cinterops.creating {
                     defFile("src/nativeMain/interop/linking.def")
-                    extraOpts("-libraryPath", openssl.libDir("macos-arm64").get())
+                    extraOpts("-libraryPath", openssl.libDir(konanTarget).get())
                 }
             }
         }

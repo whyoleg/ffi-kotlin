@@ -1,5 +1,7 @@
 package dev.whyoleg.ffi
 
+import kotlin.jvm.*
+
 //TODO: overall should be like this, but it's not possible to make it like this because of compatibility with cinterop
 // may be later?
 //public expect class ByteVariable : CVariable {
@@ -24,6 +26,12 @@ public expect fun CPointer<ByteVariable>.toUByte(): CPointer<UByteVariable>
 public expect fun CPointer<UByteVariable>.toByte(): CPointer<ByteVariable>
 
 @Suppress("NO_ACTUAL_FOR_EXPECT")
+public expect class IntVariable : CVariable
+public expect object IntVariableType : CVariableType<IntVariable>
+
+public expect var IntVariable.value: Int
+
+@Suppress("NO_ACTUAL_FOR_EXPECT")
 public expect class UIntVariable : CVariable
 public expect object UIntVariableType : CVariableType<UIntVariable>
 
@@ -41,20 +49,33 @@ public expect object ULongVariableType : CVariableType<ULongVariable>
 
 public expect var ULongVariable.value: ULong
 
+public expect class PlatformDependentInt : Number, Comparable<PlatformDependentInt>
 
-//TODO: hard to introduce because of current native structure...
-//jvm - Long
-//wasm/js - Int
-//native - Int/Long (mostly Long, but based on target)
-//public expect class PlatformInt : Number, Comparable<PlatformInt>
-//public expect class PlatformIntVariable : CVariable
-//public expect object PlatformIntVariableType : CVariableType<PlatformIntVariable>
-//
-//public expect var PlatformIntVariable.value: PlatformInt
-//
-//@JvmInline
-//public expect value class PlatformUInt internal constructor(internal val value: PlatformInt) : Comparable<PlatformUInt>
-//public expect class PlatformUIntVariable : CVariable
-//public expect object PlatformUIntVariableType : CVariableType<PlatformUIntVariable>
-//
-//public expect var PlatformUIntVariable.value: PlatformUInt
+@Suppress("NO_ACTUAL_FOR_EXPECT")
+public expect class PlatformDependentIntVariable : CVariable
+public expect object PlatformDependentIntVariableType : CVariableType<PlatformDependentIntVariable>
+
+@JvmInline
+public expect value class PlatformDependentUInt internal constructor(internal val data: PlatformDependentInt) :
+    Comparable<PlatformDependentUInt> {
+    public fun toDouble(): Double
+    public fun toFloat(): Float
+    public fun toLong(): Long
+    public fun toInt(): Int
+    public fun toShort(): Short
+    public fun toByte(): Byte
+    //TODO: add unsigned
+}
+
+@Suppress("NO_ACTUAL_FOR_EXPECT")
+public expect class PlatformDependentUIntVariable : CVariable
+public expect object PlatformDependentUIntVariableType : CVariableType<PlatformDependentUIntVariable>
+
+
+//TODO better approach?
+public expect val Int.pd: PlatformDependentInt
+public expect val UInt.pd: PlatformDependentUInt
+
+//TODO: value will clash in platform dependent sourceSets...
+public expect var PlatformDependentIntVariable.pdValue: PlatformDependentInt
+public expect var PlatformDependentUIntVariable.pdValue: PlatformDependentUInt

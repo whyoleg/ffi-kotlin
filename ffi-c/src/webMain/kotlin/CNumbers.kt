@@ -26,6 +26,18 @@ public actual var UByteVariable.value: UByte
 public actual fun CPointer<ByteVariable>.toUByte(): CPointer<UByteVariable> = CPointer(memory, UByteVariableType)
 public actual fun CPointer<UByteVariable>.toByte(): CPointer<ByteVariable> = CPointer(memory, ByteVariableType)
 
+//Int
+public actual class IntVariable
+internal constructor(memory: NativeMemory) : CVariable(memory) {
+    override val type: IntVariableType get() = IntVariableType
+}
+
+public actual object IntVariableType : CVariableType<IntVariable>(::IntVariable, Int.SIZE_BYTES)
+
+public actual var IntVariable.value: Int
+    get() = memory.loadInt(0)
+    set(value) = run { memory.storeInt(0, value) }
+
 //UInt
 public actual class UIntVariable
 internal constructor(memory: NativeMemory) : CVariable(memory) {
@@ -39,13 +51,12 @@ public actual var UIntVariable.value: UInt
     set(value) = run { memory.storeInt(0, value.toInt()) }
 
 //Long
-//TODO: proper long support
 public actual class LongVariable
 internal constructor(memory: NativeMemory) : CVariable(memory) {
     override val type: LongVariableType get() = LongVariableType
 }
 
-public actual object LongVariableType : CVariableType<LongVariable>(::LongVariable, Int.SIZE_BYTES)
+public actual object LongVariableType : CVariableType<LongVariable>(::LongVariable, Long.SIZE_BYTES)
 
 public actual var LongVariable.value: Long
     get() = memory.loadLong(0)
@@ -58,8 +69,26 @@ internal constructor(memory: NativeMemory) : CVariable(memory) {
     override val type: CPointedType<*> get() = ULongVariableType
 }
 
-public actual object ULongVariableType : CVariableType<ULongVariable>(::ULongVariable, Int.SIZE_BYTES)
+public actual object ULongVariableType : CVariableType<ULongVariable>(::ULongVariable, Long.SIZE_BYTES)
 
 public actual var ULongVariable.value: ULong
     get() = memory.loadLong(0).toULong()
     set(value) = run { memory.storeLong(0, value.toLong()) }
+
+public actual typealias PlatformDependentInt = Int
+public actual typealias PlatformDependentIntVariable = IntVariable
+public actual typealias PlatformDependentIntVariableType = IntVariableType
+
+public actual typealias PlatformDependentUInt = UInt
+public actual typealias PlatformDependentUIntVariable = UIntVariable
+public actual typealias PlatformDependentUIntVariableType = UIntVariableType
+
+public actual val Int.pd: PlatformDependentInt get() = this
+public actual val UInt.pd: PlatformDependentUInt get() = this
+
+public actual var PlatformDependentIntVariable.pdValue: PlatformDependentInt
+    get() = this.value
+    set(value) = run { this.value = value }
+public actual var PlatformDependentUIntVariable.pdValue: PlatformDependentUInt
+    get() = this.value
+    set(value) = run { this.value = value }

@@ -24,6 +24,15 @@ public actual fun CPointer<ByteVariable>.toUByte(): CPointer<UByteVariable> = CP
 
 public actual fun CPointer<UByteVariable>.toByte(): CPointer<ByteVariable> = CPointer(ByteVariable(pointed.segment))
 
+//Int
+public actual class IntVariable internal constructor(segment: MemorySegment) : CVariable(segment)
+
+public actual object IntVariableType : CVariableType<IntVariable>(::IntVariable, ValueLayout.JAVA_INT)
+
+public actual var IntVariable.value: Int
+    get() = segment.get(ValueLayout.JAVA_INT, 0)
+    set(value) = segment.set(ValueLayout.JAVA_INT, 0, value)
+
 //UInt
 public actual class UIntVariable internal constructor(segment: MemorySegment) : CVariable(segment)
 

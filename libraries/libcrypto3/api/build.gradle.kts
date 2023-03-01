@@ -1,7 +1,7 @@
 import com.android.build.gradle.tasks.*
+import openssl.*
 import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import org.jetbrains.kotlin.gradle.tasks.*
-import org.jetbrains.kotlin.konan.target.*
 
 plugins {
     id("buildx-multiplatform") //-library
@@ -73,11 +73,10 @@ kotlin {
     }
     targets.all {
         if (this is KotlinNativeTarget) {
-            check(this.konanTarget == KonanTarget.MACOS_ARM64)
             val main by compilations.getting {
                 val declarations by cinterops.creating {
                     defFile("src/nativeMain/interop/declarations.def")
-                    includeDirs(openssl.includeDir("macos-arm64"))
+                    includeDirs(openssl.includeDir(konanTarget))
                 }
             }
         }

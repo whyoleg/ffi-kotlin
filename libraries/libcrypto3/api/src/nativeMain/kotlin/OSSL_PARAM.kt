@@ -19,17 +19,17 @@ actual var OSSL_PARAM.data_type: UInt
 actual var OSSL_PARAM.data: CPointer<out CPointed>?
     get() = data
     set(value) = run { data = value }
-actual var OSSL_PARAM.data_size: ULong
+actual var OSSL_PARAM.data_size: PlatformDependentUInt
     get() = data_size
     set(value) = run { data_size = value }
-actual var OSSL_PARAM.return_size: ULong
+actual var OSSL_PARAM.return_size: PlatformDependentUInt
     get() = return_size
     set(value) = run { return_size = value }
 
 actual fun OSSL_PARAM_construct_utf8_string(
     key: CString?,
     buf: CString?,
-    bsize: ULong,
+    bsize: PlatformDependentUInt,
 ): CValue<OSSL_PARAM> {
     return dev.whyoleg.ffi.libcrypto3.cinterop.OSSL_PARAM_construct_utf8_string(key, buf, bsize)
 }

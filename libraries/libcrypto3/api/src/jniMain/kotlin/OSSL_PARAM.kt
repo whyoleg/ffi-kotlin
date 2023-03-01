@@ -20,17 +20,17 @@ actual var OSSL_PARAM.data_type: UInt
 actual var OSSL_PARAM.data: CPointer<out CPointed>? // TODO: support opaque pointers and reinterpret
     get() = TODO()
     set(value) = TODO()
-actual var OSSL_PARAM.data_size: ULong
+actual var OSSL_PARAM.data_size: PlatformDependentUInt
     get() = memory.loadLong(24).toULong()
     set(value) = memory.storeLong(24, value.toLong())
-actual var OSSL_PARAM.return_size: ULong
+actual var OSSL_PARAM.return_size: PlatformDependentUInt
     get() = memory.loadLong(32).toULong()
     set(value) = memory.storeLong(32, value.toLong())
 
 actual fun OSSL_PARAM_construct_utf8_string(
     key: CString?,
     buf: CString?,
-    bsize: ULong,
+    bsize: PlatformDependentUInt,
 ): CValue<OSSL_PARAM> = CValue(OSSL_PARAM_Type) { pointer ->
     osslparam.OSSL_PARAM_construct_utf8_string(key.nativePointer, buf.nativePointer, bsize.toLong(), pointer.value)
 }

@@ -6,6 +6,8 @@
 
 package dev.whyoleg.ffi
 
+import kotlinx.cinterop.*
+import platform.posix.*
 import kotlinx.cinterop.reinterpret as kxreinterpret
 import kotlinx.cinterop.value as kxvalue
 
@@ -30,6 +32,15 @@ public actual inline var UByteVariable.value: UByte
 public actual fun CPointer<ByteVariable>.toUByte(): CPointer<UByteVariable> = kxreinterpret()
 
 public actual fun CPointer<UByteVariable>.toByte(): CPointer<ByteVariable> = kxreinterpret()
+
+//Int
+public actual typealias IntVariable = kotlinx.cinterop.IntVar
+
+public actual object IntVariableType : CVariableType<IntVariable>(kotlinx.cinterop.IntVarOf)
+
+public actual inline var IntVariable.value: Int
+    get() = kxvalue
+    set(value) = run { kxvalue = value }
 
 //UInt
 public actual typealias UIntVariable = kotlinx.cinterop.UIntVar
@@ -57,3 +68,21 @@ public actual object ULongVariableType : CVariableType<ULongVariable>(kotlinx.ci
 public actual inline var ULongVariable.value: ULong
     get() = kxvalue
     set(value) = run { kxvalue = value }
+
+
+//we should size_t/ssize_t to make it possible to use commonization of bit width
+public actual typealias PlatformDependentInt = ssize_t
+public actual typealias PlatformDependentIntVariable = ssize_tVar
+
+public actual typealias PlatformDependentUInt = size_t
+public actual typealias PlatformDependentUIntVariable = size_tVar
+
+public actual val Int.pd: PlatformDependentInt get() = convert()
+public actual val UInt.pd: PlatformDependentUInt get() = convert()
+
+public actual var PlatformDependentIntVariable.pdValue: PlatformDependentInt
+    get() = this.value
+    set(value) = run { this.value = value }
+public actual var PlatformDependentUIntVariable.pdValue: PlatformDependentUInt
+    get() = this.value
+    set(value) = run { this.value = value }

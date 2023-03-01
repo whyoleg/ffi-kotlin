@@ -33,7 +33,7 @@ actual fun EVP_MAC_CTX_new(mac: CPointer<EVP_MAC>?): CPointer<EVP_MAC_CTX>? {
 actual fun EVP_MAC_init(
     ctx: CPointer<EVP_MAC_CTX>?,
     key: CPointer<UByteVariable>?,
-    keylen: ULong,
+    keylen: PlatformDependentUInt,
     params: CPointer<OSSL_PARAM>?,
 ): Int {
     return evpmac.EVP_MAC_init(ctx.nativePointer, key.nativePointer, keylen.toLong(), params.nativePointer)
@@ -41,14 +41,14 @@ actual fun EVP_MAC_init(
 
 actual fun EVP_MAC_CTX_get_mac_size(
     ctx: CPointer<EVP_MAC_CTX>?,
-): ULong {
+): PlatformDependentUInt {
     return evpmac.EVP_MAC_CTX_get_mac_size(ctx.nativePointer).toULong()
 }
 
 actual fun EVP_MAC_update(
     ctx: CPointer<EVP_MAC_CTX>?,
     data: CPointer<UByteVariable>?,
-    datalen: ULong,
+    datalen: PlatformDependentUInt,
 ): Int {
     return evpmac.EVP_MAC_update(ctx.nativePointer, data.nativePointer, datalen.toLong())
 }
@@ -56,8 +56,8 @@ actual fun EVP_MAC_update(
 actual fun EVP_MAC_final(
     ctx: CPointer<EVP_MAC_CTX>?,
     out: CPointer<UByteVariable>?,
-    outl: CPointer<ULongVariable>?,
-    outsize: ULong,
+    outl: CPointer<PlatformDependentUIntVariable>?,
+    outsize: PlatformDependentUInt,
 ): Int {
     return evpmac.EVP_MAC_final(ctx.nativePointer, out.nativePointer, outl.nativePointer, outsize.toLong())
 }
