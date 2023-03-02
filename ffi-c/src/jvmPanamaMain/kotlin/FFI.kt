@@ -19,8 +19,4 @@ public object FFI {
     public fun methodHandle(name: String, args: Array<MemoryLayout> = emptyArray()): MethodHandle =
         linker.downcallHandle(lookup.find(name).get(), FunctionDescriptor.ofVoid(*args))
 
-    //TODO: decide better on how to handle structures allocation!!!
-    // should be `get` to create new scope for every function call
-    public val autoSegmentAllocator: SegmentAllocator get() = SegmentAllocator.nativeAllocator(SegmentScope.auto())
-
 }

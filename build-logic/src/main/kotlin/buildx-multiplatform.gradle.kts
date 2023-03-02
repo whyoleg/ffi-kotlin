@@ -35,22 +35,24 @@ kotlin {
     }
     targetHierarchy.custom {
         common {
-            //shares library loading mechanism
-            group("jvmAndAndroid") {
-                //shared JNI declarations mechanism
-                group("jni") {
-                    withAndroid()
-                    withJvmJni()
-                }
+            group("nonNative") {
+                //shares library loading mechanism
+                group("jvmAndAndroid") {
+                    //shared JNI declarations mechanism
+                    group("jni") {
+                        withAndroid()
+                        withJvmJni()
+                    }
 
-                //shares library loading from jar or from system
-                group("jvm") {
-                    withJvm()
+                    //shares library loading from jar or from system
+                    group("jvm") {
+                        withJvm()
+                    }
                 }
-            }
-            group("web") {
-                withJs()
-                withWasm()
+                group("web") {
+                    withJs()
+                    withWasm()
+                }
             }
             group("native") {
                 group("nativeIntBased") {
@@ -62,13 +64,6 @@ kotlin {
                     }
                 }
             }
-
-            //group, on which jni and web depends on -> no native, no panama, raw memory access
-            //TODO: work on it later
-//            group("raw") {
-//                group("jni")
-//                group("web")
-//            }
         }
     }
 

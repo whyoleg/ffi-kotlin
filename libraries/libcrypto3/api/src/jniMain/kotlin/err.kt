@@ -9,7 +9,7 @@ actual fun ERR_get_error(): PlatformDependentUInt = err.ERR_get_error().toULong(
 actual fun ERR_error_string(
     e: PlatformDependentUInt,
     buf: CString?,
-): CString? = CString(NativePointer(err.ERR_error_string(e.toLong(), buf.nativePointer)))
+): CString? = nativeCString(err.ERR_error_string(e.toLong(), buf.nativeAddress))
 
 private object err {
     init {

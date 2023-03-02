@@ -6,28 +6,23 @@ package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.c.*
 
-actual object EVP_PKEY_Type : COpaqueType<EVP_PKEY>(::EVP_PKEY)
-actual class EVP_PKEY(memory: NativeMemory) : COpaque(memory) {
-    override val type: EVP_PKEY_Type get() = EVP_PKEY_Type
-}
-
 actual fun EVP_PKEY_keygen_init(ctx: CPointer<EVP_PKEY_CTX>?): Int {
-    return evppkey.EVP_PKEY_keygen_init(ctx.nativePointer)
+    return evppkey.EVP_PKEY_keygen_init(ctx.nativeAddress)
 }
 
 actual fun EVP_PKEY_generate(
     ctx: CPointer<EVP_PKEY_CTX>?,
     ppkey: CPointer<CPointerVariable<EVP_PKEY>>?,
 ): Int {
-    return evppkey.EVP_PKEY_generate(ctx.nativePointer, ppkey.nativePointer)
+    return evppkey.EVP_PKEY_generate(ctx.nativeAddress, ppkey.nativeAddress)
 }
 
 actual fun EVP_PKEY_up_ref(pkey: CPointer<EVP_PKEY>?): Int {
-    return evppkey.EVP_PKEY_up_ref(pkey.nativePointer)
+    return evppkey.EVP_PKEY_up_ref(pkey.nativeAddress)
 }
 
 actual fun EVP_PKEY_free(pkey: CPointer<EVP_PKEY>?) {
-    evppkey.EVP_PKEY_free(pkey.nativePointer)
+    evppkey.EVP_PKEY_free(pkey.nativeAddress)
 }
 
 private object evppkey {

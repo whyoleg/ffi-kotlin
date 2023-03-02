@@ -9,7 +9,7 @@ actual fun ERR_get_error(): PlatformDependentUInt = err.ERR_get_error().toUInt()
 actual fun ERR_error_string(
     e: PlatformDependentUInt,
     buf: CString?,
-): CString? = CString(NativePointer(err.ERR_error_string(e.toInt(), buf.nativePointer)))
+): CString? = nativeCString(err.ERR_error_string(e.toInt(), buf.nativeAddress))
 
 @JsModule("ffi-libcrypto")
 @JsNonModule

@@ -8,9 +8,6 @@ import dev.whyoleg.ffi.c.*
 import java.lang.foreign.*
 import java.lang.invoke.*
 
-actual class EVP_PKEY(segment: MemorySegment) : COpaque(segment)
-actual object EVP_PKEY_Type : COpaqueType<EVP_PKEY>(::EVP_PKEY)
-
 private val EVP_PKEY_keygen_init: MethodHandle = FFI.methodHandle(
     name = "EVP_PKEY_keygen_init",
     result = ValueLayout.JAVA_INT,
@@ -19,7 +16,7 @@ private val EVP_PKEY_keygen_init: MethodHandle = FFI.methodHandle(
 
 actual fun EVP_PKEY_keygen_init(ctx: CPointer<EVP_PKEY_CTX>?): Int {
     return EVP_PKEY_keygen_init.invokeExact(
-        ctx.segment
+        ctx.nativeAddress
     ) as Int
 }
 
@@ -34,8 +31,8 @@ actual fun EVP_PKEY_generate(
     ppkey: CPointer<CPointerVariable<EVP_PKEY>>?,
 ): Int {
     return EVP_PKEY_generate.invokeExact(
-        ctx.segment,
-        ppkey.segment
+        ctx.nativeAddress,
+        ppkey.nativeAddress
     ) as Int
 }
 
@@ -47,7 +44,7 @@ private val EVP_PKEY_up_ref: MethodHandle = FFI.methodHandle(
 
 actual fun EVP_PKEY_up_ref(pkey: CPointer<EVP_PKEY>?): Int {
     return EVP_PKEY_up_ref.invokeExact(
-        pkey.segment
+        pkey.nativeAddress
     ) as Int
 }
 
@@ -57,5 +54,5 @@ private val EVP_PKEY_free: MethodHandle = FFI.methodHandle(
 )
 
 actual fun EVP_PKEY_free(pkey: CPointer<EVP_PKEY>?) {
-    EVP_PKEY_free.invokeExact(pkey.segment)
+    EVP_PKEY_free.invokeExact(pkey.nativeAddress)
 }

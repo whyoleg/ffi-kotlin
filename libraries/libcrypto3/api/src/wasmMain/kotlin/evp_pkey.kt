@@ -7,28 +7,23 @@ package dev.whyoleg.ffi.libcrypto3
 import dev.whyoleg.ffi.c.*
 import kotlin.wasm.*
 
-actual object EVP_PKEY_Type : COpaqueType<EVP_PKEY>(::EVP_PKEY)
-actual class EVP_PKEY(memory: NativeMemory) : COpaque(memory) {
-    override val type: EVP_PKEY_Type get() = EVP_PKEY_Type
-}
-
 actual fun EVP_PKEY_keygen_init(ctx: CPointer<EVP_PKEY_CTX>?): Int {
-    return ffi_EVP_PKEY_keygen_init(ctx.nativePointer)
+    return ffi_EVP_PKEY_keygen_init(ctx.nativeAddress)
 }
 
 actual fun EVP_PKEY_generate(
     ctx: CPointer<EVP_PKEY_CTX>?,
     ppkey: CPointer<CPointerVariable<EVP_PKEY>>?,
 ): Int {
-    return ffi_EVP_PKEY_generate(ctx.nativePointer, ppkey.nativePointer)
+    return ffi_EVP_PKEY_generate(ctx.nativeAddress, ppkey.nativeAddress)
 }
 
 actual fun EVP_PKEY_up_ref(pkey: CPointer<EVP_PKEY>?): Int {
-    return ffi_EVP_PKEY_up_ref(pkey.nativePointer)
+    return ffi_EVP_PKEY_up_ref(pkey.nativeAddress)
 }
 
 actual fun EVP_PKEY_free(pkey: CPointer<EVP_PKEY>?) {
-    ffi_EVP_PKEY_free(pkey.nativePointer)
+    ffi_EVP_PKEY_free(pkey.nativeAddress)
 }
 
 @WasmImport("ffi-libcrypto", "ffi_EVP_PKEY_keygen_init")

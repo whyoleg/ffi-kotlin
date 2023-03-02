@@ -14,7 +14,7 @@ private val OpenSSL_version: MethodHandle = FFI.methodHandle(
     args = arrayOf(ValueLayout.JAVA_INT)
 )
 
-actual fun OpenSSL_version(type: Int): CString? = CString(OpenSSL_version.invokeExact(type) as MemorySegment)
+actual fun OpenSSL_version(type: Int): CString? = nativeCString(OpenSSL_version.invokeExact(type) as MemorySegment)
 
 private val OPENSSL_version_major: MethodHandle = FFI.methodHandle(
     name = "OPENSSL_version_major",

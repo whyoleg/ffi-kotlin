@@ -6,43 +6,32 @@ package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.c.*
 
-actual object EVP_MD_Type : COpaqueType<EVP_MD>(::EVP_MD)
-actual class EVP_MD(memory: NativeMemory) : COpaque(memory) {
-    override val type: EVP_MD_Type get() = EVP_MD_Type
-}
-
-actual object EVP_MD_CTX_Type : COpaqueType<EVP_MD_CTX>(::EVP_MD_CTX)
-actual class EVP_MD_CTX(memory: NativeMemory) : COpaque(memory) {
-    override val type: EVP_MD_CTX_Type get() = EVP_MD_CTX_Type
-}
-
 actual fun EVP_MD_fetch(
     ctx: CPointer<OSSL_LIB_CTX>?,
     algorithm: CString?,
     properties: CString?,
-): CPointer<EVP_MD>? = CPointer(
-    NativePointer(
-        evpmd.EVP_MD_fetch(
-            ctx.nativePointer,
-            algorithm.nativePointer,
-            properties.nativePointer
-        )
-    ), EVP_MD_Type
+): CPointer<EVP_MD>? = nativeCPointer(
+    EVP_MD_Type,
+    evpmd.EVP_MD_fetch(
+        ctx.nativeAddress,
+        algorithm.nativeAddress,
+        properties.nativeAddress
+    )
 )
 
 actual fun EVP_MD_CTX_new(): CPointer<EVP_MD_CTX>? {
-    return CPointer(NativePointer(evpmd.EVP_MD_CTX_new()), EVP_MD_CTX_Type)
+    return nativeCPointer(EVP_MD_CTX_Type, evpmd.EVP_MD_CTX_new())
 }
 
 actual fun EVP_MD_get_size(md: CPointer<EVP_MD>?): Int {
-    return evpmd.EVP_MD_get_size(md.nativePointer)
+    return evpmd.EVP_MD_get_size(md.nativeAddress)
 }
 
 actual fun EVP_DigestInit(
     ctx: CPointer<EVP_MD_CTX>?,
     type: CPointer<EVP_MD>?,
 ): Int {
-    return evpmd.EVP_DigestInit(ctx.nativePointer, type.nativePointer)
+    return evpmd.EVP_DigestInit(ctx.nativeAddress, type.nativeAddress)
 }
 
 actual fun EVP_DigestUpdate(
@@ -50,7 +39,7 @@ actual fun EVP_DigestUpdate(
     d: CPointer<*>?,
     cnt: PlatformDependentUInt,
 ): Int {
-    return evpmd.EVP_DigestUpdate(ctx.nativePointer, d.nativePointer, cnt.toInt())
+    return evpmd.EVP_DigestUpdate(ctx.nativeAddress, d.nativeAddress, cnt.toInt())
 }
 
 actual fun EVP_DigestFinal(
@@ -58,15 +47,15 @@ actual fun EVP_DigestFinal(
     md: CPointer<UByteVariable>?,
     s: CPointer<UIntVariable>?,
 ): Int {
-    return evpmd.EVP_DigestFinal(ctx.nativePointer, md.nativePointer, s.nativePointer)
+    return evpmd.EVP_DigestFinal(ctx.nativeAddress, md.nativeAddress, s.nativeAddress)
 }
 
 actual fun EVP_MD_CTX_free(ctx: CPointer<EVP_MD_CTX>?) {
-    evpmd.EVP_MD_CTX_free(ctx.nativePointer)
+    evpmd.EVP_MD_CTX_free(ctx.nativeAddress)
 }
 
 actual fun EVP_MD_free(ctx: CPointer<EVP_MD>?) {
-    evpmd.EVP_MD_free(ctx.nativePointer)
+    evpmd.EVP_MD_free(ctx.nativeAddress)
 }
 
 @JsModule("ffi-libcrypto")

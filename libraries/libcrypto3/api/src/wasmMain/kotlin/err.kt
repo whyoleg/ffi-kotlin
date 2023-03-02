@@ -10,7 +10,7 @@ actual fun ERR_get_error(): PlatformDependentUInt = ffi_ERR_get_error().toUInt()
 actual fun ERR_error_string(
     e: PlatformDependentUInt,
     buf: CString?,
-): CString? = CString(NativePointer(ffi_ERR_error_string(e.toInt(), buf.nativePointer)))
+): CString? = nativeCString(ffi_ERR_error_string(e.toInt(), buf.nativeAddress))
 
 @WasmImport("ffi-libcrypto", "ffi_ERR_get_error")
 private external fun ffi_ERR_get_error(): Int

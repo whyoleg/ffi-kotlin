@@ -6,11 +6,6 @@ import dev.whyoleg.ffi.c.*
 import java.lang.foreign.*
 import java.lang.invoke.*
 
-actual class EVP_MD(segment: MemorySegment) : COpaque(segment)
-actual object EVP_MD_Type : COpaqueType<EVP_MD>(::EVP_MD)
-actual class EVP_MD_CTX(segment: MemorySegment) : COpaque(segment)
-actual object EVP_MD_CTX_Type : COpaqueType<EVP_MD_CTX>(::EVP_MD_CTX)
-
 private val EVP_MD_fetch_MH: MethodHandle = FFI.methodHandle(
     name = "EVP_MD_fetch",
     result = ValueLayout.ADDRESS,
@@ -21,13 +16,13 @@ actual fun EVP_MD_fetch(
     ctx: CPointer<OSSL_LIB_CTX>?,
     algorithm: CString?,
     properties: CString?,
-): CPointer<EVP_MD>? = CPointer(
+): CPointer<EVP_MD>? = nativeCPointer(
+    EVP_MD_Type,
     EVP_MD_fetch_MH.invokeExact(
-        ctx.segment,
-        algorithm.segment,
-        properties.segment,
-    ) as MemorySegment,
-    EVP_MD_Type
+        ctx.nativeAddress,
+        algorithm.nativeAddress,
+        properties.nativeAddress,
+    ) as MemorySegment
 )
 
 private val EVP_MD_CTX_new_MH: MethodHandle = FFI.methodHandle(
@@ -36,7 +31,7 @@ private val EVP_MD_CTX_new_MH: MethodHandle = FFI.methodHandle(
 )
 
 actual fun EVP_MD_CTX_new(): CPointer<EVP_MD_CTX>? {
-    return CPointer(EVP_MD_CTX_new_MH.invokeExact() as MemorySegment, EVP_MD_CTX_Type)
+    return nativeCPointer(EVP_MD_CTX_Type, EVP_MD_CTX_new_MH.invokeExact() as MemorySegment)
 }
 
 private val EVP_MD_get_size_MH: MethodHandle = FFI.methodHandle(
@@ -46,7 +41,7 @@ private val EVP_MD_get_size_MH: MethodHandle = FFI.methodHandle(
 )
 
 actual fun EVP_MD_get_size(md: CPointer<EVP_MD>?): Int {
-    return EVP_MD_get_size_MH.invokeExact(md.segment) as Int
+    return EVP_MD_get_size_MH.invokeExact(md.nativeAddress) as Int
 }
 
 private val EVP_DigestInit_MH: MethodHandle = FFI.methodHandle(
@@ -59,7 +54,7 @@ actual fun EVP_DigestInit(
     ctx: CPointer<EVP_MD_CTX>?,
     type: CPointer<EVP_MD>?,
 ): Int {
-    return EVP_DigestInit_MH.invokeExact(ctx.segment, type.segment) as Int
+    return EVP_DigestInit_MH.invokeExact(ctx.nativeAddress, type.nativeAddress) as Int
 }
 
 private val EVP_DigestUpdate_MH: MethodHandle = FFI.methodHandle(
@@ -73,7 +68,7 @@ actual fun EVP_DigestUpdate(
     d: CPointer<*>?,
     cnt: PlatformDependentUInt,
 ): Int {
-    return EVP_DigestUpdate_MH.invokeExact(ctx.segment, d.segment, cnt.toLong()) as Int
+    return EVP_DigestUpdate_MH.invokeExact(ctx.nativeAddress, d.nativeAddress, cnt.toLong()) as Int
 }
 
 private val EVP_DigestFinal_MH: MethodHandle = FFI.methodHandle(
@@ -87,7 +82,7 @@ actual fun EVP_DigestFinal(
     md: CPointer<UByteVariable>?,
     s: CPointer<UIntVariable>?,
 ): Int {
-    return EVP_DigestFinal_MH.invokeExact(ctx.segment, md.segment, s.segment) as Int
+    return EVP_DigestFinal_MH.invokeExact(ctx.nativeAddress, md.nativeAddress, s.nativeAddress) as Int
 }
 
 private val EVP_MD_CTX_free_MH: MethodHandle = FFI.methodHandle(
@@ -96,7 +91,7 @@ private val EVP_MD_CTX_free_MH: MethodHandle = FFI.methodHandle(
 )
 
 actual fun EVP_MD_CTX_free(ctx: CPointer<EVP_MD_CTX>?) {
-    EVP_MD_CTX_free_MH.invokeExact(ctx.segment)
+    EVP_MD_CTX_free_MH.invokeExact(ctx.nativeAddress)
 }
 
 private val EVP_MD_free_MH: MethodHandle = FFI.methodHandle(
@@ -105,5 +100,5 @@ private val EVP_MD_free_MH: MethodHandle = FFI.methodHandle(
 )
 
 actual fun EVP_MD_free(ctx: CPointer<EVP_MD>?) {
-    EVP_MD_free_MH.invokeExact(ctx.segment)
+    EVP_MD_free_MH.invokeExact(ctx.nativeAddress)
 }

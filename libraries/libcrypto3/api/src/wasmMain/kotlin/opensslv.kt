@@ -7,7 +7,7 @@ import kotlin.wasm.*
 
 actual const val OPENSSL_VERSION_STRING: Int = 6 //magic :)
 
-actual fun OpenSSL_version(type: Int): CString? = CString(NativePointer(ffi_OpenSSL_version(type)))
+actual fun OpenSSL_version(type: Int): CString? = nativeCString(ffi_OpenSSL_version(type))
 
 actual fun OPENSSL_version_major(): UInt = ffi_OPENSSL_version_major().toUInt()
 

@@ -31,7 +31,9 @@ actual fun OSSL_PARAM_construct_utf8_string(
     buf: CString?,
     bsize: PlatformDependentUInt,
 ): CValue<OSSL_PARAM> {
-    return dev.whyoleg.ffi.libcrypto3.cinterop.OSSL_PARAM_construct_utf8_string(key, buf, bsize)
+    return dev.whyoleg.ffi.libcrypto3.cinterop.OSSL_PARAM_construct_utf8_string(key, buf, bsize).also {
+
+    }
 }
 
 actual fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM> {

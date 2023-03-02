@@ -14,13 +14,13 @@ actual fun EVP_DigestSignInit_ex(
     params: CPointer<OSSL_PARAM>?,
 ): Int {
     return evpdigest.EVP_DigestSignInit_ex(
-        ctx.nativePointer,
-        pctx.nativePointer,
-        mdname.nativePointer,
-        libctx.nativePointer,
-        props.nativePointer,
-        pkey.nativePointer,
-        params.nativePointer,
+        ctx.nativeAddress,
+        pctx.nativeAddress,
+        mdname.nativeAddress,
+        libctx.nativeAddress,
+        props.nativeAddress,
+        pkey.nativeAddress,
+        params.nativeAddress,
     )
 }
 
@@ -29,7 +29,7 @@ actual fun EVP_DigestSignUpdate(
     data: CPointer<*>?,
     dsize: PlatformDependentUInt,
 ): Int {
-    return evpdigest.EVP_DigestSignUpdate(ctx.nativePointer, data.nativePointer, dsize.toInt())
+    return evpdigest.EVP_DigestSignUpdate(ctx.nativeAddress, data.nativeAddress, dsize.toInt())
 }
 
 actual fun EVP_DigestSignFinal(
@@ -37,7 +37,7 @@ actual fun EVP_DigestSignFinal(
     sigret: CPointer<UByteVariable>?,
     siglen: CPointer<PlatformDependentUIntVariable>?,
 ): Int {
-    return evpdigest.EVP_DigestSignFinal(ctx.nativePointer, sigret.nativePointer, siglen.nativePointer)
+    return evpdigest.EVP_DigestSignFinal(ctx.nativeAddress, sigret.nativeAddress, siglen.nativeAddress)
 }
 
 actual fun EVP_DigestVerifyInit_ex(
@@ -50,13 +50,13 @@ actual fun EVP_DigestVerifyInit_ex(
     params: CPointer<OSSL_PARAM>?,
 ): Int {
     return evpdigest.EVP_DigestVerifyInit_ex(
-        ctx.nativePointer,
-        pctx.nativePointer,
-        mdname.nativePointer,
-        libctx.nativePointer,
-        props.nativePointer,
-        pkey.nativePointer,
-        params.nativePointer,
+        ctx.nativeAddress,
+        pctx.nativeAddress,
+        mdname.nativeAddress,
+        libctx.nativeAddress,
+        props.nativeAddress,
+        pkey.nativeAddress,
+        params.nativeAddress,
     )
 }
 
@@ -65,7 +65,7 @@ actual fun EVP_DigestVerifyUpdate(
     data: CPointer<*>?,
     dsize: PlatformDependentUInt,
 ): Int {
-    return evpdigest.EVP_DigestVerifyUpdate(ctx.nativePointer, data.nativePointer, dsize.toInt())
+    return evpdigest.EVP_DigestVerifyUpdate(ctx.nativeAddress, data.nativeAddress, dsize.toInt())
 }
 
 actual fun EVP_DigestVerifyFinal(
@@ -73,7 +73,7 @@ actual fun EVP_DigestVerifyFinal(
     sig: CPointer<UByteVariable>?,
     siglen: PlatformDependentUInt,
 ): Int {
-    return evpdigest.EVP_DigestVerifyFinal(ctx.nativePointer, sig.nativePointer, siglen.toInt())
+    return evpdigest.EVP_DigestVerifyFinal(ctx.nativeAddress, sig.nativeAddress, siglen.toInt())
 }
 
 @JsModule("ffi-libcrypto")

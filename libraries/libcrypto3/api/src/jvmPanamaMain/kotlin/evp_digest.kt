@@ -30,13 +30,13 @@ actual fun EVP_DigestSignInit_ex(
     params: CPointer<OSSL_PARAM>?,
 ): Int {
     return EVP_DigestSignInit_ex.invokeExact(
-        ctx.segment,
-        pctx.segment,
-        mdname.segment,
-        libctx.segment,
-        props.segment,
-        pkey.segment,
-        params.segment,
+        ctx.nativeAddress,
+        pctx.nativeAddress,
+        mdname.nativeAddress,
+        libctx.nativeAddress,
+        props.nativeAddress,
+        pkey.nativeAddress,
+        params.nativeAddress,
     ) as Int
 }
 
@@ -52,8 +52,8 @@ actual fun EVP_DigestSignUpdate(
     dsize: PlatformDependentUInt,
 ): Int {
     return EVP_DigestSignUpdate.invokeExact(
-        ctx.segment,
-        data.segment,
+        ctx.nativeAddress,
+        data.nativeAddress,
         dsize.toLong()
     ) as Int
 }
@@ -70,9 +70,9 @@ actual fun EVP_DigestSignFinal(
     siglen: CPointer<PlatformDependentUIntVariable>?,
 ): Int {
     return EVP_DigestSignFinal.invokeExact(
-        ctx.segment,
-        sigret.segment,
-        siglen.segment
+        ctx.nativeAddress,
+        sigret.nativeAddress,
+        siglen.nativeAddress
     ) as Int
 }
 
@@ -100,13 +100,13 @@ actual fun EVP_DigestVerifyInit_ex(
     params: CPointer<OSSL_PARAM>?,
 ): Int {
     return EVP_DigestVerifyInit_ex.invokeExact(
-        ctx.segment,
-        pctx.segment,
-        mdname.segment,
-        libctx.segment,
-        props.segment,
-        pkey.segment,
-        params.segment,
+        ctx.nativeAddress,
+        pctx.nativeAddress,
+        mdname.nativeAddress,
+        libctx.nativeAddress,
+        props.nativeAddress,
+        pkey.nativeAddress,
+        params.nativeAddress,
     ) as Int
 }
 
@@ -122,8 +122,8 @@ actual fun EVP_DigestVerifyUpdate(
     dsize: PlatformDependentUInt,
 ): Int {
     return EVP_DigestVerifyUpdate.invokeExact(
-        ctx.segment,
-        data.segment,
+        ctx.nativeAddress,
+        data.nativeAddress,
         dsize.toLong()
     ) as Int
 }
@@ -140,8 +140,8 @@ actual fun EVP_DigestVerifyFinal(
     siglen: PlatformDependentUInt,
 ): Int {
     return EVP_DigestVerifyFinal.invokeExact(
-        ctx.segment,
-        sig.segment,
+        ctx.nativeAddress,
+        sig.nativeAddress,
         siglen.toLong()
     ) as Int
 }

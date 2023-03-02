@@ -7,7 +7,7 @@ internal constructor(
 ) {
 
     public actual fun <T : CVariable> alloc(type: CVariableType<T>): T {
-        return type.wrap(allocator.allocate(type.byteSize))
+        return type.wrap(allocator.allocate(type.layout))
     }
 
     public actual fun <T : CVariable> alloc(type: CVariableType<T>, initialize: T.() -> Unit): T {
@@ -15,23 +15,26 @@ internal constructor(
     }
 
     public actual fun <T : CPointed> allocPointerTo(type: CPointedType<T>): CPointerVariable<T> {
-        return CPointerVariable(allocator.allocate(pointerSize), type)
+        return CPointerVariable(type, allocator.allocate(NativeLayout.Pointer))
     }
 
     public actual fun <T : CVariable> allocPointerTo(value: CValue<T>): CPointer<T> {
-        return CPointer(allocator.allocate(value.type.byteSize).also(value.memory::copyTo), value.type)
+        val memory = allocator.allocate(value.type.layout).also {
+            value.memory.copyElementTo(0, value.type.layout, 0, it)
+        }
+        return CPointer(value.type, memory.pointer)
     }
 
     public actual fun <T : CVariable> allocArray(type: CVariableType<T>, size: Int): CArrayPointer<T> {
-        return CPointer(allocator.allocate(type.byteSize * size), type)
+        return CPointer(type, allocator.allocateArray(type.layout, size).pointer)
     }
 
     public actual fun <T : CVariable> allocArrayOf(type: CVariableType<T>, vararg elements: CValue<T>): CArrayPointer<T> {
-        val array = allocArray(type, elements.size)
+        val array = allocator.allocateArray(type.layout, elements.size)
         elements.forEachIndexed { index, element ->
-            element.memory.copyTo(array.memory, index * type.byteSize, type.byteSize)
+            element.memory.copyElementTo(index, type.layout, 0, array)
         }
-        return array
+        return CPointer(type, array.pointer)
     }
 
     public actual fun alloc(value: Byte): ByteVariable {
@@ -43,15 +46,13 @@ internal constructor(
     }
 
     public actual fun alloc(value: String): CString {
-        val bytes = value.encodeToByteArray()
-        return CPointer(allocator.allocate(bytes.size + 1).also {
-            it.storeByteArray(0, bytes)
-            it.storeByte(bytes.size, 0)
-        }, ByteVariableType)
+        return CPointer(ByteVariableType, allocator.allocateString(value).pointer)
     }
 
     public actual fun allocArrayOf(elements: ByteArray): CArrayPointer<ByteVariable> {
-        return CPointer(allocator.allocate(elements.size).also { it.storeByteArray(0, elements) }, ByteVariableType)
+        return CPointer(ByteVariableType, allocator.allocateArray(NativeLayout.Byte, elements.size).also {
+            it.storeByteArray(0, elements)
+        }.pointer)
     }
 
     public actual fun <T> ByteArray.read(index: Int, block: (pointer: CArrayPointer<ByteVariable>, size: Int) -> T): T =
@@ -68,22 +69,16 @@ internal constructor(
         copyBefore: Boolean = false,
         copyAfter: Boolean = false,
         block: (pointer: CPointer<ByteVariable>, size: Int) -> T,
-    ): T {
+    ): T = createDefaultNativeAllocator().use {
         val pointedSize = size - index
         check(pointedSize >= 0)
-        val memory = allocator.allocate(pointedSize)
+        val memory = it.allocateArray(NativeLayout.Byte, pointedSize)
         if (copyBefore) memory.storeByteArray(0, this, index, pointedSize)
-        val result = block(CPointer(memory, ByteVariableType), pointedSize)
+        val result = block(CPointer(ByteVariableType, memory.pointer), pointedSize)
         if (copyAfter) memory.loadByteArray(0, this, index, pointedSize)
         return result
     }
 }
 
-public actual inline fun <T> cInteropScope(block: CInteropScope.() -> T): T {
-    val allocator = NativeAllocator.Default()
-    try {
-        return CInteropScope(allocator).block()
-    } finally {
-        allocator.close()
-    }
-}
+public actual inline fun <T> cInteropScope(block: CInteropScope.() -> T): T =
+    createDefaultNativeAllocator().use { CInteropScope(it).block() }

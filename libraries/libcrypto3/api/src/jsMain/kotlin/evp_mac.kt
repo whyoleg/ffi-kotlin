@@ -6,28 +6,17 @@ package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.c.*
 
-actual object EVP_MAC_Type : COpaqueType<EVP_MAC>(::EVP_MAC)
-actual class EVP_MAC(memory: NativeMemory) : COpaque(memory) {
-    override val type: EVP_MAC_Type get() = EVP_MAC_Type
-}
-
-actual object EVP_MAC_CTX_Type : COpaqueType<EVP_MAC_CTX>(::EVP_MAC_CTX)
-actual class EVP_MAC_CTX(memory: NativeMemory) : COpaque(memory) {
-    override val type: EVP_MAC_CTX_Type get() = EVP_MAC_CTX_Type
-}
-
 actual fun EVP_MAC_fetch(
     libctx: CPointer<OSSL_LIB_CTX>?,
     algorithm: CString?,
     properties: CString?,
-): CPointer<EVP_MAC>? = CPointer(
-    NativePointer(
-        evpmac.EVP_MAC_fetch(libctx.nativePointer, algorithm.nativePointer, properties.nativePointer)
-    ), EVP_MAC_Type
+): CPointer<EVP_MAC>? = nativeCPointer(
+    EVP_MAC_Type,
+    evpmac.EVP_MAC_fetch(libctx.nativeAddress, algorithm.nativeAddress, properties.nativeAddress)
 )
 
 actual fun EVP_MAC_CTX_new(mac: CPointer<EVP_MAC>?): CPointer<EVP_MAC_CTX>? {
-    return CPointer(NativePointer(evpmac.EVP_MAC_CTX_new(mac.nativePointer)), EVP_MAC_CTX_Type)
+    return nativeCPointer(EVP_MAC_CTX_Type, evpmac.EVP_MAC_CTX_new(mac.nativeAddress))
 }
 
 actual fun EVP_MAC_init(
@@ -36,13 +25,13 @@ actual fun EVP_MAC_init(
     keylen: PlatformDependentUInt,
     params: CPointer<OSSL_PARAM>?,
 ): Int {
-    return evpmac.EVP_MAC_init(ctx.nativePointer, key.nativePointer, keylen.toInt(), params.nativePointer)
+    return evpmac.EVP_MAC_init(ctx.nativeAddress, key.nativeAddress, keylen.toInt(), params.nativeAddress)
 }
 
 actual fun EVP_MAC_CTX_get_mac_size(
     ctx: CPointer<EVP_MAC_CTX>?,
 ): PlatformDependentUInt {
-    return evpmac.EVP_MAC_CTX_get_mac_size(ctx.nativePointer).toUInt()
+    return evpmac.EVP_MAC_CTX_get_mac_size(ctx.nativeAddress).toUInt()
 }
 
 actual fun EVP_MAC_update(
@@ -50,7 +39,7 @@ actual fun EVP_MAC_update(
     data: CPointer<UByteVariable>?,
     datalen: PlatformDependentUInt,
 ): Int {
-    return evpmac.EVP_MAC_update(ctx.nativePointer, data.nativePointer, datalen.toInt())
+    return evpmac.EVP_MAC_update(ctx.nativeAddress, data.nativeAddress, datalen.toInt())
 }
 
 actual fun EVP_MAC_final(
@@ -59,15 +48,15 @@ actual fun EVP_MAC_final(
     outl: CPointer<PlatformDependentUIntVariable>?,
     outsize: PlatformDependentUInt,
 ): Int {
-    return evpmac.EVP_MAC_final(ctx.nativePointer, out.nativePointer, outl.nativePointer, outsize.toInt())
+    return evpmac.EVP_MAC_final(ctx.nativeAddress, out.nativeAddress, outl.nativeAddress, outsize.toInt())
 }
 
 actual fun EVP_MAC_CTX_free(ctx: CPointer<EVP_MAC_CTX>?) {
-    evpmac.EVP_MAC_CTX_free(ctx.nativePointer)
+    evpmac.EVP_MAC_CTX_free(ctx.nativeAddress)
 }
 
 actual fun EVP_MAC_free(ctx: CPointer<EVP_MAC>?) {
-    evpmac.EVP_MAC_free(ctx.nativePointer)
+    evpmac.EVP_MAC_free(ctx.nativeAddress)
 }
 
 @JsModule("ffi-libcrypto")

@@ -2,6 +2,7 @@ package dev.whyoleg.ffi.c
 
 import java.nio.*
 
+//TODO: rename to FFI?
 public object JNI {
     init {
         EmbeddedLibraryLoader.Current.loadLibrary("ffi-jni")
@@ -19,6 +20,4 @@ public object JNI {
     @JvmStatic
     @JvmName("getStringFromPointer")
     internal external fun getStringFromPointer(pointer: Long): String?
-
-    internal val autoAllocator: NativeAllocator get() = NativeAllocator.Default
 }

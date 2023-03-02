@@ -22,4 +22,4 @@ private val ERR_error_string_MH: MethodHandle = FFI.methodHandle(
 actual fun ERR_error_string(
     e: PlatformDependentUInt,
     buf: CString?,
-): CString? = CString(ERR_error_string_MH.invokeExact(e.toLong(), buf.segment) as MemorySegment)
+): CString? = nativeCString(ERR_error_string_MH.invokeExact(e.toLong(), buf.nativeAddress) as MemorySegment)

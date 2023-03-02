@@ -6,11 +6,6 @@ import dev.whyoleg.ffi.c.*
 import java.lang.foreign.*
 import java.lang.invoke.*
 
-actual class EVP_MAC(segment: MemorySegment) : COpaque(segment)
-actual object EVP_MAC_Type : COpaqueType<EVP_MAC>(::EVP_MAC)
-actual class EVP_MAC_CTX(segment: MemorySegment) : COpaque(segment)
-actual object EVP_MAC_CTX_Type : COpaqueType<EVP_MAC_CTX>(::EVP_MAC_CTX)
-
 private val EVP_MAC_fetch_MH: MethodHandle = FFI.methodHandle(
     name = "EVP_MAC_fetch",
     result = ValueLayout.ADDRESS,
@@ -21,13 +16,13 @@ actual fun EVP_MAC_fetch(
     libctx: CPointer<OSSL_LIB_CTX>?,
     algorithm: CString?,
     properties: CString?,
-): CPointer<EVP_MAC>? = CPointer(
+): CPointer<EVP_MAC>? = nativeCPointer(
+    EVP_MAC_Type,
     EVP_MAC_fetch_MH.invokeExact(
-        libctx.segment,
-        algorithm.segment,
-        properties.segment,
-    ) as MemorySegment,
-    EVP_MAC_Type
+        libctx.nativeAddress,
+        algorithm.nativeAddress,
+        properties.nativeAddress,
+    ) as MemorySegment
 )
 
 private val EVP_MAC_CTX_new_MH: MethodHandle = FFI.methodHandle(
@@ -39,13 +34,13 @@ private val EVP_MAC_CTX_new_MH: MethodHandle = FFI.methodHandle(
 actual fun EVP_MAC_CTX_new(
     mac: CPointer<EVP_MAC>?,
 ): CPointer<EVP_MAC_CTX>? {
-    return CPointer(EVP_MAC_CTX_new_MH.invokeExact(mac.segment) as MemorySegment, EVP_MAC_CTX_Type)
+    return nativeCPointer(EVP_MAC_CTX_Type, EVP_MAC_CTX_new_MH.invokeExact(mac.nativeAddress) as MemorySegment)
 }
 
 private val EVP_MAC_init_MH: MethodHandle = FFI.methodHandle(
     name = "EVP_MAC_init",
     result = ValueLayout.JAVA_INT,
-    args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG, OSSL_PARAM_Type.layout)
+    args = arrayOf(ValueLayout.ADDRESS, ValueLayout.ADDRESS, ValueLayout.JAVA_LONG, OSSL_PARAM_layout)
 )
 
 actual fun EVP_MAC_init(
@@ -55,10 +50,10 @@ actual fun EVP_MAC_init(
     params: CPointer<OSSL_PARAM>?,
 ): Int {
     return EVP_MAC_init_MH.invokeExact(
-        ctx.segment,
-        key.segment,
+        ctx.nativeAddress,
+        key.nativeAddress,
         keylen.toLong(),
-        params.segment
+        params.nativeAddress
     ) as Int
 }
 
@@ -71,7 +66,7 @@ private val EVP_MAC_CTX_get_mac_size_MH: MethodHandle = FFI.methodHandle(
 actual fun EVP_MAC_CTX_get_mac_size(
     ctx: CPointer<EVP_MAC_CTX>?,
 ): PlatformDependentUInt {
-    return (EVP_MAC_CTX_get_mac_size_MH.invokeExact(ctx.segment) as Long).toULong()
+    return (EVP_MAC_CTX_get_mac_size_MH.invokeExact(ctx.nativeAddress) as Long).toULong()
 }
 
 private val EVP_MAC_update_MH: MethodHandle = FFI.methodHandle(
@@ -86,8 +81,8 @@ actual fun EVP_MAC_update(
     datalen: PlatformDependentUInt,
 ): Int {
     return EVP_MAC_update_MH.invokeExact(
-        ctx.segment,
-        data.segment,
+        ctx.nativeAddress,
+        data.nativeAddress,
         datalen.toLong(),
     ) as Int
 }
@@ -105,9 +100,9 @@ actual fun EVP_MAC_final(
     outsize: PlatformDependentUInt,
 ): Int {
     return EVP_MAC_final_MH.invokeExact(
-        ctx.segment,
-        out.segment,
-        outl.segment,
+        ctx.nativeAddress,
+        out.nativeAddress,
+        outl.nativeAddress,
         outsize.toLong(),
     ) as Int
 }
@@ -118,7 +113,7 @@ private val EVP_MAC_CTX_free_MH: MethodHandle = FFI.methodHandle(
 )
 
 actual fun EVP_MAC_CTX_free(ctx: CPointer<EVP_MAC_CTX>?) {
-    EVP_MAC_CTX_free_MH.invokeExact(ctx.segment)
+    EVP_MAC_CTX_free_MH.invokeExact(ctx.nativeAddress)
 }
 
 private val EVP_MAC_free_MH: MethodHandle = FFI.methodHandle(
@@ -127,5 +122,5 @@ private val EVP_MAC_free_MH: MethodHandle = FFI.methodHandle(
 )
 
 actual fun EVP_MAC_free(ctx: CPointer<EVP_MAC>?) {
-    EVP_MAC_free_MH.invokeExact(ctx.segment)
+    EVP_MAC_free_MH.invokeExact(ctx.nativeAddress)
 }

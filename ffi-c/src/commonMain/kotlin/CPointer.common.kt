@@ -13,3 +13,6 @@ public expect var <T : CPointed> CPointerVariable<T>.value: CPointer<T>?
 
 public expect val <T : CPointed> T.pointer: CPointer<T>
 public expect val <T : CPointed> CPointer<T>.pointed: T
+
+//TODO: not really safe function :)
+public expect fun <R : CPointed> CPointer<*>.reinterpret(type: CPointedType<R>): CPointer<R>

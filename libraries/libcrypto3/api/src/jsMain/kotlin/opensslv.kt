@@ -6,7 +6,7 @@ import dev.whyoleg.ffi.c.*
 
 actual const val OPENSSL_VERSION_STRING: Int = 6 //magic :)
 
-actual fun OpenSSL_version(type: Int): CString? = CString(NativePointer(opensslv.OpenSSL_version(type)))
+actual fun OpenSSL_version(type: Int): CString? = nativeCString(opensslv.OpenSSL_version(type))
 
 actual fun OPENSSL_version_major(): UInt = opensslv.OPENSSL_version_major().toUInt()
 
