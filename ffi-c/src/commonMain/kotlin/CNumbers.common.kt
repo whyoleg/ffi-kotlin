@@ -22,8 +22,8 @@ public expect object UByteVariableType : CVariableType<UByteVariable>
 
 public expect var UByteVariable.value: UByte
 
-public expect fun CPointer<ByteVariable>.toUByte(): CPointer<UByteVariable>
-public expect fun CPointer<UByteVariable>.toByte(): CPointer<ByteVariable>
+public fun CPointer<ByteVariable>.toUByte(): CPointer<UByteVariable> = reinterpret(UByteVariableType)
+public fun CPointer<UByteVariable>.toByte(): CPointer<ByteVariable> = reinterpret(ByteVariableType)
 
 @Suppress("NO_ACTUAL_FOR_EXPECT")
 public expect class IntVariable : CVariable

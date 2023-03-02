@@ -6,7 +6,6 @@
 
 package dev.whyoleg.ffi.c
 
-import kotlinx.cinterop.reinterpret as kxreinterpret
 import kotlinx.cinterop.value as kxvalue
 
 //Byte
@@ -26,10 +25,6 @@ public actual object UByteVariableType : CVariableType<UByteVariable>(kotlinx.ci
 public actual inline var UByteVariable.value: UByte
     get() = kxvalue
     set(value) = run { kxvalue = value }
-
-public actual fun CPointer<ByteVariable>.toUByte(): CPointer<UByteVariable> = kxreinterpret()
-
-public actual fun CPointer<UByteVariable>.toByte(): CPointer<ByteVariable> = kxreinterpret()
 
 //Int
 public actual typealias IntVariable = kotlinx.cinterop.IntVar

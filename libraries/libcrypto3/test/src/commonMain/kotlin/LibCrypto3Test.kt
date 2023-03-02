@@ -22,6 +22,7 @@ abstract class LibCrypto3Test {
         assertEquals(4U, p1.data_type)
         assertEquals(9U.pd, p1.data_size)
         assertEquals("digest", p1.key!!.toKString())
+        assertEquals("ALGORITHM", p1.data!!.reinterpret(ByteVariableType).toKString())
         p1.data_type = 32U
         assertEquals(32U, p1.data_type)
     }

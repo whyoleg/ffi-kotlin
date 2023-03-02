@@ -11,7 +11,7 @@ internal val OSSL_PARAM_layout = MemoryLayout.structLayout(
     ValueLayout.ADDRESS.withName("key").asUnbounded(), //8
     ValueLayout.JAVA_INT.withName("data_type"), //4
     MemoryLayout.paddingLayout(32), //TODO: how this works ? :) //4
-    ValueLayout.ADDRESS.withName("data"), //8
+    ValueLayout.ADDRESS.withName("data").asUnbounded(), //8
     ValueLayout.JAVA_LONG.withName("data_size"), //8
     ValueLayout.JAVA_LONG.withName("return_size"), //8
 ).withName("ossl_param_st")  //TODO: or OSSL_PARAM?

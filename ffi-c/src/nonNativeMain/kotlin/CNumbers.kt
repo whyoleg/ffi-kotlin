@@ -28,9 +28,6 @@ public actual var UByteVariable.value: UByte
     get() = memory.loadByte(0).toUByte()
     set(value) = run { memory.storeByte(0, value.toByte()) }
 
-public actual fun CPointer<ByteVariable>.toUByte(): CPointer<UByteVariable> = reinterpret(UByteVariableType)
-public actual fun CPointer<UByteVariable>.toByte(): CPointer<ByteVariable> = reinterpret(ByteVariableType)
-
 //Int
 public actual object IntVariableType : CVariableType<IntVariable>() {
     override fun wrap(memory: NativeMemory): IntVariable = IntVariable(memory)

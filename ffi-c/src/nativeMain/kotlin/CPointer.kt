@@ -21,3 +21,5 @@ public actual val <T : CPointed> T.pointer: CPointer<T>
 
 public actual val <T : CPointed> CPointer<T>.pointed: T
     get() = interpretNullablePointed(rawValue)!!
+
+public actual fun <R : CPointed> CPointer<*>.reinterpret(type: CPointedType<R>): CPointer<R> = reinterpret()
