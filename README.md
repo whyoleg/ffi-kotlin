@@ -29,7 +29,7 @@ For future auto-generated bindings we need to keep in mind platform details
 Uses similar code, that could generate jextract but using some kotlin specifics.
 Only Kotlin codegen and JDK 20 is needed.
 
-#### JVM+JNI
+#### JVM(Android)+JNI
 
 Uses similar code, that is used in K/N jvm cinterop flavor.
 To use such bindings we need:
@@ -40,22 +40,17 @@ To use such bindings we need:
    (not sure, what is the best workflow here regarding portability and cross-compilation)
 4. somehow package it - both per OS+ARCH and single artifact for all OSs
 
-TODO:
-
-* requires compiler to build JNI library - how to set up it properly to support different OSs?
-* is it possible to use K/N provided clang with cross-compile possibilities here?
-* replace ByteBuffers with Unsafe but with safe fallback to ByteBuffers if Unsafe is not available
-  (similar to how netty handles it)
-
-#### Android+JNI
-
-Same as JVM+JNI,
+For Android everything is the same
 but building and packaging is not a problem
 as NDK is able to cross-compile
 and AAR format supports distributing shared libraries for multiple architectures
 
 TODO:
 
+* requires compiler to build JNI library - how to set up it properly to support different OSs?
+* is it possible to use K/N provided clang with cross-compile possibilities here?
+* replace ByteBuffers with Unsafe but with safe fallback to ByteBuffers if Unsafe is not available
+  (similar to how netty handles it)
 * somehow fix duplicating service in resources for android
 
 #### WASM/JS
