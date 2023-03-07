@@ -1,0 +1,16 @@
+package = dev.whyoleg.ffi.c.index.clang
+headerFilter = clang-c/**
+headers = clang-c/Index.h
+
+strictEnums = CXErrorCode \
+              CXCursorKind \
+              CXTypeKind \
+              CXIdxEntityKind \
+              CXIdxEntityRefKind \
+              CXIdxEntityLanguage \
+              CXSymbolRole \
+              CXDiagnosticSeverity
+
+linkerOpts = -lclang
+linkerOpts.osx = -L/opt/homebrew/opt/llvm/lib
+compilerOpts.osx = -I/opt/homebrew/opt/llvm/include

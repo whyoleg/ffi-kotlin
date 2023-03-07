@@ -33,6 +33,10 @@ gradleEnterprise {
 
 rootProject.name = "ffi-kotlin"
 
+
+include("ffi-c-index")
+include("ffi-c-generator")
+
 include("ffi-c")
 
 fun includeLibrary(name: String) {
