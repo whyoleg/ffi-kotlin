@@ -2,7 +2,7 @@ package dev.whyoleg.ffi.c
 
 import java.lang.foreign.*
 
-public actual class NativePointer internal constructor(internal val segment: MemorySegment) {
+public actual data class NativePointer internal constructor(internal val segment: MemorySegment) {
     public actual companion object {
         public actual val NULL: NativePointer = NativePointer(MemorySegment.NULL)
     }

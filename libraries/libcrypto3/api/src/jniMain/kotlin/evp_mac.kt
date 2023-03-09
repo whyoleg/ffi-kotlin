@@ -20,8 +20,8 @@ actual fun EVP_MAC_CTX_new(mac: CPointer<EVP_MAC>?): CPointer<EVP_MAC_CTX>? {
 
 actual fun EVP_MAC_init(
     ctx: CPointer<EVP_MAC_CTX>?,
-    key: CPointer<UByteVariable>?,
-    keylen: PlatformDependentUInt,
+    key: CPointer<CUByte>?,
+    keylen: PlatformUInt,
     params: CPointer<OSSL_PARAM>?,
 ): Int {
     return evpmac.EVP_MAC_init(ctx.nativeAddress, key.nativeAddress, keylen.toLong(), params.nativeAddress)
@@ -29,23 +29,23 @@ actual fun EVP_MAC_init(
 
 actual fun EVP_MAC_CTX_get_mac_size(
     ctx: CPointer<EVP_MAC_CTX>?,
-): PlatformDependentUInt {
+): PlatformUInt {
     return evpmac.EVP_MAC_CTX_get_mac_size(ctx.nativeAddress).toULong()
 }
 
 actual fun EVP_MAC_update(
     ctx: CPointer<EVP_MAC_CTX>?,
-    data: CPointer<UByteVariable>?,
-    datalen: PlatformDependentUInt,
+    data: CPointer<CUByte>?,
+    datalen: PlatformUInt,
 ): Int {
     return evpmac.EVP_MAC_update(ctx.nativeAddress, data.nativeAddress, datalen.toLong())
 }
 
 actual fun EVP_MAC_final(
     ctx: CPointer<EVP_MAC_CTX>?,
-    out: CPointer<UByteVariable>?,
-    outl: CPointer<PlatformDependentUIntVariable>?,
-    outsize: PlatformDependentUInt,
+    out: CPointer<CUByte>?,
+    outl: CPointer<CPlatformUInt>?,
+    outsize: PlatformUInt,
 ): Int {
     return evpmac.EVP_MAC_final(ctx.nativeAddress, out.nativeAddress, outl.nativeAddress, outsize.toLong())
 }

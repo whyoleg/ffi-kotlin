@@ -35,8 +35,8 @@ actual fun EVP_DigestSignUpdate(
 
 actual fun EVP_DigestSignFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    sigret: CPointer<UByteVariable>?,
-    siglen: CPointer<PlatformDependentUIntVariable>?,
+    sigret: CPointer<CUByte>?,
+    siglen: CPointer<PlatformDependentCUInt>?,
 ): Int {
     return ffi_EVP_DigestSignFinal(ctx.nativeAddress, sigret.nativeAddress, siglen.nativeAddress)
 }
@@ -71,7 +71,7 @@ actual fun EVP_DigestVerifyUpdate(
 
 actual fun EVP_DigestVerifyFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    sig: CPointer<UByteVariable>?,
+    sig: CPointer<CUByte>?,
     siglen: PlatformDependentUInt,
 ): Int {
     return ffi_EVP_DigestVerifyFinal(ctx.nativeAddress, sig.nativeAddress, siglen.toInt())

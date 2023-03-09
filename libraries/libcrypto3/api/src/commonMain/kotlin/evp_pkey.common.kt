@@ -4,8 +4,9 @@ package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.c.*
 
-expect class EVP_PKEY : COpaque
-expect object EVP_PKEY_Type : COpaqueType<EVP_PKEY>
+expect class EVP_PKEY : COpaque {
+    companion object Type : COpaque.Type<EVP_PKEY>
+}
 
 expect fun EVP_PKEY_keygen_init(
     ctx: CPointer<EVP_PKEY_CTX>?,

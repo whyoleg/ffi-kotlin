@@ -6,13 +6,36 @@ package dev.whyoleg.ffi.c
 public typealias CArrayPointer<T> = CPointer<T>
 public typealias CArrayPointerVariable<T> = CPointerVariable<T>
 
-public expect class CPointer<T : CPointed>
-public expect class CPointerVariable<T : CPointed> : CVariable
+public class CPointer<T : CPointed>
+internal constructor(
+    internal val type: CPointed.Type<T>,
+    internal val pointer: NativePointer, //non null
+) {
+    init {
+        require(pointer != NativePointer.NULL) { "CPointer can not have NULL pointer" }
+    }
 
-public expect var <T : CPointed> CPointerVariable<T>.value: CPointer<T>?
+    internal companion object {
+        fun <T : CPointed> of(type: CPointed.Type<T>, pointer: NativePointer): CPointer<T>? = when (pointer) {
+            NativePointer.NULL -> null
+            else               -> CPointer(type, pointer)
+        }
+    }
+}
 
-public expect val <T : CPointed> T.pointer: CPointer<T>
-public expect val <T : CPointed> CPointer<T>.pointed: T
+public class CPointerVariable<T : CPointed>
+internal constructor(
+    override val type: CPointed.Type<T>,
+    memory: NativeMemory,
+) : CVariable(memory) {
+    public var value: CPointer<T>?
+        get() = CPointer.of(type, memory.loadPointer(0))
+        set(value) = memory.storePointer(0, value?.pointer ?: NativePointer.NULL)
 
-//TODO: not really safe function :)
-public expect fun <R : CPointed> CPointer<*>.reinterpret(type: CPointedType<R>): CPointer<R>
+//    public companion object Type : CVariable.Type<CPointerVariable<*>>
+}
+
+@Suppress("UNCHECKED_CAST")
+public val <T : CPointed> T.pointer: CPointer<T> get() = CPointer(type, memory.pointer) as CPointer<T>
+public val <T : CPointed> CPointer<T>.pointed: T get() = type.wrap(pointer)
+public fun <R : CPointed> CPointer<*>.reinterpret(type: CPointed.Type<R>): CPointer<R> = CPointer(type, pointer)

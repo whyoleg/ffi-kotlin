@@ -16,13 +16,13 @@ abstract class LibCrypto3Test {
 
     @Test
     fun testOsslParam(): Unit = cInteropScope {
-        val param = OSSL_PARAM_construct_utf8_string(alloc("digest"), alloc("ALGORITHM"), 0U.pd)
+        val param = OSSL_PARAM_construct_utf8_string(alloc("digest"), alloc("ALGORITHM"), 0U)
 
         val p1 = allocPointerTo(param).pointed
         assertEquals(4U, p1.data_type)
         assertEquals(9U.pd, p1.data_size)
         assertEquals("digest", p1.key!!.toKString())
-        assertEquals("ALGORITHM", p1.data!!.reinterpret(ByteVariableType).toKString())
+        assertEquals("ALGORITHM", p1.data!!.reinterpret(CByte).toKString())
         p1.data_type = 32U
         assertEquals(32U, p1.data_type)
     }
@@ -38,7 +38,7 @@ abstract class LibCrypto3Test {
                         checkError(
                             EVP_MAC_init(
                                 ctx = context,
-                                key = keyPointer.toUByte(),
+                                key = keyPointer.reinterpret(CUByte),
                                 keylen = keySize.toUInt().pd,
                                 params = allocArrayOf(
                                     OSSL_PARAM_Type,
@@ -72,7 +72,7 @@ abstract class LibCrypto3Test {
                     digest.write { digestPointer, _ ->
                         checkError(EVP_DigestInit(context, md))
                         checkError(EVP_DigestUpdate(context, dataPointer, dataSize.toUInt().pd))
-                        checkError(EVP_DigestFinal(context, digestPointer.toUByte(), null))
+                        checkError(EVP_DigestFinal(context, digestPointer.reinterpret(CUByte), null))
                     }
                     digest
                 }
@@ -96,7 +96,7 @@ abstract class LibCrypto3Test {
                         checkError(
                             EVP_MAC_init(
                                 ctx = context,
-                                key = keyPointer.toUByte(),
+                                key = keyPointer.reinterpret(CUByte),
                                 keylen = keySize.toUInt().pd,
                                 params = allocArrayOf(
                                     OSSL_PARAM_Type,
@@ -108,9 +108,9 @@ abstract class LibCrypto3Test {
                         val signature = ByteArray(checkError(EVP_MAC_CTX_get_mac_size(context).toInt()))
                         assertEquals(32, signature.size)
                         signature.write { signaturePointer, signatureSize ->
-                            checkError(EVP_MAC_update(context, dataPointer.toUByte(), dataSize.toUInt().pd))
-                            val out = alloc(PlatformDependentUIntVariableType)
-                            checkError(EVP_MAC_final(context, signaturePointer.toUByte(), out.pointer, signatureSize.toUInt().pd))
+                            checkError(EVP_MAC_update(context, dataPointer.reinterpret(CUByte), dataSize.toUInt().pd))
+                            val out = alloc(PlatformDependentCUIntType)
+                            checkError(EVP_MAC_final(context, signaturePointer.reinterpret(CUByte), out.pointer, signatureSize.toUInt().pd))
                             assertEquals(32U.pd, out.pdValue)
                         }
                         signature
@@ -171,12 +171,12 @@ abstract class LibCrypto3Test {
                 dataInput.read { dataPointer, dataSize ->
                     checkError(EVP_DigestSignUpdate(context, dataPointer, dataSize.toUInt().pd))
 
-                    val siglen = alloc(PlatformDependentUIntVariableType)
+                    val siglen = alloc(PlatformDependentCUIntType)
                     checkError(EVP_DigestSignFinal(context, null, siglen.pointer))
                     assertContains(130..140, siglen.pdValue.toInt())
                     val signature = ByteArray(siglen.pdValue.toInt())
                     signature.write { signaturePointer, _ ->
-                        checkError(EVP_DigestSignFinal(context, signaturePointer.toUByte(), siglen.pointer))
+                        checkError(EVP_DigestSignFinal(context, signaturePointer.reinterpret(CUByte), siglen.pointer))
                     }
                     assertContains(130..140, siglen.pdValue.toInt())
                     signature.copyOf(siglen.pdValue.toInt())
@@ -206,7 +206,7 @@ abstract class LibCrypto3Test {
                     checkError(EVP_DigestVerifyUpdate(context, dataPointer, dataSize.toUInt().pd))
 
                     val result = signatureInput.read { signaturePointer, signatureSize ->
-                        EVP_DigestVerifyFinal(context, signaturePointer.toUByte(), signatureSize.toUInt().pd)
+                        EVP_DigestVerifyFinal(context, signaturePointer.reinterpret(CUByte), signatureSize.toUInt().pd)
                     }
                     // 0     - means verification failed
                     // 1     - means verification succeeded

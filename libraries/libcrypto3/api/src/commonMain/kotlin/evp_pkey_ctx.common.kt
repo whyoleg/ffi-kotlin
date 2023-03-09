@@ -4,8 +4,9 @@ package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.c.*
 
-expect class EVP_PKEY_CTX : COpaque
-expect object EVP_PKEY_CTX_Type : COpaqueType<EVP_PKEY_CTX>
+expect class EVP_PKEY_CTX : COpaque {
+    companion object Type : COpaque.Type<EVP_PKEY_CTX>
+}
 
 expect fun EVP_PKEY_CTX_new_from_name(
     libctx: CPointer<OSSL_LIB_CTX>?,

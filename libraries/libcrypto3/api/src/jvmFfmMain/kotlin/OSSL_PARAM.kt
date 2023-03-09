@@ -16,6 +16,8 @@ internal val OSSL_PARAM_layout = MemoryLayout.structLayout(
     ValueLayout.JAVA_LONG.withName("return_size"), //8
 ).withName("ossl_param_st")  //TODO: or OSSL_PARAM?
 
+private val test = OSSL_PARAM_layout.byteOffset()
+
 private val key_VH = OSSL_PARAM_layout.varHandle(MemoryLayout.PathElement.groupElement("key"))
 private val data_type_VH = OSSL_PARAM_layout.varHandle(MemoryLayout.PathElement.groupElement("data_type"))
 private val data_VH = OSSL_PARAM_layout.varHandle(MemoryLayout.PathElement.groupElement("data"))
@@ -27,7 +29,7 @@ actual object OSSL_PARAM_Type : CVariableType<OSSL_PARAM>() {
     override fun wrap(memory: NativeMemory): OSSL_PARAM = OSSL_PARAM(memory)
 }
 
-actual class OSSL_PARAM(memory: NativeMemory) : CStructVariable(memory) {
+actual class OSSL_PARAM(memory: NativeMemory) : CStruct(memory) {
     override val type: CPointedType<*> get() = OSSL_PARAM_Type
 }
 
@@ -43,11 +45,11 @@ actual var OSSL_PARAM.data: CPointer<out CPointed>?
     get() = nativeCPointer(COpaqueTypeEmpty, data_VH.get(nativeAddress) as MemorySegment)
     set(value) = data_VH.set(nativeAddress, value.nativeAddress)
 
-actual var OSSL_PARAM.data_size: PlatformDependentUInt
+actual var OSSL_PARAM.data_size: PlatformUInt
     get() = (data_size_VH.get(nativeAddress) as Long).toULong()
     set(value) = data_size_VH.set(nativeAddress, value.toLong())
 
-actual var OSSL_PARAM.return_size: PlatformDependentUInt
+actual var OSSL_PARAM.return_size: PlatformUInt
     get() = (return_size_VH.get(nativeAddress) as Long).toULong()
     set(value) = return_size_VH.set(nativeAddress, value.toLong())
 
@@ -60,7 +62,7 @@ private val OSSL_PARAM_construct_utf8_string_MH: MethodHandle = FFI.methodHandle
 actual fun OSSL_PARAM_construct_utf8_string(
     key: CString?,
     buf: CString?,
-    bsize: PlatformDependentUInt,
+    bsize: PlatformUInt,
 ): CValue<OSSL_PARAM> = nativeCValue(OSSL_PARAM_Type) { allocator ->
     OSSL_PARAM_construct_utf8_string_MH.invokeExact(
         allocator,

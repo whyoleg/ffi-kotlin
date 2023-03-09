@@ -1,6 +1,6 @@
 package dev.whyoleg.ffi.c
 
-public actual class NativePointer internal constructor(internal val value: Int) {
+public actual data class NativePointer internal constructor(internal val value: Int) {
     public actual companion object {
         public actual val NULL: NativePointer = NativePointer(0)
     }

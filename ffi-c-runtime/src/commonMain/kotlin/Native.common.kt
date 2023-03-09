@@ -2,6 +2,8 @@ package dev.whyoleg.ffi.c
 
 //TODO: should `offset` be Int or some PlatformInt?
 
+//TODO: rename to foreign memory ?
+
 public expect class NativePointer {
     public companion object {
         public val NULL: NativePointer

@@ -18,13 +18,13 @@ expect fun EVP_DigestSignInit_ex(
 expect fun EVP_DigestSignUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     data: CPointer<*>?,
-    dsize: PlatformDependentUInt,
+    dsize: PlatformUInt,
 ): Int
 
 expect fun EVP_DigestSignFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    sigret: CPointer<UByteVariable>?,
-    siglen: CPointer<PlatformDependentUIntVariable>?,
+    sigret: CPointer<CUByte>?,
+    siglen: CPointer<CPlatformUInt>?,
 ): Int
 
 @Suppress("NO_ACTUAL_FOR_EXPECT")
@@ -41,11 +41,11 @@ expect fun EVP_DigestVerifyInit_ex(
 expect fun EVP_DigestVerifyUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     data: CPointer<*>?,
-    dsize: PlatformDependentUInt,
+    dsize: PlatformUInt,
 ): Int
 
 expect fun EVP_DigestVerifyFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    sig: CPointer<UByteVariable>?,
-    siglen: PlatformDependentUInt,
+    sig: CPointer<CUByte>?,
+    siglen: PlatformUInt,
 ): Int

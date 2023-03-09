@@ -4,5 +4,6 @@ package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.c.*
 
-expect class OSSL_LIB_CTX : COpaque
-expect object OSSL_LIB_CTX_Type : COpaqueType<OSSL_LIB_CTX>
+expect class OSSL_LIB_CTX : COpaque {
+    companion object Type : COpaque.Type<OSSL_LIB_CTX>
+}

@@ -45,8 +45,8 @@ private val EVP_MAC_init_MH: MethodHandle = FFI.methodHandle(
 
 actual fun EVP_MAC_init(
     ctx: CPointer<EVP_MAC_CTX>?,
-    key: CPointer<UByteVariable>?,
-    keylen: PlatformDependentUInt,
+    key: CPointer<CUByte>?,
+    keylen: PlatformUInt,
     params: CPointer<OSSL_PARAM>?,
 ): Int {
     return EVP_MAC_init_MH.invokeExact(
@@ -65,7 +65,7 @@ private val EVP_MAC_CTX_get_mac_size_MH: MethodHandle = FFI.methodHandle(
 
 actual fun EVP_MAC_CTX_get_mac_size(
     ctx: CPointer<EVP_MAC_CTX>?,
-): PlatformDependentUInt {
+): PlatformUInt {
     return (EVP_MAC_CTX_get_mac_size_MH.invokeExact(ctx.nativeAddress) as Long).toULong()
 }
 
@@ -77,8 +77,8 @@ private val EVP_MAC_update_MH: MethodHandle = FFI.methodHandle(
 
 actual fun EVP_MAC_update(
     ctx: CPointer<EVP_MAC_CTX>?,
-    data: CPointer<UByteVariable>?,
-    datalen: PlatformDependentUInt,
+    data: CPointer<CUByte>?,
+    datalen: PlatformUInt,
 ): Int {
     return EVP_MAC_update_MH.invokeExact(
         ctx.nativeAddress,
@@ -95,9 +95,9 @@ private val EVP_MAC_final_MH: MethodHandle = FFI.methodHandle(
 
 actual fun EVP_MAC_final(
     ctx: CPointer<EVP_MAC_CTX>?,
-    out: CPointer<UByteVariable>?,
-    outl: CPointer<PlatformDependentUIntVariable>?,
-    outsize: PlatformDependentUInt,
+    out: CPointer<CUByte>?,
+    outl: CPointer<CPlatformUInt>?,
+    outsize: PlatformUInt,
 ): Int {
     return EVP_MAC_final_MH.invokeExact(
         ctx.nativeAddress,

@@ -1,26 +1,27 @@
 @file:Suppress(
-    "PrivatePropertyName", "FunctionName", "ClassName", "SpellCheckingInspection",
-    "EXTENSION_SHADOWED_BY_MEMBER"
+    "PrivatePropertyName", "FunctionName", "ClassName", "SpellCheckingInspection", "PropertyName",
 )
 
 package dev.whyoleg.ffi.libcrypto3
 
 import dev.whyoleg.ffi.c.*
 
-expect object OSSL_PARAM_Type : CVariableType<OSSL_PARAM>
-expect class OSSL_PARAM : CStructVariable
+expect class OSSL_PARAM : CStruct {
+    var key: CString?
+    var data_type: UInt
+    var data: CPointer<out CPointed>? //COpaque - TODO
+    var data_size: PlatformUInt
+    var return_size: PlatformUInt
 
-//Subclasses of NativePointed cannot have properties with backing fields - but there is no backing fields...
-expect var OSSL_PARAM.key: CString?
-expect var OSSL_PARAM.data_type: UInt
-expect var OSSL_PARAM.data: CPointer<out CPointed>? //COpaque - but cinterop is different
-expect var OSSL_PARAM.data_size: PlatformDependentUInt
-expect var OSSL_PARAM.return_size: PlatformDependentUInt
+    override val type: Type
+
+    companion object Type : CStruct.Type<OSSL_PARAM>
+}
 
 expect fun OSSL_PARAM_construct_utf8_string(
     key: CString?,
     buf: CString?,
-    bsize: PlatformDependentUInt,
+    bsize: PlatformUInt,
 ): CValue<OSSL_PARAM>
 
 expect fun OSSL_PARAM_construct_end(): CValue<OSSL_PARAM>

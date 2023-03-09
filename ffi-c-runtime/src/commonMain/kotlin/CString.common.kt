@@ -1,7 +1,9 @@
 package dev.whyoleg.ffi.c
 
-public typealias CCharVariable = ByteVariable
+//TODO!!!
+
+public typealias CCharVariable = CByte
 public typealias CChar = Byte
 public typealias CString = CPointer<CCharVariable>
 
-public expect fun CString.toKString(): String
+public fun CString.toKString(): String = pointed.memory.loadString(0)

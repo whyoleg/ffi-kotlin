@@ -49,7 +49,7 @@ private val EVP_DigestSignUpdate: MethodHandle = FFI.methodHandle(
 actual fun EVP_DigestSignUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     data: CPointer<*>?,
-    dsize: PlatformDependentUInt,
+    dsize: PlatformUInt,
 ): Int {
     return EVP_DigestSignUpdate.invokeExact(
         ctx.nativeAddress,
@@ -66,8 +66,8 @@ private val EVP_DigestSignFinal: MethodHandle = FFI.methodHandle(
 
 actual fun EVP_DigestSignFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    sigret: CPointer<UByteVariable>?,
-    siglen: CPointer<PlatformDependentUIntVariable>?,
+    sigret: CPointer<CUByte>?,
+    siglen: CPointer<CPlatformUInt>?,
 ): Int {
     return EVP_DigestSignFinal.invokeExact(
         ctx.nativeAddress,
@@ -119,7 +119,7 @@ private val EVP_DigestVerifyUpdate: MethodHandle = FFI.methodHandle(
 actual fun EVP_DigestVerifyUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     data: CPointer<*>?,
-    dsize: PlatformDependentUInt,
+    dsize: PlatformUInt,
 ): Int {
     return EVP_DigestVerifyUpdate.invokeExact(
         ctx.nativeAddress,
@@ -136,8 +136,8 @@ private val EVP_DigestVerifyFinal: MethodHandle = FFI.methodHandle(
 
 actual fun EVP_DigestVerifyFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    sig: CPointer<UByteVariable>?,
-    siglen: PlatformDependentUInt,
+    sig: CPointer<CUByte>?,
+    siglen: PlatformUInt,
 ): Int {
     return EVP_DigestVerifyFinal.invokeExact(
         ctx.nativeAddress,

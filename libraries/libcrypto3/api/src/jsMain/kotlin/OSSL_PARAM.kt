@@ -9,7 +9,7 @@ import dev.whyoleg.ffi.c.*
 actual fun OSSL_PARAM_construct_utf8_string(
     key: CString?,
     buf: CString?,
-    bsize: PlatformDependentUInt,
+    bsize: PlatformUInt,
 ): CValue<OSSL_PARAM> = nativeCValue(OSSL_PARAM_Type) { nativeAddress ->
     osslparam.OSSL_PARAM_construct_utf8_string(key.nativeAddress, buf.nativeAddress, bsize.toInt(), nativeAddress)
 }

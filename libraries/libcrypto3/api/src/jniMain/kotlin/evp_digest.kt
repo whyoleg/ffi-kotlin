@@ -27,15 +27,15 @@ actual fun EVP_DigestSignInit_ex(
 actual fun EVP_DigestSignUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     data: CPointer<*>?,
-    dsize: PlatformDependentUInt,
+    dsize: PlatformUInt,
 ): Int {
     return evpdigest.EVP_DigestSignUpdate(ctx.nativeAddress, data.nativeAddress, dsize.toLong())
 }
 
 actual fun EVP_DigestSignFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    sigret: CPointer<UByteVariable>?,
-    siglen: CPointer<PlatformDependentUIntVariable>?,
+    sigret: CPointer<CUByte>?,
+    siglen: CPointer<CPlatformUInt>?,
 ): Int {
     return evpdigest.EVP_DigestSignFinal(ctx.nativeAddress, sigret.nativeAddress, siglen.nativeAddress)
 }
@@ -63,15 +63,15 @@ actual fun EVP_DigestVerifyInit_ex(
 actual fun EVP_DigestVerifyUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     data: CPointer<*>?,
-    dsize: PlatformDependentUInt,
+    dsize: PlatformUInt,
 ): Int {
     return evpdigest.EVP_DigestVerifyUpdate(ctx.nativeAddress, data.nativeAddress, dsize.toLong())
 }
 
 actual fun EVP_DigestVerifyFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    sig: CPointer<UByteVariable>?,
-    siglen: PlatformDependentUInt,
+    sig: CPointer<CUByte>?,
+    siglen: PlatformUInt,
 ): Int {
     return evpdigest.EVP_DigestVerifyFinal(ctx.nativeAddress, sig.nativeAddress, siglen.toLong())
 }

@@ -27,8 +27,8 @@ actual fun EVP_MAC_CTX_new(mac: CPointer<EVP_MAC>?): CPointer<EVP_MAC_CTX>? {
 
 actual fun EVP_MAC_init(
     ctx: CPointer<EVP_MAC_CTX>?,
-    key: CPointer<UByteVariable>?,
-    keylen: PlatformDependentUInt,
+    key: CPointer<CUByte>?,
+    keylen: PlatformUInt,
     params: CPointer<OSSL_PARAM>?,
 ): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC_init(ctx, key, keylen, params)
@@ -36,23 +36,23 @@ actual fun EVP_MAC_init(
 
 actual fun EVP_MAC_CTX_get_mac_size(
     ctx: CPointer<EVP_MAC_CTX>?,
-): PlatformDependentUInt {
+): PlatformUInt {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC_CTX_get_mac_size(ctx)
 }
 
 actual fun EVP_MAC_update(
     ctx: CPointer<EVP_MAC_CTX>?,
-    data: CPointer<UByteVariable>?,
-    datalen: PlatformDependentUInt,
+    data: CPointer<CUByte>?,
+    datalen: PlatformUInt,
 ): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC_update(ctx, data, datalen)
 }
 
 actual fun EVP_MAC_final(
     ctx: CPointer<EVP_MAC_CTX>?,
-    out: CPointer<UByteVariable>?,
-    outl: CPointer<PlatformDependentUIntVariable>?,
-    outsize: PlatformDependentUInt,
+    out: CPointer<CUByte>?,
+    outl: CPointer<CPlatformUInt>?,
+    outsize: PlatformUInt,
 ): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MAC_final(ctx, out, outl, outsize)
 }

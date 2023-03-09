@@ -1,17 +1,14 @@
 package dev.whyoleg.ffi.c
 
-//TODO: abstract vs sealed
+public sealed class CPointed(public val memory: NativeMemory) {
+    public abstract val type: Type<*>
 
-public expect abstract class CPointed
-public expect abstract class CPointedType<T : CPointed>
+    public sealed class Type<T : CPointed> {
+        public abstract val layout: NativeLayout
+        public abstract fun wrap(memory: NativeMemory): T
+        public fun wrap(pointer: NativePointer): T = wrap(NativeMemory(pointer, layout))
+    }
+}
 
 //TODO: support functions
 //public expect class CFunction<T : Function<*>> : CPointed
-
-public expect abstract class COpaque : CPointed
-public expect abstract class COpaqueType<T : COpaque> : CPointedType<T>
-
-public expect abstract class CVariable : CPointed
-public expect abstract class CVariableType<T : CVariable> : CPointedType<T>
-
-public expect abstract class CStructVariable : CVariable

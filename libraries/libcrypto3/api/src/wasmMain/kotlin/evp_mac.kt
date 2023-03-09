@@ -21,7 +21,7 @@ actual fun EVP_MAC_CTX_new(mac: CPointer<EVP_MAC>?): CPointer<EVP_MAC_CTX>? {
 
 actual fun EVP_MAC_init(
     ctx: CPointer<EVP_MAC_CTX>?,
-    key: CPointer<UByteVariable>?,
+    key: CPointer<CUByte>?,
     keylen: PlatformDependentUInt,
     params: CPointer<OSSL_PARAM>?,
 ): Int {
@@ -36,7 +36,7 @@ actual fun EVP_MAC_CTX_get_mac_size(
 
 actual fun EVP_MAC_update(
     ctx: CPointer<EVP_MAC_CTX>?,
-    data: CPointer<UByteVariable>?,
+    data: CPointer<CUByte>?,
     datalen: PlatformDependentUInt,
 ): Int {
     return ffi_EVP_MAC_update(ctx.nativeAddress, data.nativeAddress, datalen.toInt())
@@ -44,8 +44,8 @@ actual fun EVP_MAC_update(
 
 actual fun EVP_MAC_final(
     ctx: CPointer<EVP_MAC_CTX>?,
-    out: CPointer<UByteVariable>?,
-    outl: CPointer<PlatformDependentUIntVariable>?,
+    out: CPointer<CUByte>?,
+    outl: CPointer<PlatformDependentCUInt>?,
     outsize: PlatformDependentUInt,
 ): Int {
     return ffi_EVP_MAC_final(ctx.nativeAddress, out.nativeAddress, outl.nativeAddress, outsize.toInt())

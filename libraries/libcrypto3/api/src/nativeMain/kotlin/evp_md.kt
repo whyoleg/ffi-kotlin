@@ -40,15 +40,15 @@ actual fun EVP_DigestInit(
 actual fun EVP_DigestUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     d: CPointer<*>?,
-    cnt: PlatformDependentUInt,
+    cnt: PlatformUInt,
 ): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_DigestUpdate(ctx, d, cnt)
 }
 
 actual fun EVP_DigestFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    md: CPointer<UByteVariable>?,
-    s: CPointer<UIntVariable>?,
+    md: CPointer<CUByte>?,
+    s: CPointer<CUInt>?,
 ): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_DigestFinal(ctx, md, s)
 }

@@ -40,8 +40,8 @@ actual fun EVP_DigestUpdate(
 
 actual fun EVP_DigestFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    md: CPointer<UByteVariable>?,
-    s: CPointer<UIntVariable>?,
+    md: CPointer<CUByte>?,
+    s: CPointer<CUInt>?,
 ): Int {
     return ffi_EVP_DigestFinal(ctx.nativeAddress, md.nativeAddress, s.nativeAddress)
 }

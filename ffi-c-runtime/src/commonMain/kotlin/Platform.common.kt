@@ -2,15 +2,18 @@ package dev.whyoleg.ffi.c
 
 import kotlin.jvm.*
 
-public expect class PlatformDependentInt : Number, Comparable<PlatformDependentInt>
+//TODO: better naming?
 
-@Suppress("NO_ACTUAL_FOR_EXPECT")
-public expect class PlatformDependentIntVariable : CVariable
-public expect object PlatformDependentIntVariableType : CVariableType<PlatformDependentIntVariable>
+public expect class PlatformInt : Number, Comparable<PlatformInt>
+public expect class CPlatformInt internal constructor(memory: NativeMemory) : CPrimitive<PlatformInt> {
+    override val type: Type
+
+    public companion object Type : CPrimitive.Type<PlatformInt, CPlatformInt>
+}
 
 @JvmInline
-public expect value class PlatformDependentUInt internal constructor(internal val data: PlatformDependentInt) :
-    Comparable<PlatformDependentUInt> {
+public expect value class PlatformUInt internal constructor(internal val data: PlatformInt) :
+    Comparable<PlatformUInt> {
     public fun toDouble(): Double
     public fun toFloat(): Float
     public fun toLong(): Long
@@ -20,15 +23,14 @@ public expect value class PlatformDependentUInt internal constructor(internal va
     //TODO: add unsigned
 }
 
-@Suppress("NO_ACTUAL_FOR_EXPECT")
-public expect class PlatformDependentUIntVariable : CVariable
-public expect object PlatformDependentUIntVariableType : CVariableType<PlatformDependentUIntVariable>
+//@Suppress("NO_ACTUAL_FOR_EXPECT")
+public expect class CPlatformUInt internal constructor(memory: NativeMemory) : CPrimitive<PlatformUInt> {
+    override val type: Type
 
+    public companion object Type : CPrimitive.Type<PlatformUInt, CPlatformUInt>
+}
 
-//TODO better approach?
-public expect val Int.pd: PlatformDependentInt
-public expect val UInt.pd: PlatformDependentUInt
-
-//TODO: value will clash in platform dependent sourceSets...
-public expect var PlatformDependentIntVariable.pdValue: PlatformDependentInt
-public expect var PlatformDependentUIntVariable.pdValue: PlatformDependentUInt
+//
+////TODO better approach?
+//public expect val Int.pd: PlatformInt
+//public expect val UInt.pd: PlatformDependentUInt

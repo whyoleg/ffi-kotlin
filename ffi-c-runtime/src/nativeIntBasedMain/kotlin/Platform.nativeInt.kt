@@ -1,9 +1,12 @@
-@file:Suppress(
-    "ACTUAL_WITHOUT_EXPECT",
-    "ACTUAL_TYPE_ALIAS_NOT_TO_CLASS",
-)
-
 package dev.whyoleg.ffi.c
 
-public actual typealias PlatformDependentIntVariableType = IntVariableType
-public actual typealias PlatformDependentUIntVariableType = UIntVariableType
+import kotlinx.cinterop.convert as kxc
+
+public actual typealias PlatformInt = Int
+public actual typealias CPlatformInt = CInt
+
+public actual typealias PlatformUInt = UInt
+public actual typealias CPlatformUInt = CUInt
+
+public actual inline fun <reified R : Any> PlatformInt.convert(): R = kxc()
+public actual inline fun <reified R : Any> PlatformUInt.convert(): R = kxc()

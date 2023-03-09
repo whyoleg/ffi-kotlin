@@ -37,15 +37,15 @@ actual fun EVP_DigestInit(
 actual fun EVP_DigestUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     d: CPointer<*>?,
-    cnt: PlatformDependentUInt,
+    cnt: PlatformUInt,
 ): Int {
     return evpmd.EVP_DigestUpdate(ctx.nativeAddress, d.nativeAddress, cnt.toInt())
 }
 
 actual fun EVP_DigestFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    md: CPointer<UByteVariable>?,
-    s: CPointer<UIntVariable>?,
+    md: CPointer<CUByte>?,
+    s: CPointer<CUInt>?,
 ): Int {
     return evpmd.EVP_DigestFinal(ctx.nativeAddress, md.nativeAddress, s.nativeAddress)
 }

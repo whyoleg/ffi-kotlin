@@ -2,7 +2,7 @@ package dev.whyoleg.ffi.c
 
 import java.nio.*
 
-public actual class NativePointer internal constructor(internal val value: Long) {
+public actual data class NativePointer internal constructor(internal val value: Long) {
     public actual companion object {
         public actual val NULL: NativePointer = NativePointer(0)
     }

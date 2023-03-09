@@ -66,7 +66,7 @@ private val EVP_DigestUpdate_MH: MethodHandle = FFI.methodHandle(
 actual fun EVP_DigestUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     d: CPointer<*>?,
-    cnt: PlatformDependentUInt,
+    cnt: PlatformUInt,
 ): Int {
     return EVP_DigestUpdate_MH.invokeExact(ctx.nativeAddress, d.nativeAddress, cnt.toLong()) as Int
 }
@@ -79,8 +79,8 @@ private val EVP_DigestFinal_MH: MethodHandle = FFI.methodHandle(
 
 actual fun EVP_DigestFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    md: CPointer<UByteVariable>?,
-    s: CPointer<UIntVariable>?,
+    md: CPointer<CUByte>?,
+    s: CPointer<CUInt>?,
 ): Int {
     return EVP_DigestFinal_MH.invokeExact(ctx.nativeAddress, md.nativeAddress, s.nativeAddress) as Int
 }
