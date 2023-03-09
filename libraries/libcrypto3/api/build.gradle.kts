@@ -67,7 +67,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.ffiC)
+                api(projects.ffiCRuntime)
             }
         }
     }

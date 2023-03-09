@@ -12,7 +12,7 @@ Support for all kotlin platforms:
 
 ### Structure
 
-* ffi-c - kotlinx.cinterop package adapted for multiplatform
+* ffi-c-runtime - kotlinx.cinterop package adapted for multiplatform
 * libraries
     * libcrypto3
         * api - expect/actual declarations for some part of OpenSSL libcrypto API

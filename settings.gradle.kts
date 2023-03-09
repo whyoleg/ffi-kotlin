@@ -37,7 +37,7 @@ rootProject.name = "ffi-kotlin"
 include("ffi-c-index")
 include("ffi-c-generator")
 
-include("ffi-c")
+include("ffi-c-runtime")
 
 fun includeLibrary(name: String) {
     listOf("api", "shared", "prebuilt", "test").forEach { submodule ->
