@@ -11,8 +11,8 @@ plugins {
 }
 
 kotlin {
-    //TODO: setup 20 toolchain only for panama compilation - is it possible?
-    jvmToolchain(20) //for panama
+    //TODO: setup 20 toolchain only for FFM compilation - is it possible?
+    jvmToolchain(20) //for FFM
 
     fun KotlinTargetHierarchyBuilder.withPlatform(platformType: KotlinPlatformType, block: (KotlinTarget) -> Boolean = { true }) {
         withCompilations {
@@ -21,18 +21,6 @@ kotlin {
         }
     }
 
-    fun KotlinTargetHierarchyBuilder.withWasm() {
-        withPlatform(KotlinPlatformType.wasm)
-    }
-
-    //TODO: what is a better way if not by name of target?
-    fun KotlinTargetHierarchyBuilder.withJvmJni() {
-        withPlatform(KotlinPlatformType.jvm) { it.name.contains("jni", ignoreCase = true) }
-    }
-
-    fun KotlinTargetHierarchyBuilder.withJvmPanama() {
-        withPlatform(KotlinPlatformType.jvm) { it.name.contains("panama", ignoreCase = true) }
-    }
     targetHierarchy.custom {
         common {
             group("nonNative") {
@@ -41,7 +29,7 @@ kotlin {
                     //shared JNI declarations mechanism
                     group("jni") {
                         withAndroid()
-                        withJvmJni()
+                        withPlatform(KotlinPlatformType.jvm) { it.name.contains("jni", ignoreCase = true) }
                     }
 
                     //shares library loading from jar or from system
@@ -51,7 +39,7 @@ kotlin {
                 }
                 group("web") {
                     withJs()
-                    withWasm()
+                    withPlatform(KotlinPlatformType.wasm)
                 }
             }
             group("native") {

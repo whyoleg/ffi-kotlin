@@ -5,7 +5,7 @@ plugins {
 }
 
 kotlin {
-    jvm("jvmPanama") {
+    jvm("jvmFfm") {
         attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 20)
         compilations.all {
             compilerOptions.configure {

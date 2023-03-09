@@ -4,7 +4,9 @@
 
 Support for all kotlin platforms:
 
-* JVM via JNI (min JDK 8) and via Panama (min JDK 20)
+* JVM
+    * via JNI: min JDK 8
+    * via FFM(Panama): min JDK 20
 * Android via JNI (minSdk 21)
 * Native via cinterop
 * WASM via emscripten
@@ -24,7 +26,7 @@ Support for all kotlin platforms:
 
 For future auto-generated bindings we need to keep in mind platform details
 
-#### JVM+Panama
+#### JVM+FFM(Panama)
 
 Uses similar code, that could generate jextract but using some kotlin specifics.
 Only Kotlin codegen and JDK 20 is needed.
