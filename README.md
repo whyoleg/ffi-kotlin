@@ -6,7 +6,7 @@ Support for all kotlin platforms:
 
 * JVM
     * via JNI: min JDK 8
-    * via FFM(Panama): min JDK 20
+    * via FFM(Panama): min JDK 20 (JEP: https://openjdk.org/jeps/434)
 * Android via JNI (minSdk 21)
 * Native via cinterop
 * WASM via emscripten
