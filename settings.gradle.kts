@@ -33,11 +33,8 @@ gradleEnterprise {
 
 rootProject.name = "ffi-kotlin"
 
-
-include("ffi-c-index")
-include("ffi-c-generator")
-
-include("ffi-c-runtime")
+//include("ffi-c-runtime")
+include("foreign-runtime")
 
 fun includeLibrary(name: String) {
     listOf("api", "shared", "prebuilt", "test").forEach { submodule ->
@@ -46,4 +43,4 @@ fun includeLibrary(name: String) {
     }
 }
 
-includeLibrary("libcrypto3")
+//includeLibrary("libcrypto3")
