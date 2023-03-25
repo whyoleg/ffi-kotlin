@@ -13,14 +13,12 @@ constructor(
     public abstract val type: CType.Struct<Self>
 }
 
-public fun <KT : CStruct<KT>> MemoryScope.pointer(value: KT): CPointer<KT> = pointerFor(value.type, value)
+public inline fun <KT : CStruct<KT>> MemoryScope.pointer(value: KT): CPointer<KT> = pointerFor(value.type, value)
 
-public fun <KT : CStruct<KT>> MemoryScope.pointer(type: CType.Struct<KT>, block: KT.() -> Unit): CPointer<KT> =
+public inline fun <KT : CStruct<KT>> MemoryScope.pointer(type: CType.Struct<KT>, block: KT.() -> Unit): CPointer<KT> =
     pointerFor(type).apply { value!!.block() }
 
-// TODO: is it really needed?
 @OptIn(ForeignMemoryApi::class)
-public fun <KT : CStruct<KT>> MemoryScope.struct(type: CType.Struct<KT>, block: KT.() -> Unit = {}): KT {
+public inline fun <KT : CStruct<KT>> MemoryScope.struct(type: CType.Struct<KT>, block: KT.() -> Unit = {}): KT {
     return type.accessor.get(allocateMemory(type.layout))!!.apply(block)
-//    return pointerFor(type).value!!.apply(block)
 }

@@ -2,6 +2,8 @@ package dev.whyoleg.foreign.c
 
 import dev.whyoleg.foreign.memory.*
 import dev.whyoleg.foreign.memory.access.*
+import dev.whyoleg.foreign.platform.PlatformInt as PInt
+import dev.whyoleg.foreign.platform.PlatformUInt as PUInt
 
 public sealed class CType<KT : Any> {
     @ForeignMemoryApi
@@ -9,6 +11,8 @@ public sealed class CType<KT : Any> {
 
     @ForeignMemoryApi
     public abstract val accessor: MemoryAccessor<KT>
+
+    public val pointer: CType<CPointer<KT>> by lazy { Pointer(this) }
 
     public object Void : CType<Unit>() {
         @ForeignMemoryApi
@@ -42,21 +46,20 @@ public sealed class CType<KT : Any> {
         override val accessor: MemoryAccessor<kotlin.UInt> get() = MemoryAccessor.UInt
     }
 
-    public class Pointer<KT : Any>(pointedType: CType<KT>) : CType<CPointer<KT>>() {
+    public object PlatformInt : CType<PInt>() {
         @ForeignMemoryApi
-        override val layout: MemoryLayout get() = MemoryLayout.Address
+        override val layout: MemoryLayout get() = MemoryLayout.PlatformInt
 
         @ForeignMemoryApi
-        override val accessor: MemoryAccessor<CPointer<KT>> = Accessor(pointedType.accessor)
+        override val accessor: MemoryAccessor<PInt> get() = MemoryAccessor.PlatformInt
+    }
+
+    public object PlatformUInt : CType<PUInt>() {
+        @ForeignMemoryApi
+        override val layout: MemoryLayout get() = MemoryLayout.PlatformInt
 
         @ForeignMemoryApi
-        private class Accessor<KT : Any>(
-            override val pointedAccessor: MemoryAccessor<KT>,
-            offset: MemoryAddressSize = 0,
-        ) : MemoryAccessor.Address<CPointer<KT>, KT>(offset) {
-            override fun at(offset: MemoryAddressSize): MemoryAccessor<CPointer<KT>> = Accessor(pointedAccessor, offset)
-            override fun wrap(segment: MemorySegment): CPointer<KT> = CPointer(pointedAccessor, segment)
-        }
+        override val accessor: MemoryAccessor<PUInt> get() = MemoryAccessor.PlatformUInt
     }
 
     public abstract class Struct<KT : CStruct<KT>> : CType<KT>() {
@@ -81,6 +84,23 @@ public sealed class CType<KT : Any> {
                 _size += layout.size
                 return offset
             }
+        }
+    }
+
+    private class Pointer<KT : Any>(pointedType: CType<KT>) : CType<CPointer<KT>>() {
+        @ForeignMemoryApi
+        override val layout: MemoryLayout get() = MemoryLayout.Address
+
+        @ForeignMemoryApi
+        override val accessor: MemoryAccessor<CPointer<KT>> = Accessor(pointedType.accessor)
+
+        @ForeignMemoryApi
+        private class Accessor<KT : Any>(
+            override val pointedAccessor: MemoryAccessor<KT>,
+            offset: MemoryAddressSize = 0,
+        ) : MemoryAccessor.Address<CPointer<KT>, KT>(offset) {
+            override fun at(offset: MemoryAddressSize): MemoryAccessor<CPointer<KT>> = Accessor(pointedAccessor, offset)
+            override fun wrap(segment: MemorySegment): CPointer<KT> = CPointer(pointedAccessor, segment)
         }
     }
 }

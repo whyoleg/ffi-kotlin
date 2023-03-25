@@ -33,7 +33,7 @@ internal fun testFunc(): Unit = memoryScoped {
 
     val test = pointerFor(CType.Byte, 5)
     val test2 = pointerFor(Byte)
-    val test3 = pointerTo(CType.Byte)
+    val test3 = pointerFor(CType.Byte.pointer)
 
     val param = pointer(OSSL_PARAM) {
         data_type = 123U
