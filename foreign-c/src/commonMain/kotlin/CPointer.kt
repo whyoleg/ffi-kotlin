@@ -1,33 +1,40 @@
 package dev.whyoleg.foreign.c
 
 import dev.whyoleg.foreign.memory.*
+import dev.whyoleg.foreign.memory.access.*
 import kotlin.reflect.*
 
+// TODO: recheck constructor
 @OptIn(ForeignMemoryApi::class)
 public class CPointer<KT : Any>
-@PublishedApi
 internal constructor(
+    public val accessor: MemoryAccessor<KT>,
     segment: MemorySegment,
-) : MemoryHolder(segment) {
-    public class Layout<KT : Any>(offset: MemoryAddressSize = 0) : MemoryLayout.Address<CPointer<KT>>(offset) {
-        override fun wrap(segment: MemorySegment): CPointer<KT> = CPointer(segment)
-    }
-}
+) : MemoryHolder(segment)
 
+// those should be extensions on CPointer and not members to be able to use declarations for primitives to avoid boxing
 @OptIn(ForeignMemoryApi::class)
-public var <KT : Any> CPointer<CPointer<KT>>.value: CPointer<KT>? by CPointer.Layout()
+public inline var <KT : Any> CPointer<KT>.value: KT?
+    get() = accessor.get(segment)
+    set(value) = accessor.set(segment, value)
 
-public inline operator fun <KT : Any> CPointer<CPointer<KT>>.getValue(thisRef: Any?, property: KProperty<*>): CPointer<KT>? = value
-public inline operator fun <KT : Any> CPointer<CPointer<KT>>.setValue(thisRef: Any?, property: KProperty<*>, value: CPointer<KT>?): Unit {
+public inline operator fun <KT : Any> CPointer<KT>.getValue(thisRef: Any?, property: KProperty<*>): KT? = value
+public inline operator fun <KT : Any> CPointer<KT>.setValue(thisRef: Any?, property: KProperty<*>, value: KT?) {
     this.value = value
 }
 
-@OptIn(ForeignMemoryApi::class)
-public fun <KT : Any> MemoryScope.pointerFor(value: CPointer<KT>?): CPointer<CPointer<KT>> {
-    return CPointer<CPointer<KT>>(allocateMemory(MemoryLayout.Address)).apply { this.value = value }
+//todo: naming
+public fun <KT : Any> MemoryScope.pointerTo(type: CType<KT>, value: CPointer<KT>? = null): CPointer<CPointer<KT>> {
+    return pointerFor(CType.Pointer(type), value)
 }
 
 @OptIn(ForeignMemoryApi::class)
-public fun <KT : Any> MemoryScope.pointerFor(layout: MemoryLayout<KT>): CPointer<KT> {
-    return CPointer(allocateMemory(layout))
+public fun <KT : Any> MemoryScope.pointerFor(type: CType<KT>, value: KT? = null): CPointer<KT> {
+    return CPointer(type.accessor, allocateMemory(type.layout)).apply { this.value = value }
+}
+
+// TODO: recheck
+@OptIn(ForeignMemoryApi::class)
+public fun <KT : Any> CPointer<*>.reinterpret(type: CType<KT>): CPointer<KT> {
+    return CPointer(type.accessor, segment.view(accessor.offset, type.layout))
 }

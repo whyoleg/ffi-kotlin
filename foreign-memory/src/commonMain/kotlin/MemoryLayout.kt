@@ -1,20 +1,37 @@
 package dev.whyoleg.foreign.memory
 
-//public interface MemoryAccessor
+import dev.whyoleg.foreign.platform.PlatformInt as PInt
 
 //KT - Kotlin representation, could be: Primitive(Int, Long, etc), Opaque, Struct, Union, Unit(?) or CPointer
-public interface MemoryLayout<KT : Any> {
+@ForeignMemoryApi
+public interface MemoryLayout {
     public val alignment: MemoryAddressSize
     public val size: MemoryAddressSize
 
-    public fun accessor(offset: MemoryAddressSize = 0)
+    // TODO: naming
+    public object Void : MemoryLayout {
+        override val alignment: MemoryAddressSize get() = 0
+        override val size: MemoryAddressSize get() = 0
+    }
 
-    @Suppress("FunctionName")
-    public companion object {
-        public fun Byte(): MemoryLayout<Byte> = ByteLayout
+    public object Byte : MemoryLayout {
+        override val alignment: MemoryAddressSize get() = kotlin.Byte.SIZE_BYTES
+        override val size: MemoryAddressSize get() = kotlin.Byte.SIZE_BYTES
+    }
 
-        @Suppress("UNCHECKED_CAST")
-        public fun <KT : MemoryHolder> Address(): MemoryLayout<KT> = AddressLayout as MemoryLayout<KT>
+    public object Int : MemoryLayout {
+        override val alignment: MemoryAddressSize get() = kotlin.Int.SIZE_BYTES
+        override val size: MemoryAddressSize get() = kotlin.Int.SIZE_BYTES
+    }
+
+    public object PlatformInt : MemoryLayout {
+        override val alignment: MemoryAddressSize get() = PInt.SIZE_BYTES
+        override val size: MemoryAddressSize get() = PInt.SIZE_BYTES
+    }
+
+    public object Address : MemoryLayout {
+        override val alignment: MemoryAddressSize get() = MemoryAddressSize.SIZE_BYTES
+        override val size: MemoryAddressSize get() = MemoryAddressSize.SIZE_BYTES
     }
 
 //    public object UByte : Primitive<kotlin.Byte>(kotlin.UByte.SIZE_BYTES)
@@ -23,14 +40,4 @@ public interface MemoryLayout<KT : Any> {
 //    public object Long : Primitive<kotlin.Long>(kotlin.Long.SIZE_BYTES)
 //    public object ULong : Primitive<kotlin.Long>(kotlin.ULong.SIZE_BYTES)
 //    public object PlatformInt : Primitive<dev.whyoleg.foreign.platform.PlatformInt>(dev.whyoleg.foreign.platform.PlatformInt.SIZE_BYTES)
-}
-
-private object ByteLayout : MemoryLayout<Byte> {
-    override val alignment: MemoryAddressSize get() = Byte.SIZE_BYTES
-    override val size: MemoryAddressSize get() = Byte.SIZE_BYTES
-}
-
-private object AddressLayout : MemoryLayout<MemoryHolder> {
-    override val alignment: MemoryAddressSize get() = MemoryAddressSize.SIZE_BYTES
-    override val size: MemoryAddressSize get() = MemoryAddressSize.SIZE_BYTES
 }
