@@ -2,6 +2,8 @@ package dev.whyoleg.foreign.memory.access
 
 import dev.whyoleg.foreign.memory.*
 import kotlin.reflect.*
+import dev.whyoleg.foreign.platform.PlatformInt as PInt
+import dev.whyoleg.foreign.platform.PlatformUInt as PUInt
 
 @ForeignMemoryApi
 public sealed class MemoryAccessor<KT : Any>(public val offset: MemoryAddressSize) {
@@ -42,6 +44,25 @@ public sealed class MemoryAccessor<KT : Any>(public val offset: MemoryAddressSiz
         override fun at(offset: MemoryAddressSize): UInt = UInt(offset)
 
         public companion object : UInt(0)
+    }
+
+    //TODO: this should be just typealias?
+    public open class PlatformInt private constructor(offset: MemoryAddressSize) : MemoryAccessor<PInt>(offset) {
+        override val layout: MemoryLayout get() = MemoryLayout.PlatformInt
+        override fun get(segment: MemorySegment): PInt = getRaw(segment)
+        override fun set(segment: MemorySegment, value: PInt?): Unit = setRaw(segment, value ?: 0)
+        override fun at(offset: MemoryAddressSize): PlatformInt = PlatformInt(offset)
+
+        public companion object : PlatformInt(0)
+    }
+
+    public open class PlatformUInt private constructor(offset: MemoryAddressSize) : MemoryAccessor<PUInt>(offset) {
+        override val layout: MemoryLayout get() = MemoryLayout.PlatformInt
+        override fun get(segment: MemorySegment): PUInt = getRaw(segment)
+        override fun set(segment: MemorySegment, value: PUInt?): Unit = setRaw(segment, value ?: 0U)
+        override fun at(offset: MemoryAddressSize): PlatformUInt = PlatformUInt(offset)
+
+        public companion object : PlatformUInt(0)
     }
 
     public abstract class Address<Ref : MemoryHolder, PKT : Any>(offset: MemoryAddressSize) : MemoryAccessor<Ref>(offset) {

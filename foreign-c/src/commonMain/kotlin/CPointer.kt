@@ -23,18 +23,13 @@ public inline operator fun <KT : Any> CPointer<KT>.setValue(thisRef: Any?, prope
     this.value = value
 }
 
-//todo: naming
-public fun <KT : Any> MemoryScope.pointerTo(type: CType<KT>, value: CPointer<KT>? = null): CPointer<CPointer<KT>> {
-    return pointerFor(CType.Pointer(type), value)
-}
-
 @OptIn(ForeignMemoryApi::class)
 public fun <KT : Any> MemoryScope.pointerFor(type: CType<KT>, value: KT? = null): CPointer<KT> {
-    return CPointer(type.accessor, allocateMemory(type.layout)).apply { this.value = value }
+    return type.pointer.accessor.get(allocateMemory(type.layout))!!.apply { this.value = value }
 }
 
 // TODO: recheck
 @OptIn(ForeignMemoryApi::class)
 public fun <KT : Any> CPointer<*>.reinterpret(type: CType<KT>): CPointer<KT> {
-    return CPointer(type.accessor, segment.view(accessor.offset, type.layout))
+    return type.pointer.accessor.get(segment.view(accessor.offset, type.layout))!!
 }
