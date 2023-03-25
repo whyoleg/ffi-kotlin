@@ -34,7 +34,10 @@ gradleEnterprise {
 rootProject.name = "ffi-kotlin"
 
 //include("ffi-c-runtime")
-include("foreign-runtime")
+include("foreign-platform")
+include("foreign-memory")
+include("foreign-c")
+include("foreign-wip")
 
 fun includeLibrary(name: String) {
     listOf("api", "shared", "prebuilt", "test").forEach { submodule ->
