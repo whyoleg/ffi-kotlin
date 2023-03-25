@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign
+package dev.whyoleg.foreign.platform
 
 public typealias PlatformInt = Int
 public typealias PlatformUInt = UInt
