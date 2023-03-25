@@ -1,33 +1,39 @@
-package dev.whyoleg.foreign.wip
+package dev.whyoleg.foreign.playground
 
 import dev.whyoleg.foreign.c.*
+import dev.whyoleg.foreign.lib.*
 import dev.whyoleg.foreign.memory.*
 
 internal fun testFunc(): Unit = memoryScoped {
-    val lengthVar: CPointer<Int> = pointer(5)
-    val ptrVar: CPointer<CPointer<Int>> = pointer(lengthVar)
+    val b = pointer(5.toByte())
 
-    var ptr: CPointer<Int>? by ptrVar
-    var length: Int by lengthVar
-    var ptrToPtrV: CPointer<Int>? by ptrVar
+    val bb by b
+
+    val lengthVar: CPointer<Byte> = pointer(5.toByte())
+    val ptrVar: CPointer<CPointer<Byte>> = pointer(lengthVar)
+
+    var ptr: CPointer<Byte>? by ptrVar
+    var length: Byte by lengthVar
+    var ptrToPtrV: CPointer<Byte>? by ptrVar
 
     val paramPointer = returnPointer(5)!!
 
     var v by paramPointer
 
     usePointer(paramPointer)
-    useValue(paramPointer.value)
+    useValue(paramPointer.value!!)
 
     val paramValue = returnValue(4)
-    val paramValuePointer = pointerFor(OSSL_PARAM, paramValue)
+    val paramValuePointer = pointer(paramValue)
 
     val s = pointerFor(OSSL_PARAM)
 
     useValue(paramValue)
     usePointer(paramValuePointer)
 
-    val test = pointerFor(MemoryLayout.Int)
-    val test2 = pointerFor(Int)
+    val test = pointerFor(CType.Byte, 5)
+    val test2 = pointerFor(Byte)
+    val test3 = pointerTo(CType.Byte)
 
     val param = pointer(OSSL_PARAM) {
         data_type = 123U

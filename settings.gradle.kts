@@ -34,10 +34,13 @@ gradleEnterprise {
 rootProject.name = "ffi-kotlin"
 
 //include("ffi-c-runtime")
-include("foreign-platform")
-include("foreign-memory")
-include("foreign-c")
-include("foreign-wip")
+
+// Code is divided in separate modules depending on the complexity of usage (?)
+include("foreign-platform") // TBD what will be here - for now only PlatformInt
+include("foreign-memory") // foreign memory management
+include("foreign-c") // C types
+include("foreign-lib") // some library declarations using C API
+include("foreign-playground") // some user code
 
 fun includeLibrary(name: String) {
     listOf("api", "shared", "prebuilt", "test").forEach { submodule ->
