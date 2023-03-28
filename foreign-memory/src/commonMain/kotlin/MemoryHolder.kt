@@ -23,3 +23,8 @@ public abstract class MemoryValue
 constructor(
     segment: MemorySegment,
 ) : MemoryHolder(segment)
+
+//for opaque support
+public abstract class EmptyMemoryValue
+@ForeignMemoryApi
+constructor()
