@@ -2,8 +2,6 @@ package dev.whyoleg.foreign.memory
 
 public actual typealias MemoryAddressSize = Long
 
-public actual inline fun MemoryAddressSize(value: Int): MemoryAddressSize = value.toLong()
-public actual inline fun MemoryAddressSize(value: Long): MemoryAddressSize = value
-
-@PublishedApi
-internal actual const val ZeroMemoryAddressSize: MemoryAddressSize = 0
+public actual inline fun memoryAddressSize(value: Int): MemoryAddressSize = value.toLong()
+public actual inline fun memoryAddressSize(value: Long): MemoryAddressSize = value
+public actual inline fun memoryAddressSizeZero(): MemoryAddressSize = 0

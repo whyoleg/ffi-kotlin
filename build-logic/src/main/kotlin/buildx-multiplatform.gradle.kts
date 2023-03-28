@@ -25,7 +25,7 @@ kotlin {
             group("platformInt") {
                 //shares common wasm api
                 group("web") {
-                    withJs()
+                    withPlatform(KotlinPlatformType.js)
                     withPlatform(KotlinPlatformType.wasm)
                 }
                 withPlatform(KotlinPlatformType.native) {

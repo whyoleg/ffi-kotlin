@@ -1,8 +1,8 @@
 package dev.whyoleg.foreign.playground
 
 import dev.whyoleg.foreign.c.*
-import dev.whyoleg.foreign.lib.OSSL_PARAM
-import dev.whyoleg.foreign.memory.memoryScoped
+import dev.whyoleg.foreign.lib.*
+import dev.whyoleg.foreign.memory.*
 
 internal fun testFunc(): Unit = memoryScoped {
     val b = pointer(5.toByte())

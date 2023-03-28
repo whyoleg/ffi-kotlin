@@ -74,8 +74,8 @@ public sealed class CType<KT : Any> {
 
         @ForeignMemoryApi
         private class StructLayout() : MemoryLayout {
-            private var _size: MemoryAddressSize = MemoryAddressSize.ZERO
-            override val alignment: MemoryAddressSize get() = MemoryAddressSize(8) // TODO!!!
+            private var _size: MemoryAddressSize = memoryAddressSizeZero()
+            override val alignment: MemoryAddressSize get() = memoryAddressSize(8) // TODO!!!
             override val size: MemoryAddressSize get() = _size
 
             // TODO!!!
@@ -97,7 +97,7 @@ public sealed class CType<KT : Any> {
         @ForeignMemoryApi
         private class Accessor<KT : Any>(
             override val pointedAccessor: MemoryAccessor<KT>,
-            offset: MemoryAddressSize = MemoryAddressSize.ZERO,
+            offset: MemoryAddressSize = memoryAddressSizeZero(),
         ) : AddressMemoryAccessor<CPointer<KT>, KT>(offset) {
             override fun at(offset: MemoryAddressSize): MemoryAccessor<CPointer<KT>> = Accessor(pointedAccessor, offset)
             override fun wrap(segment: MemorySegment): CPointer<KT> = CPointer(pointedAccessor, segment)
