@@ -11,6 +11,6 @@ constructor()
 @get:JvmName("getOpaqueValue")
 @set:JvmName("setOpaqueValue")
 @OptIn(ForeignMemoryApi::class)
-public inline var <KT : COpaque> CPointer<KT>.value: KT?
+public inline var <KT : COpaque> CPointer<KT>.pointed: KT?
     get() = accessor.get(segment)
     set(value) = accessor.set(segment, value)

@@ -21,7 +21,7 @@ internal fun testFunc(): Unit = memoryScoped {
     var v by paramPointer
 
     usePointer(paramPointer)
-    useValue(paramPointer.value)
+    useValue(paramPointer.pointed)
 
     val paramValue = returnValue(4)
     val paramValuePointer = pointer(paramValue)

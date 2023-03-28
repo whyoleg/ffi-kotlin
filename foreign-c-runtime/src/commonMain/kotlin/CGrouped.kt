@@ -29,22 +29,22 @@ constructor(segment: MemorySegment) : MemoryValue(segment) {
 @get:JvmName("getGroupValue")
 @set:JvmName("setGroupValue")
 @OptIn(ForeignMemoryApi::class)
-public inline var <KT : CGrouped<KT>> CPointer<KT>.value: KT
+public inline var <KT : CGrouped<KT>> CPointer<KT>.pointed: KT
     get() = accessor.getRaw(segment)
     set(value) = accessor.setRaw(segment, value)
 
 @JvmName("getGroupValue")
-public inline operator fun <KT : CGrouped<KT>> CPointer<KT>.getValue(thisRef: Any?, property: KProperty<*>): KT = value
+public inline operator fun <KT : CGrouped<KT>> CPointer<KT>.getValue(thisRef: Any?, property: KProperty<*>): KT = pointed
 
 @JvmName("setGroupValue")
 public inline operator fun <KT : CGrouped<KT>> CPointer<KT>.setValue(thisRef: Any?, property: KProperty<*>, value: KT) {
-    this.value = value
+    this.pointed = value
 }
 
 public inline fun <KT : CGrouped<KT>> MemoryScope.pointer(value: KT): CPointer<KT> = pointerFor(value.type, value)
 
 public inline fun <KT : CGrouped<KT>> MemoryScope.pointer(type: CType.Group<KT>, block: KT.() -> Unit): CPointer<KT> =
-    pointerFor(type).apply { value.block() }
+    pointerFor(type).apply { pointed.block() }
 
 @OptIn(ForeignMemoryApi::class)
 public inline fun <KT : CGrouped<KT>> MemoryScope.struct(type: CType.Group<KT>, block: KT.() -> Unit = {}): KT {
