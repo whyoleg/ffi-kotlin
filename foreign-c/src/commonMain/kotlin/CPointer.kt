@@ -1,8 +1,11 @@
 package dev.whyoleg.foreign.c
 
-import dev.whyoleg.foreign.memory.*
-import dev.whyoleg.foreign.memory.access.*
-import kotlin.reflect.*
+import dev.whyoleg.foreign.memory.ForeignMemoryApi
+import dev.whyoleg.foreign.memory.MemoryHolder
+import dev.whyoleg.foreign.memory.MemoryScope
+import dev.whyoleg.foreign.memory.MemorySegment
+import dev.whyoleg.foreign.memory.access.MemoryAccessor
+import kotlin.reflect.KProperty
 
 // TODO: recheck constructor
 @OptIn(ForeignMemoryApi::class)
@@ -31,5 +34,5 @@ public fun <KT : Any> MemoryScope.pointerFor(type: CType<KT>, value: KT? = null)
 // TODO: recheck
 @OptIn(ForeignMemoryApi::class)
 public fun <KT : Any> CPointer<*>.reinterpret(type: CType<KT>): CPointer<KT> {
-    return type.pointer.accessor.get(segment.view(accessor.offset, type.layout))!!
+    return type.pointer.accessor.get(segment.loadSegment(accessor.offset, type.layout))!!
 }

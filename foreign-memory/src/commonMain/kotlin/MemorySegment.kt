@@ -1,11 +1,14 @@
 package dev.whyoleg.foreign.memory
 
-import dev.whyoleg.foreign.platform.*
+import dev.whyoleg.foreign.platform.PlatformInt
 
 @ForeignMemoryApi
 public expect class MemorySegment {
-//    public val address: MemoryAddressSize
-//    public val size: MemoryAddressSize
+    public val address: MemoryAddressSize
+    public val size: MemoryAddressSize
+
+    // returns false, when segment is released
+    public val isAccessible: Boolean
 
     public fun loadByte(offset: MemoryAddressSize): Byte
     public fun storeByte(offset: MemoryAddressSize, value: Byte)
@@ -22,13 +25,13 @@ public expect class MemorySegment {
     public fun loadString(offset: MemoryAddressSize): String
     public fun storeString(offset: MemoryAddressSize, value: String)
 
+    // TODO: rename functions?
     public fun loadAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment?
     public fun storeAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?)
 
+    // TODO: rename functions?
     public fun loadSegment(offset: MemoryAddressSize, segmentLayout: MemoryLayout): MemorySegment
     public fun storeSegment(offset: MemoryAddressSize, segmentLayout: MemoryLayout, value: MemorySegment)
-
-    public fun view(offset: MemoryAddressSize, layout: MemoryLayout): MemorySegment
 
     public companion object {
         public val Empty: MemorySegment

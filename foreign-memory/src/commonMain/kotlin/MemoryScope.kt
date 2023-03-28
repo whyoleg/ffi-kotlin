@@ -2,11 +2,22 @@ package dev.whyoleg.foreign.memory
 
 public expect abstract class MemoryScope {
     @ForeignMemoryApi
-    public fun allocateMemory(layout: MemoryLayout): MemorySegment
+    public abstract fun allocateMemory(layout: MemoryLayout): MemorySegment
 
-    public class Closeable() : MemoryScope, AutoCloseable
+    //TODO: add AutoCloseable, because now there is an error on jvm...
+    public class Closeable() : MemoryScope {
+        public fun close()
+    }
 
     public object Auto : MemoryScope
 }
 
-public inline fun <T> memoryScoped(block: MemoryScope.() -> T): T = MemoryScope.Closeable().use(block)
+public inline fun <T> memoryScoped(block: MemoryScope.() -> T): T {
+    //return MemoryScope.Closeable().use(block)
+    val scope = MemoryScope.Closeable()
+    try {
+        return scope.block()
+    } finally {
+        scope.close()
+    }
+}
