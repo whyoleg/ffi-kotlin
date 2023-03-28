@@ -3,12 +3,12 @@ package dev.whyoleg.foreign.memory
 import dev.whyoleg.foreign.platform.*
 
 @ForeignMemoryApi
-public actual class MemorySegment {
-    public actual val address: MemoryAddressSize get() = TODO()
-    public actual val size: MemoryAddressSize get() = TODO()
-
-    // returns false, when segment is released
-    public actual val isAccessible: Boolean get() = TODO()
+public actual class MemorySegment internal constructor(
+    public actual val address: MemoryAddressSize,
+    public actual val size: MemoryAddressSize,
+) {
+    private var _isAccessible = true
+    public actual val isAccessible: Boolean get() = _isAccessible
 
     public actual fun loadByte(offset: MemoryAddressSize): Byte = TODO()
     public actual fun storeByte(offset: MemoryAddressSize, value: Byte): Unit = TODO()
