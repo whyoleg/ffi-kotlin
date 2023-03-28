@@ -3,11 +3,11 @@ plugins {
 }
 
 kotlin {
-    js("webJs") {
+    js("emscriptenJs") {
         browser()
         nodejs()
     }
-    wasm("webWasm") {
+    wasm("emscriptenWasm") {
         browser()
         nodejs()
     }
