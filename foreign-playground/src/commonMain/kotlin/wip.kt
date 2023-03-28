@@ -1,8 +1,8 @@
 package dev.whyoleg.foreign.playground
 
 import dev.whyoleg.foreign.c.*
-import dev.whyoleg.foreign.lib.*
-import dev.whyoleg.foreign.memory.*
+import dev.whyoleg.foreign.lib.OSSL_PARAM
+import dev.whyoleg.foreign.memory.memoryScoped
 
 internal fun testFunc(): Unit = memoryScoped {
     val b = pointer(5.toByte())
@@ -44,7 +44,7 @@ internal fun testFunc(): Unit = memoryScoped {
     }
 }
 
-internal fun MemoryScope.usePointer(pointer: CPointer<OSSL_PARAM>?): Int = TODO()
-internal fun MemoryScope.useValue(value: OSSL_PARAM): Int = TODO()
-internal fun MemoryScope.returnPointer(value: Int): CPointer<OSSL_PARAM>? = TODO()
-internal fun MemoryScope.returnValue(value: Int): OSSL_PARAM = TODO()
+internal fun usePointer(pointer: CPointer<OSSL_PARAM>?): Int = TODO()
+internal fun useValue(value: OSSL_PARAM): Int = TODO()
+internal fun returnPointer(value: Int): CPointer<OSSL_PARAM>? = TODO()
+internal fun returnValue(value: Int): OSSL_PARAM = TODO()
