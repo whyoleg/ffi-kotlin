@@ -1,6 +1,6 @@
 package dev.whyoleg.foreign.memory
 
-import dev.whyoleg.foreign.platform.PlatformInt
+import dev.whyoleg.foreign.platform.*
 
 @ForeignMemoryApi
 public expect class MemorySegment {
@@ -30,8 +30,8 @@ public expect class MemorySegment {
     public fun storeAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?)
 
     // TODO: rename functions?
-    public fun loadSegment(offset: MemoryAddressSize, segmentLayout: MemoryLayout): MemorySegment
-    public fun storeSegment(offset: MemoryAddressSize, segmentLayout: MemoryLayout, value: MemorySegment)
+    public fun loadSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout): MemorySegment
+    public fun storeSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout, value: MemorySegment)
 
     public companion object {
         public val Empty: MemorySegment
