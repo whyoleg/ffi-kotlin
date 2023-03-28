@@ -9,10 +9,7 @@ import dev.whyoleg.foreign.platform.*
 
 @OptIn(ForeignMemoryApi::class)
 public class EVP_PKEY private constructor() : COpaque() {
-    public companion object Type : CType.Opaque<EVP_PKEY>() {
-        @ForeignMemoryApi
-        override val accessor: OpaqueMemoryAccessor<EVP_PKEY> = OpaqueMemoryAccessor(EVP_PKEY())
-    }
+    public companion object Type : CType.Opaque<EVP_PKEY>(EVP_PKEY())
 }
 
 // TODO: we can use compiler plugin to generate `Type` similar to how kx.serialization works

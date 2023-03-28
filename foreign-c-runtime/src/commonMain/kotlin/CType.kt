@@ -62,12 +62,12 @@ public sealed class CType<KT : Any> {
         override val accessor: MemoryAccessor<PUInt> get() = MemoryAccessor.PlatformUInt
     }
 
-    public abstract class Opaque<KT : COpaque> : CType<KT>() {
+    public abstract class Opaque<KT : COpaque>(instance: KT) : CType<KT>() {
         @ForeignMemoryApi
         final override val layout: MemoryLayout get() = MemoryLayout.Void
 
         @ForeignMemoryApi
-        abstract override val accessor: OpaqueMemoryAccessor<KT>
+        final override val accessor: OpaqueMemoryAccessor<KT> = OpaqueMemoryAccessor(instance)
     }
 
     public sealed class Group<KT : CGrouped<KT>> : CType<KT>() {
