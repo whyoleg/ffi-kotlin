@@ -7,4 +7,6 @@ public expect abstract class MemoryObject {
 
     //TODO: how to work with default?
     public object Default : MemoryObject
+
+    public companion object
 }

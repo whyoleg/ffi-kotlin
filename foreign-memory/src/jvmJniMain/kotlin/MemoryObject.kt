@@ -5,4 +5,6 @@ public actual abstract class MemoryObject {
     public actual fun createScope(): MemoryScope.Closeable = TODO()
 
     public actual object Default : MemoryObject()
+
+    public actual companion object
 }

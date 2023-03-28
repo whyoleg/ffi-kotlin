@@ -5,4 +5,6 @@ public actual abstract class MemoryObject private constructor() {
     public actual fun createScope(): MemoryScope.Closeable = MemoryScope.Impl()
 
     public actual object Default : MemoryObject()
+
+    public actual companion object
 }
