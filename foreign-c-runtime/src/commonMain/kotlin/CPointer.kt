@@ -13,27 +13,25 @@ internal constructor(
     segment: MemorySegment,
 ) : MemoryReference(segment)
 
-//TODO: rename `value` to `pointed`!!!
-
 // those should be extensions on CPointer and not members to be able to use declarations for primitives to avoid boxing
 @get:JvmName("getAnyValue")
 @set:JvmName("setAnyValue")
 @OptIn(ForeignMemoryApi::class)
-public inline var <KT : Any> CPointer<KT>.value: KT?
+public inline var <KT : Any> CPointer<KT>.pointed: KT?
     get() = accessor.get(segment)
     set(value) = accessor.set(segment, value)
 
 @JvmName("getAnyValue")
-public inline operator fun <KT : Any> CPointer<KT>.getValue(thisRef: Any?, property: KProperty<*>): KT? = value
+public inline operator fun <KT : Any> CPointer<KT>.getValue(thisRef: Any?, property: KProperty<*>): KT? = pointed
 
 @JvmName("setAnyValue")
 public inline operator fun <KT : Any> CPointer<KT>.setValue(thisRef: Any?, property: KProperty<*>, value: KT?) {
-    this.value = value
+    this.pointed = value
 }
 
 @OptIn(ForeignMemoryApi::class)
 public fun <KT : Any> MemoryScope.pointerFor(type: CType<KT>, value: KT? = null): CPointer<KT> {
-    return type.pointer.accessor.get(allocateMemory(type.layout))!!.apply { this.value = value }
+    return type.pointer.accessor.get(allocateMemory(type.layout))!!.apply { this.pointed = value }
 }
 
 // TODO: recheck
