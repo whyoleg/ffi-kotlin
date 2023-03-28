@@ -2,6 +2,9 @@ package dev.whyoleg.foreign.c
 
 import dev.whyoleg.foreign.memory.*
 
+@SubclassOptInRequired(ForeignMemoryApi::class)
+public abstract class COpaque
+
 //TODO: COpaque, CUnion
 @OptIn(ForeignMemoryApi::class)
 @SubclassOptInRequired(ForeignMemoryApi::class)

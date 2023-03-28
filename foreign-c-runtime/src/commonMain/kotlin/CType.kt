@@ -62,6 +62,11 @@ public sealed class CType<KT : Any> {
         override val accessor: MemoryAccessor<PUInt> get() = MemoryAccessor.PlatformUInt
     }
 
+    public abstract class Opaque<KT : COpaque> : CType<KT>() {
+        @ForeignMemoryApi
+        final override val layout: MemoryLayout get() = MemoryLayout.Void
+    }
+
     public abstract class Struct<KT : CStruct<KT>> : CType<KT>() {
         @ForeignMemoryApi
         private val _layout = StructLayout()

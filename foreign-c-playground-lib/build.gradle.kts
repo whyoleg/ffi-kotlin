@@ -11,7 +11,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.foreignLib)
+                api(projects.foreignCRuntime)
             }
         }
     }
