@@ -19,6 +19,10 @@ public actual class MemorySegment internal constructor(
     private val _isAccessible = AtomicInt(1)
     public actual val isAccessible: Boolean get() = _isAccessible.value > 0
 
+    internal fun makeInaccessible() {
+        _isAccessible.compareAndSet(1, 0)
+    }
+
     private inline fun checkAccessFor(offset: MemoryAddressSize, bytes: MemoryAddressSize) {
         check(isAccessible) { "Not accessible" }
         check(offset + bytes < size) { "Out of bound access [offset=$offset, bytes=$bytes, size=$size]" }
@@ -72,15 +76,29 @@ public actual class MemorySegment internal constructor(
         nativeMemUtils.putByte(pointed(offset + bytes.size), 0)
     }
 
-    public actual fun loadAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? {
+    public actual fun loadByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int, arrayEndIndex: Int) {
+        val size = arrayEndIndex - arrayStartIndex
+        checkAccessFor(offset, size.toLong())
+        val temp = ByteArray(size)
+        nativeMemUtils.getByteArray(pointed(offset), temp, size)
+        temp.copyInto(array, arrayStartIndex)
+    }
+
+    public actual fun storeByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int, arrayEndIndex: Int) {
+        val size = arrayEndIndex - arrayStartIndex
+        checkAccessFor(offset, size.toLong())
+        nativeMemUtils.putByteArray(array.copyOfRange(arrayStartIndex, arrayEndIndex), pointed(offset), size)
+    }
+
+    public actual fun loadPointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? {
         //TODO: use sizeOf?
         checkAccessFor(offset, 8) //TODO?
         val ptr = nativeMemUtils.getNativePtr(pointed(offset))
         if (ptr == NativePtr.NULL) return null
-        return MemorySegment(ptr, pointedLayout.size, cleaner)
+        return MemorySegment(ptr, pointedLayout.size, null)
     }
 
-    public actual fun storeAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?) {
+    public actual fun storePointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?) {
         //TODO: use sizeOf?
         checkAccessFor(offset, 8) //TODO?
         value?.checkAccessFor(0, 8) //TODO?
@@ -96,10 +114,6 @@ public actual class MemorySegment internal constructor(
         checkAccessFor(offset, valueLayout.size)
         value.checkAccessFor(0, valueLayout.size)
         nativeMemUtils.copyMemory(pointed(offset), valueLayout.size.toInt(), value.pointed(0))
-    }
-
-    internal fun makeInaccessible() {
-        _isAccessible.compareAndSet(1, 0)
     }
 
     public actual companion object {

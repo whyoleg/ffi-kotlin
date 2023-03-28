@@ -2,6 +2,7 @@ package dev.whyoleg.foreign.memory
 
 import dev.whyoleg.foreign.platform.*
 
+//TODO: rename to MemoryView?
 @ForeignMemoryApi
 public expect class MemorySegment {
     public val address: MemoryAddressSize
@@ -25,9 +26,13 @@ public expect class MemorySegment {
     public fun loadString(offset: MemoryAddressSize): String
     public fun storeString(offset: MemoryAddressSize, value: String)
 
+    public fun loadByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int = 0, arrayEndIndex: Int = array.size)
+    public fun storeByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int = 0, arrayEndIndex: Int = array.size)
+
     // TODO: rename functions?
-    public fun loadAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment?
-    public fun storeAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?)
+    // TODO: need to add cleanup action here!!!
+    public fun loadPointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment?
+    public fun storePointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?)
 
     // TODO: rename functions?
     // load - creates a view

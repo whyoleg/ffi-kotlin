@@ -25,8 +25,16 @@ public actual class MemorySegment {
     public actual fun loadString(offset: MemoryAddressSize): String = TODO()
     public actual fun storeString(offset: MemoryAddressSize, value: String): Unit = TODO()
 
-    public actual fun loadAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? = TODO()
-    public actual fun storeAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?): Unit = TODO()
+    public actual fun loadByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int, arrayEndIndex: Int) {
+
+    }
+
+    public actual fun storeByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int, arrayEndIndex: Int) {
+
+    }
+
+    public actual fun loadPointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? = TODO()
+    public actual fun storePointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?): Unit = TODO()
 
     public actual fun loadSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout): MemorySegment = TODO()
     public actual fun storeSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout, value: MemorySegment): Unit = TODO()

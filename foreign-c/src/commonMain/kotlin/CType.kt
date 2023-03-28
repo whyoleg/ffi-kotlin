@@ -98,9 +98,9 @@ public sealed class CType<KT : Any> {
         private class Accessor<KT : Any>(
             override val pointedAccessor: MemoryAccessor<KT>,
             offset: MemoryAddressSize = memoryAddressSizeZero(),
-        ) : AddressMemoryAccessor<CPointer<KT>, KT>(offset) {
+        ) : PointedMemoryAccessor<CPointer<KT>, KT>(offset) {
             override fun at(offset: MemoryAddressSize): MemoryAccessor<CPointer<KT>> = Accessor(pointedAccessor, offset)
-            override fun wrap(segment: MemorySegment): CPointer<KT> = CPointer(pointedAccessor, segment)
+            override fun wrap(pointedSegment: MemorySegment): CPointer<KT> = CPointer(pointedAccessor, pointedSegment)
         }
     }
 }

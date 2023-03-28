@@ -28,18 +28,31 @@ public actual class MemorySegment internal constructor(
     public actual fun loadString(offset: MemoryAddressSize): String = segment.getUtf8String(offset)
     public actual fun storeString(offset: MemoryAddressSize, value: String): Unit = segment.setUtf8String(offset, value)
 
-    public actual fun loadAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? {
-        //TODO: looks like this can leak...
-        //TODO: check if `asSlice` is ok
-        //TODO: with JDK 21 replace asUnbounded with target layout
-        //TODO: do we really need slice?
-        val value = segment.get(ValueLayout.ADDRESS.asUnbounded(), offset)
-        if (value == JMemorySegment.NULL) return null
-        return MemorySegment(value.asSlice(0, pointedLayout.size))
+    public actual fun loadByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int, arrayEndIndex: Int) {
+        JMemorySegment.copy(
+            /*src*/ segment, ValueLayout.JAVA_BYTE, offset,
+            /*dst*/ array, arrayStartIndex,
+            arrayEndIndex - arrayStartIndex
+        )
     }
 
-    public actual fun storeAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?) {
-        //TODO: asSlice?
+    public actual fun storeByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int, arrayEndIndex: Int) {
+        JMemorySegment.copy(
+            /*src*/ array, arrayStartIndex,
+            /*dst*/ segment, ValueLayout.JAVA_BYTE, offset,
+            arrayEndIndex - arrayStartIndex
+        )
+    }
+
+    public actual fun loadPointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? {
+        //TODO: with JDK 21 replace asUnbounded with target layout
+        //TODO: is auto scope is ok?
+        val address = segment.get(ValueLayout.ADDRESS, offset)
+        if (address == JMemorySegment.NULL) return null
+        return MemorySegment(JMemorySegment.ofAddress(address.address(), pointedLayout.size, SegmentScope.auto()))
+    }
+
+    public actual fun storePointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?) {
         segment.set(ValueLayout.ADDRESS, offset, value?.segment ?: JMemorySegment.NULL)
     }
 
