@@ -4,7 +4,12 @@ import dev.whyoleg.foreign.memory.*
 import dev.whyoleg.foreign.platform.*
 import kotlin.reflect.*
 
-//KT - Kotlin representation, could be: Primitive(Int, Long, etc), Opaque, Struct, Union, Unit(?) or CPointer
+//KT - Kotlin representation, could be:
+// * Primitive(Int, Long, etc)
+// * Unit (similar to opaque)
+// * EmptyMemoryValue (Opaque)
+// * MemoryValue (Struct / Union)
+// * MemoryReference (CPointer)
 @ForeignMemoryApi
 public sealed class MemoryAccessor<KT : Any>(public val offset: MemoryAddressSize) {
     public abstract val layout: MemoryLayout
@@ -21,7 +26,7 @@ public sealed class MemoryAccessor<KT : Any>(public val offset: MemoryAddressSiz
     }
 
     public companion object {
-        public val Void: MemoryAccessor<Unit> = OpaqueMemoryAccessor(Unit)
+        public val Void: MemoryAccessor<Unit> get() = VoidMemoryAccessor
         public val Byte: MemoryAccessor<Byte> = ByteMemoryAccessor(memoryAddressSizeZero())
         public val Int: MemoryAccessor<Int> = IntMemoryAccessor(memoryAddressSizeZero())
         public val UInt: MemoryAccessor<UInt> = UIntMemoryAccessor(memoryAddressSizeZero())
