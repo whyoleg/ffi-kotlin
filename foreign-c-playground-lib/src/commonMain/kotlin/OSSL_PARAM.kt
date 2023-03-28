@@ -1,3 +1,5 @@
+@file:Suppress("ClassName", "PropertyName")
+
 package dev.whyoleg.foreign.lib
 
 import dev.whyoleg.foreign.c.*
@@ -5,13 +7,16 @@ import dev.whyoleg.foreign.memory.*
 import dev.whyoleg.foreign.memory.access.*
 import dev.whyoleg.foreign.platform.*
 
+@OptIn(ForeignMemoryApi::class)
 public class EVP_PKEY private constructor() : COpaque() {
-
+    public companion object Type : CType.Opaque<EVP_PKEY>() {
+        @ForeignMemoryApi
+        override val accessor: OpaqueMemoryAccessor<EVP_PKEY> = OpaqueMemoryAccessor(EVP_PKEY())
+    }
 }
 
 // TODO: we can use compiler plugin to generate `Type` similar to how kx.serialization works
 @OptIn(ForeignMemoryApi::class)
-@Suppress("ClassName", "PropertyName")
 public class OSSL_PARAM private constructor(segment: MemorySegment) : CStruct<OSSL_PARAM>(segment) {
     override val type: CType.Struct<OSSL_PARAM> get() = Type
     public var key: CString? by Type.key
@@ -27,11 +32,11 @@ public class OSSL_PARAM private constructor(segment: MemorySegment) : CStruct<OS
         private val data_size = element(PlatformUInt)
         private val return_size = element(PlatformUInt)
 
-        override val accessor: MemoryAccessor<OSSL_PARAM> get() = Accessor
+        override val accessor: ValueMemoryAccessor<OSSL_PARAM> get() = Accessor
 
-        private open class Accessor private constructor(offset: MemoryAddressSize) : SegmentMemoryAccessor<OSSL_PARAM>(offset) {
+        private open class Accessor private constructor(offset: MemoryAddressSize) : ValueMemoryAccessor<OSSL_PARAM>(offset) {
             override val layout: MemoryLayout get() = Type.layout
-            override fun at(offset: MemoryAddressSize): MemoryAccessor<OSSL_PARAM> = Accessor(offset)
+            override fun withOffset(offset: MemoryAddressSize): MemoryAccessor<OSSL_PARAM> = Accessor(offset)
             override fun wrap(segment: MemorySegment): OSSL_PARAM = OSSL_PARAM(segment)
 
             companion object : Accessor(memoryAddressSizeZero())

@@ -1,7 +1,7 @@
 package dev.whyoleg.foreign.memory
 
 //in bytes
-public expect class MemoryAddressSize {
+public expect class MemoryAddressSize : Comparable<MemoryAddressSize> {
 
     public operator fun plus(other: MemoryAddressSize): MemoryAddressSize
 

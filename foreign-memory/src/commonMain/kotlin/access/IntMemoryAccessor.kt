@@ -8,7 +8,7 @@ internal class IntMemoryAccessor(offset: MemoryAddressSize) : MemoryAccessor<Int
     override val layout: MemoryLayout get() = MemoryLayout.Int
     override fun get(segment: MemorySegment): Int = getRaw(segment)
     override fun set(segment: MemorySegment, value: Int?): Unit = setRaw(segment, value ?: 0)
-    override fun at(offset: MemoryAddressSize): MemoryAccessor<Int> = IntMemoryAccessor(offset)
+    override fun withOffset(offset: MemoryAddressSize): MemoryAccessor<Int> = IntMemoryAccessor(offset)
 }
 
 @ForeignMemoryApi
