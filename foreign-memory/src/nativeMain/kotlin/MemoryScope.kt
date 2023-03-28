@@ -30,7 +30,7 @@ public actual abstract class MemoryScope {
         @ForeignMemoryApi
         override fun allocateMemory(layout: MemoryLayout): MemorySegment {
             val ptr = nativeHeap.alloc(layout)
-            val cleaner = createCleaner(ptr, nativeHeap::free)
+            val cleaner = createCleaner(ptr) { nativeHeap.free(it) }
             return MemorySegment(ptr, layout.size, cleaner)
         }
     }
