@@ -2,10 +2,11 @@ package dev.whyoleg.foreign.memory
 
 import dev.whyoleg.foreign.platform.*
 
+//TODO: really need to rename to avoid confusion with Panama naming...
 //TODO: rename to MemoryView?
 @ForeignMemoryApi
 public expect class MemorySegment {
-    public val address: MemoryAddressSize
+    public val address: MemoryAddress
     public val size: MemoryAddressSize
 
     // returns false, when segment is released

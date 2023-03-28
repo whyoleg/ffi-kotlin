@@ -8,7 +8,7 @@ import java.lang.foreign.MemorySegment as JMemorySegment
 public actual class MemorySegment internal constructor(
     private val segment: JMemorySegment
 ) {
-    public actual val address: MemoryAddressSize get() = segment.address()
+    public actual val address: MemoryAddress get() = segment
     public actual val size: MemoryAddressSize get() = segment.byteSize()
     public actual val isAccessible: Boolean get() = segment.scope().isAlive
 
