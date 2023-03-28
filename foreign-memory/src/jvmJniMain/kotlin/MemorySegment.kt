@@ -1,6 +1,6 @@
 package dev.whyoleg.foreign.memory
 
-import dev.whyoleg.foreign.platform.PlatformInt
+import dev.whyoleg.foreign.platform.*
 
 @ForeignMemoryApi
 public actual class MemorySegment {
@@ -28,8 +28,8 @@ public actual class MemorySegment {
     public actual fun loadAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? = TODO()
     public actual fun storeAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?): Unit = TODO()
 
-    public actual fun loadSegment(offset: MemoryAddressSize, segmentLayout: MemoryLayout): MemorySegment = TODO()
-    public actual fun storeSegment(offset: MemoryAddressSize, segmentLayout: MemoryLayout, value: MemorySegment): Unit = TODO()
+    public actual fun loadSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout): MemorySegment = TODO()
+    public actual fun storeSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout, value: MemorySegment): Unit = TODO()
 
     public actual companion object {
         public actual val Empty: MemorySegment get() = TODO()
