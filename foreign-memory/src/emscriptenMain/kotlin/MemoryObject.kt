@@ -1,15 +1,15 @@
 package dev.whyoleg.foreign.memory
 
-public actual abstract class MemoryObject {
-    @ForeignMemoryApi
-    protected abstract val memory: WasmMemory
-    public actual val autoScope: MemoryScope get() = TODO()
-    public actual fun createScope(): MemoryScope.Closeable = TODO()
+@OptIn(ForeignMemoryApi::class)
+public actual class MemoryObject
+@ForeignMemoryApi
+constructor(
+    private val memory: WasmMemory
+) {
+    public actual val autoScope: MemoryScope = MemoryScope.Auto(memory)
+    public actual fun createScope(): MemoryScope.Closeable = MemoryScope.Closeable(memory)
 
-    public actual object Default : MemoryObject() {
-        @ForeignMemoryApi
-        override val memory: WasmMemory get() = TODO()
+    public actual companion object {
+        public actual val Default: MemoryObject = MemoryObject(WasmMemory.default())
     }
-
-    public actual companion object
 }
