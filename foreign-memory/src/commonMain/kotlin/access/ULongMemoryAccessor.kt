@@ -8,7 +8,7 @@ internal class ULongMemoryAccessor(offset: MemoryAddressSize) : MemoryAccessor<U
     override val layout: MemoryLayout get() = MemoryLayout.Long
     override fun get(segment: MemorySegment): ULong = getRaw(segment)
     override fun set(segment: MemorySegment, value: ULong?): Unit = setRaw(segment, value ?: 0U)
-    override fun at(offset: MemoryAddressSize): MemoryAccessor<ULong> = ULongMemoryAccessor(offset)
+    override fun withOffset(offset: MemoryAddressSize): MemoryAccessor<ULong> = ULongMemoryAccessor(offset)
 }
 
 @ForeignMemoryApi

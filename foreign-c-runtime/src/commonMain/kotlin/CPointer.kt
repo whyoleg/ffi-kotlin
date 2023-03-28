@@ -11,7 +11,9 @@ public class CPointer<KT : Any>
 internal constructor(
     public val accessor: MemoryAccessor<KT>,
     segment: MemorySegment,
-) : MemoryHolder(segment)
+) : MemoryReference(segment)
+
+//TODO: rename `value` to `pointed`!!!
 
 // those should be extensions on CPointer and not members to be able to use declarations for primitives to avoid boxing
 @get:JvmName("getAnyValue")

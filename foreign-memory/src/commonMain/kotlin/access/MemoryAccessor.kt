@@ -13,10 +13,15 @@ public sealed class MemoryAccessor<KT : Any>(public val offset: MemoryAddressSiz
     public abstract fun get(segment: MemorySegment): KT?
     public abstract fun set(segment: MemorySegment, value: KT?)
 
-    public abstract fun at(offset: MemoryAddressSize): MemoryAccessor<KT>
+    protected abstract fun withOffset(offset: MemoryAddressSize): MemoryAccessor<KT>
+
+    public fun at(offset: MemoryAddressSize): MemoryAccessor<KT> {
+        if (this.offset == offset) return this
+        return withOffset(offset)
+    }
 
     public companion object {
-        public val Void: MemoryAccessor<Unit> get() = VoidMemoryAccessor
+        public val Void: MemoryAccessor<Unit> = OpaqueMemoryAccessor(Unit)
         public val Byte: MemoryAccessor<Byte> = ByteMemoryAccessor(memoryAddressSizeZero())
         public val Int: MemoryAccessor<Int> = IntMemoryAccessor(memoryAddressSizeZero())
         public val UInt: MemoryAccessor<UInt> = UIntMemoryAccessor(memoryAddressSizeZero())

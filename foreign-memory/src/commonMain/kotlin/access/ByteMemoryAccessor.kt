@@ -8,7 +8,7 @@ internal class ByteMemoryAccessor(offset: MemoryAddressSize) : MemoryAccessor<By
     override val layout: MemoryLayout get() = MemoryLayout.Byte
     override fun get(segment: MemorySegment): Byte = getRaw(segment)
     override fun set(segment: MemorySegment, value: Byte?): Unit = setRaw(segment, value ?: 0)
-    override fun at(offset: MemoryAddressSize): MemoryAccessor<Byte> = ByteMemoryAccessor(offset)
+    override fun withOffset(offset: MemoryAddressSize): MemoryAccessor<Byte> = ByteMemoryAccessor(offset)
 }
 
 // all those re-declarations are needed to overcome boxing...
