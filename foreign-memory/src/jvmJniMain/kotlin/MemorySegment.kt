@@ -1,45 +1,90 @@
 package dev.whyoleg.foreign.memory
 
 import dev.whyoleg.foreign.platform.*
+import java.nio.*
 
 @ForeignMemoryApi
-public actual class MemorySegment {
-    public actual val address: MemoryAddressSize get() = TODO()
-    public actual val size: MemoryAddressSize get() = TODO()
+public actual class MemorySegment internal constructor(
+    private val holder: BufferHolder
+) {
+    private inline val buffer: ByteBuffer get() = holder.access()
 
-    // returns false, when segment is released
-    public actual val isAccessible: Boolean get() = TODO()
+    public actual val address: MemoryAddressSize get() = JNI.getPointerFromByteBuffer(buffer)
+    public actual val size: MemoryAddressSize get() = buffer.capacity().toLong()
+    public actual val isAccessible: Boolean get() = holder.isAccessible
 
-    public actual fun loadByte(offset: MemoryAddressSize): Byte = TODO()
-    public actual fun storeByte(offset: MemoryAddressSize, value: Byte): Unit = TODO()
+    //TODO: copy check access and offset from native
+    public actual fun loadByte(offset: MemoryAddressSize): Byte = buffer.get(offset.toInt())
+    public actual fun storeByte(offset: MemoryAddressSize, value: Byte) {
+        buffer.put(offset.toInt(), value)
+    }
 
-    public actual fun loadInt(offset: MemoryAddressSize): Int = TODO()
-    public actual fun storeInt(offset: MemoryAddressSize, value: Int): Unit = TODO()
+    public actual fun loadInt(offset: MemoryAddressSize): Int = buffer.getInt(offset.toInt())
+    public actual fun storeInt(offset: MemoryAddressSize, value: Int) {
+        buffer.putInt(offset.toInt(), value)
+    }
 
-    public actual fun loadLong(offset: MemoryAddressSize): Long = TODO()
-    public actual fun storeLong(offset: MemoryAddressSize, value: Long): Unit = TODO()
+    public actual fun loadLong(offset: MemoryAddressSize): Long = buffer.getLong(offset.toInt())
+    public actual fun storeLong(offset: MemoryAddressSize, value: Long) {
+        buffer.putLong(offset.toInt(), value)
+    }
 
-    public actual fun loadPlatformInt(offset: MemoryAddressSize): PlatformInt = TODO()
-    public actual fun storePlatformInt(offset: MemoryAddressSize, value: PlatformInt): Unit = TODO()
+    public actual fun loadPlatformInt(offset: MemoryAddressSize): PlatformInt = loadLong(offset)
+    public actual fun storePlatformInt(offset: MemoryAddressSize, value: PlatformInt): Unit = storeLong(offset, value)
 
-    public actual fun loadString(offset: MemoryAddressSize): String = TODO()
-    public actual fun storeString(offset: MemoryAddressSize, value: String): Unit = TODO()
+    public actual fun loadString(offset: MemoryAddressSize): String {
+        return JNI.getStringFromPointer(address + offset)!!
+    }
+
+    public actual fun storeString(offset: MemoryAddressSize, value: String) {
+        val bytes = value.encodeToByteArray()
+        storeByteArray(offset, bytes)
+        storeByte(offset + bytes.size, 0)
+    }
 
     public actual fun loadByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int, arrayEndIndex: Int) {
-
+        buffer.clear()
+        buffer.position(offset.toInt())
+        buffer.get(array, arrayStartIndex, arrayEndIndex - arrayStartIndex)
     }
 
     public actual fun storeByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int, arrayEndIndex: Int) {
-
+        buffer.clear()
+        buffer.position(offset.toInt())
+        buffer.put(array, arrayStartIndex, arrayEndIndex - arrayStartIndex)
     }
 
-    public actual fun loadPointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? = TODO()
-    public actual fun storePointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?): Unit = TODO()
+    public actual fun loadPointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? {
+        val address = loadLong(offset)
+        if (address == 0L) return null
+        return MemorySegment(
+            BufferHolder.Root(
+                JNI.getByteBufferFromPointer(address + offset, pointedLayout.size.toInt())!!
+            )
+        )
+    }
 
-    public actual fun loadSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout): MemorySegment = TODO()
-    public actual fun storeSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout, value: MemorySegment): Unit = TODO()
+    public actual fun storePointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?) {
+        val address = value?.address ?: 0
+        storeLong(offset, address)
+    }
+
+    public actual fun loadSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout): MemorySegment {
+        buffer.clear()
+        buffer.position(offset.toInt())
+        buffer.limit((offset + valueLayout.size).toInt())
+        return MemorySegment(holder.view(buffer.slice()))
+    }
+
+    public actual fun storeSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout, value: MemorySegment) {
+        buffer.clear()
+        buffer.position(offset.toInt())
+        buffer.limit((offset + valueLayout.size).toInt())
+        value.buffer.clear()
+        buffer.put(value.buffer)
+    }
 
     public actual companion object {
-        public actual val Empty: MemorySegment get() = TODO()
+        public actual val Empty: MemorySegment = MemorySegment(BufferHolder.Root(ByteBuffer.allocateDirect(0)))
     }
 }
