@@ -29,5 +29,10 @@ internal sealed class BufferHolder(buffer: ByteBuffer) {
         override fun view(view: ByteBuffer): BufferHolder = View(view, root)
     }
 
-    fun access(): ByteBuffer = buffer!!
+    fun access(): ByteBuffer {
+        if (isAccessible) return buffer!!
+
+        buffer = null
+        error("Buffer is not accessible")
+    }
 }

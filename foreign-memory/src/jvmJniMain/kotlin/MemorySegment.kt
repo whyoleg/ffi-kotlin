@@ -9,7 +9,7 @@ public actual class MemorySegment internal constructor(
 ) {
     private inline val buffer: ByteBuffer get() = holder.access()
 
-    public actual val address: MemoryAddressSize get() = JNI.getPointerFromByteBuffer(buffer)
+    public actual val address: MemoryAddress get() = JNI.getPointerFromByteBuffer(buffer)
     public actual val size: MemoryAddressSize get() = buffer.capacity().toLong()
     public actual val isAccessible: Boolean get() = holder.isAccessible
 

@@ -4,7 +4,7 @@ import dev.whyoleg.foreign.platform.*
 
 @ForeignMemoryApi
 public actual class MemorySegment internal constructor(
-    public actual val address: MemoryAddressSize,
+    public actual val address: MemoryAddress,
     public actual val size: MemoryAddressSize,
     private val memory: WasmMemory,
     private val cleaner: Cleaner?

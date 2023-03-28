@@ -13,7 +13,7 @@ public actual class MemorySegment internal constructor(
     public actual val size: MemoryAddressSize,
     private val cleaner: Cleaner?
 ) {
-    public actual val address: MemoryAddressSize get() = pointer.toLong()
+    public actual val address: MemoryAddress get() = pointer
 
     private var _isAccessible = true
     public actual val isAccessible: Boolean get() = _isAccessible
