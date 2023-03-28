@@ -8,17 +8,24 @@ import kotlin.reflect.*
 internal expect class PlatformUIntMemoryAccessor(offset: MemoryAddressSize) : MemoryAccessor<PlatformUInt>
 
 @ForeignMemoryApi
-public inline fun MemoryAccessor<PlatformUInt>.getRaw(segment: MemorySegment): PlatformUInt =
+public inline fun MemoryAccessor<out PlatformUInt>.getRaw(segment: MemorySegment): PlatformUInt =
     segment.loadPlatformInt(offset).toPlatformUInt()
 
 @ForeignMemoryApi
-public inline fun MemoryAccessor<PlatformUInt>.setRaw(segment: MemorySegment, value: PlatformUInt): Unit =
+public inline fun MemoryAccessor<out PlatformUInt>.setRaw(segment: MemorySegment, value: PlatformUInt): Unit =
     segment.storePlatformInt(offset, value.toPlatformInt())
 
 @ForeignMemoryApi
-public inline operator fun MemoryAccessor<PlatformUInt>.getValue(thisRef: MemoryHolder, property: KProperty<*>): PlatformUInt =
+public inline operator fun MemoryAccessor<out PlatformUInt>.getValue(
+    thisRef: MemoryHolder,
+    property: KProperty<*>
+): PlatformUInt =
     getRaw(thisRef.segment)
 
 @ForeignMemoryApi
-public inline operator fun MemoryAccessor<PlatformUInt>.setValue(thisRef: MemoryHolder, property: KProperty<*>, value: PlatformUInt): Unit =
+public inline operator fun MemoryAccessor<out PlatformUInt>.setValue(
+    thisRef: MemoryHolder,
+    property: KProperty<*>,
+    value: PlatformUInt
+): Unit =
     setRaw(thisRef.segment, value)

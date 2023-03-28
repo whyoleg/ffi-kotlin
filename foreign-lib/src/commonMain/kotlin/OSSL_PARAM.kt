@@ -30,7 +30,7 @@ public class OSSL_PARAM private constructor(segment: MemorySegment) : CStruct<OS
             override fun at(offset: MemoryAddressSize): MemoryAccessor<OSSL_PARAM> = Accessor(offset)
             override fun wrap(segment: MemorySegment): OSSL_PARAM = OSSL_PARAM(segment)
 
-            companion object : Accessor(MemoryAddressSize.ZERO)
+            companion object : Accessor(memoryAddressSizeZero())
         }
     }
 }

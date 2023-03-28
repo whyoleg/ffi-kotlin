@@ -1,11 +1,9 @@
 package dev.whyoleg.foreign.c
 
-import dev.whyoleg.foreign.memory.ForeignMemoryApi
-import dev.whyoleg.foreign.memory.MemoryHolder
-import dev.whyoleg.foreign.memory.MemoryScope
-import dev.whyoleg.foreign.memory.MemorySegment
-import dev.whyoleg.foreign.memory.access.MemoryAccessor
-import kotlin.reflect.KProperty
+import dev.whyoleg.foreign.memory.*
+import dev.whyoleg.foreign.memory.access.*
+import kotlin.jvm.*
+import kotlin.reflect.*
 
 // TODO: recheck constructor
 @OptIn(ForeignMemoryApi::class)
@@ -16,12 +14,17 @@ internal constructor(
 ) : MemoryHolder(segment)
 
 // those should be extensions on CPointer and not members to be able to use declarations for primitives to avoid boxing
+@get:JvmName("getAnyValue")
+@set:JvmName("setAnyValue")
 @OptIn(ForeignMemoryApi::class)
 public inline var <KT : Any> CPointer<KT>.value: KT?
     get() = accessor.get(segment)
     set(value) = accessor.set(segment, value)
 
+@JvmName("getAnyValue")
 public inline operator fun <KT : Any> CPointer<KT>.getValue(thisRef: Any?, property: KProperty<*>): KT? = value
+
+@JvmName("setAnyValue")
 public inline operator fun <KT : Any> CPointer<KT>.setValue(thisRef: Any?, property: KProperty<*>, value: KT?) {
     this.value = value
 }

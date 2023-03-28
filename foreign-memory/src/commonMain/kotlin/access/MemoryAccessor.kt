@@ -16,11 +16,11 @@ public sealed class MemoryAccessor<KT : Any>(public val offset: MemoryAddressSiz
 
     public companion object {
         public val Void: MemoryAccessor<Unit> get() = VoidMemoryAccessor
-        public val Byte: MemoryAccessor<Byte> = ByteMemoryAccessor(MemoryAddressSize.ZERO)
-        public val Int: MemoryAccessor<Int> = IntMemoryAccessor(MemoryAddressSize.ZERO)
-        public val UInt: MemoryAccessor<UInt> = UIntMemoryAccessor(MemoryAddressSize.ZERO)
-        public val PlatformInt: MemoryAccessor<PlatformInt> = PlatformIntMemoryAccessor(MemoryAddressSize.ZERO)
-        public val PlatformUInt: MemoryAccessor<PlatformUInt> = PlatformUIntMemoryAccessor(MemoryAddressSize.ZERO)
+        public val Byte: MemoryAccessor<Byte> = ByteMemoryAccessor(memoryAddressSizeZero())
+        public val Int: MemoryAccessor<Int> = IntMemoryAccessor(memoryAddressSizeZero())
+        public val UInt: MemoryAccessor<UInt> = UIntMemoryAccessor(memoryAddressSizeZero())
+        public val PlatformInt: MemoryAccessor<PlatformInt> = PlatformIntMemoryAccessor(memoryAddressSizeZero())
+        public val PlatformUInt: MemoryAccessor<PlatformUInt> = PlatformUIntMemoryAccessor(memoryAddressSizeZero())
     }
 }
 

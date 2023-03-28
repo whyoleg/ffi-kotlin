@@ -10,10 +10,6 @@ public expect class MemoryAddressSize {
     }
 }
 
-public expect inline fun MemoryAddressSize(value: Int): MemoryAddressSize
-public expect inline fun MemoryAddressSize(value: Long): MemoryAddressSize
-
-public inline val MemoryAddressSize.Companion.ZERO: MemoryAddressSize get() = ZeroMemoryAddressSize
-
-@PublishedApi
-internal expect val ZeroMemoryAddressSize: MemoryAddressSize
+public expect inline fun memoryAddressSize(value: Int): MemoryAddressSize
+public expect inline fun memoryAddressSize(value: Long): MemoryAddressSize
+public expect inline fun memoryAddressSizeZero(): MemoryAddressSize
