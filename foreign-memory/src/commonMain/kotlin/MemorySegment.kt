@@ -30,6 +30,8 @@ public expect class MemorySegment {
     public fun storeAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?)
 
     // TODO: rename functions?
+    // load - creates a view
+    // store - copy
     public fun loadSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout): MemorySegment
     public fun storeSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout, value: MemorySegment)
 

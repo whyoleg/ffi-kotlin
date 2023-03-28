@@ -32,11 +32,15 @@ public actual class MemorySegment internal constructor(
         //TODO: looks like this can leak...
         //TODO: check if `asSlice` is ok
         //TODO: with JDK 21 replace asUnbounded with target layout
-        return MemorySegment(segment.get(ValueLayout.ADDRESS.asUnbounded(), offset).asSlice(0, pointedLayout.size))
+        //TODO: do we really need slice?
+        val value = segment.get(ValueLayout.ADDRESS.asUnbounded(), offset)
+        if (value == JMemorySegment.NULL) return null
+        return MemorySegment(value.asSlice(0, pointedLayout.size))
     }
 
     public actual fun storeAddress(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?) {
-        segment.set(ValueLayout.ADDRESS.asUnbounded(), offset, value?.segment ?: JMemorySegment.NULL)
+        //TODO: asSlice?
+        segment.set(ValueLayout.ADDRESS, offset, value?.segment ?: JMemorySegment.NULL)
     }
 
     public actual fun loadSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout): MemorySegment {
