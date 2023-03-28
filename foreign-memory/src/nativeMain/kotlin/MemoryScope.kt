@@ -1,28 +1,37 @@
 package dev.whyoleg.foreign.memory
 
 import kotlinx.cinterop.*
+import kotlinx.cinterop.NativePtr
 import kotlin.native.internal.*
-import kotlin.native.internal.NativePtr
 
 public actual abstract class MemoryScope {
-    protected abstract val placement: NativePlacement
-    protected abstract fun cleaner(ptr: NativePtr): Cleaner?
+    @ForeignMemoryApi
+    protected fun NativePlacement.alloc(layout: MemoryLayout): NativePtr =
+        alloc(layout.size, layout.alignment.toInt()).rawPtr
 
     @ForeignMemoryApi
-    public actual fun allocateMemory(layout: MemoryLayout): MemorySegment {
-        val ptr = placement.alloc(layout.size, layout.alignment.toInt()).rawPtr
-        return MemorySegment(ptr, layout.size, cleaner(ptr))
-    }
+    public actual abstract fun allocateMemory(layout: MemoryLayout): MemorySegment
 
-    public actual abstract class Closeable internal constructor(override val placement: Arena) : MemoryScope() {
-        override fun cleaner(ptr: NativePtr): Cleaner? = null
-        public actual fun close(): Unit = placement.clear()
+    public actual class Closeable internal constructor() : MemoryScope() {
+        private val arena = Arena()
+
+        @ForeignMemoryApi
+        override fun allocateMemory(layout: MemoryLayout): MemorySegment {
+            val ptr = arena.alloc(layout)
+            val segment = MemorySegment(ptr, layout.size, null)
+            arena.defer { segment.makeInaccessible() }
+            return segment
+        }
+
+        public actual fun close(): Unit = arena.clear()
     }
 
     internal object Auto : MemoryScope() {
-        override val placement: NativePlacement get() = nativeHeap
-        override fun cleaner(ptr: NativePtr): Cleaner = createCleaner(ptr, nativeHeap::free)
+        @ForeignMemoryApi
+        override fun allocateMemory(layout: MemoryLayout): MemorySegment {
+            val ptr = nativeHeap.alloc(layout)
+            val cleaner = createCleaner(ptr, nativeHeap::free)
+            return MemorySegment(ptr, layout.size, cleaner)
+        }
     }
-
-    internal class Impl : Closeable(Arena(nativeHeap))
 }
