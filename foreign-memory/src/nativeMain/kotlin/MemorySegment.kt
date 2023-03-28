@@ -98,7 +98,7 @@ public actual class MemorySegment internal constructor(
         nativeMemUtils.copyMemory(pointed(offset), valueLayout.size.toInt(), value.pointed(0))
     }
 
-    internal fun close() {
+    internal fun makeInaccessible() {
         _isAccessible.compareAndSet(1, 0)
     }
 
