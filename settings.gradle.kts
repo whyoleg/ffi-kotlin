@@ -33,20 +33,18 @@ gradleEnterprise {
 
 rootProject.name = "ffi-kotlin"
 
-//include("ffi-c-runtime")
-
-// Code is divided in separate modules depending on the complexity of usage (?)
+// Code is divided in separate modules depending on the layer of foreign access
 include("foreign-platform") // TBD what will be here - for now only PlatformInt
 include("foreign-memory") // foreign memory management
-include("foreign-c") // C types
-include("foreign-lib") // some library declarations using C API
-include("foreign-playground") // some user code
+include("foreign-c-runtime") // C types
+include("foreign-c-playground-lib") // some library declarations using C API
+include("foreign-c-playground") // some user code
 
 fun includeLibrary(name: String) {
-    listOf("api", "shared", "prebuilt", "test").forEach { submodule ->
+    listOf("api"/*, "shared", "prebuilt", "test"*/).forEach { submodule ->
         include("libraries:$name:$name-$submodule")
         project(":libraries:$name:$name-$submodule").projectDir = file("libraries/$name/$submodule")
     }
 }
 
-//includeLibrary("libcrypto3")
+includeLibrary("libcrypto3")

@@ -5,6 +5,10 @@ import dev.whyoleg.foreign.memory.*
 import dev.whyoleg.foreign.memory.access.*
 import dev.whyoleg.foreign.platform.*
 
+public class EVP_PKEY private constructor() : COpaque() {
+
+}
+
 // TODO: we can use compiler plugin to generate `Type` similar to how kx.serialization works
 @OptIn(ForeignMemoryApi::class)
 @Suppress("ClassName", "PropertyName")
