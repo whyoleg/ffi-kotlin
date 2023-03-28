@@ -25,12 +25,12 @@ public class OSSL_PARAM private constructor(segment: MemorySegment) : CStruct<OS
 
         override val accessor: MemoryAccessor<OSSL_PARAM> get() = Accessor
 
-        private open class Accessor private constructor(offset: MemoryAddressSize) : MemoryAccessor.Segment<OSSL_PARAM>(offset) {
+        private open class Accessor private constructor(offset: MemoryAddressSize) : SegmentMemoryAccessor<OSSL_PARAM>(offset) {
             override val layout: MemoryLayout get() = Type.layout
             override fun at(offset: MemoryAddressSize): MemoryAccessor<OSSL_PARAM> = Accessor(offset)
             override fun wrap(segment: MemorySegment): OSSL_PARAM = OSSL_PARAM(segment)
 
-            companion object : Accessor(0)
+            companion object : Accessor(MemoryAddressSize.ZERO)
         }
     }
 }

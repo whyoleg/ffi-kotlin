@@ -1,8 +1,12 @@
 package dev.whyoleg.foreign.memory
 
-public sealed class MemoryScope {
+public expect abstract class MemoryScope {
     @ForeignMemoryApi
-    public abstract fun allocateMemory(layout: MemoryLayout): MemorySegment
+    public fun allocateMemory(layout: MemoryLayout): MemorySegment
+
+    public class Closeable() : MemoryScope, AutoCloseable
+
+    public object Auto : MemoryScope
 }
 
-public inline fun <T> memoryScoped(block: MemoryScope.() -> T): T = TODO()
+public inline fun <T> memoryScoped(block: MemoryScope.() -> T): T = MemoryScope.Closeable().use(block)
