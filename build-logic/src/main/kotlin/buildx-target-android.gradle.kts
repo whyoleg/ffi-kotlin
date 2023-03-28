@@ -15,7 +15,7 @@ android {
 }
 
 kotlin {
-    android {
+    android("jvmAndroidJni") {
         compilations.all {
             compilerOptions.configure {
                 jvmTarget.set(JvmTarget.JVM_1_8)

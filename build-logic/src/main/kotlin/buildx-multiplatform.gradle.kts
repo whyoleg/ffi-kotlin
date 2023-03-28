@@ -1,7 +1,6 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
 import org.jetbrains.kotlin.gradle.*
-import org.jetbrains.kotlin.gradle.dsl.*
 import org.jetbrains.kotlin.gradle.plugin.*
 import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import org.jetbrains.kotlin.konan.target.*
@@ -15,40 +14,39 @@ kotlin {
     jvmToolchain(20) //for FFM
 
     fun KotlinTargetHierarchyBuilder.withPlatform(platformType: KotlinPlatformType, block: (KotlinTarget) -> Boolean = { true }) {
-        withCompilations {
-            it.target.platformType == platformType &&
-                    block(it.target)
-        }
+        withCompilations { it.target.platformType == platformType && block(it.target) }
     }
 
     targetHierarchy.custom {
         common {
-            group("nonNative") {
-                //shares library loading mechanism
-                group("jvmAndAndroid") {
-                    //shared JNI declarations mechanism
-                    group("jni") {
-                        withAndroid()
-                        withPlatform(KotlinPlatformType.jvm) { it.name.contains("jni", ignoreCase = true) }
-                    }
-
-                    //shares library loading from jar or from system
-                    group("jvm") {
-                        withJvm()
-                    }
-                }
+            group("native") {
+                withNative()
+            }
+            group("platformInt") {
+                //shares common wasm api
                 group("web") {
                     withJs()
                     withPlatform(KotlinPlatformType.wasm)
                 }
-            }
-            group("native") {
-                group("nativeIntBased") {
-                    withIosArm32()
+                withPlatform(KotlinPlatformType.native) {
+                    (it as KotlinNativeTarget).konanTarget == KonanTarget.IOS_ARM32
                 }
-                group("nativeLongBased") {
-                    withPlatform(KotlinPlatformType.native) {
-                        (it as KotlinNativeTarget).konanTarget != KonanTarget.IOS_ARM32
+            }
+            group("platformLong") {
+                withPlatform(KotlinPlatformType.native) {
+                    (it as KotlinNativeTarget).konanTarget != KonanTarget.IOS_ARM32
+                }
+
+                //shares a library loading mechanism and some of the platform specifics
+                group("jvm") {
+                    //shared JNI declarations mechanism
+                    group("jvmJni") {
+                        withAndroid()
+                        withPlatform(KotlinPlatformType.jvm) { it.name.contains("jni", ignoreCase = true) }
+                    }
+                    //shares library loading from jar or from system
+                    group("jvmJdk") {
+                        withJvm()
                     }
                 }
             }
