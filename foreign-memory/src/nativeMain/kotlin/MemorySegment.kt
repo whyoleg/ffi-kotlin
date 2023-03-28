@@ -3,7 +3,6 @@ package dev.whyoleg.foreign.memory
 import dev.whyoleg.foreign.platform.*
 import kotlinx.cinterop.*
 import kotlinx.cinterop.NativePtr
-import kotlin.native.concurrent.*
 import kotlin.native.internal.*
 
 //TODO: decide on how to work with cleaner
@@ -16,11 +15,11 @@ public actual class MemorySegment internal constructor(
 ) {
     public actual val address: MemoryAddressSize get() = pointer.toLong()
 
-    private val _isAccessible = AtomicInt(1)
-    public actual val isAccessible: Boolean get() = _isAccessible.value > 0
+    private var _isAccessible = true
+    public actual val isAccessible: Boolean get() = _isAccessible
 
     internal fun makeInaccessible() {
-        _isAccessible.compareAndSet(1, 0)
+        _isAccessible = false
     }
 
     private inline fun checkAccessFor(offset: MemoryAddressSize, bytes: MemoryAddressSize) {
@@ -101,7 +100,6 @@ public actual class MemorySegment internal constructor(
     public actual fun storePointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?) {
         //TODO: use sizeOf?
         checkAccessFor(offset, 8) //TODO?
-        value?.checkAccessFor(0, 8) //TODO?
         nativeMemUtils.putNativePtr(pointed(offset), value?.pointer ?: NativePtr.NULL)
     }
 

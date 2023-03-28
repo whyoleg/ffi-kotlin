@@ -63,6 +63,7 @@ public actual class MemorySegment internal constructor(
     public actual fun loadPointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? {
         //TODO: is it possible to support storing pointers to other memory?
         val address = loadInt(offset)
+        if (address == 0) return null
         return MemorySegment(address, pointedLayout.size, memory, null)
     }
 
