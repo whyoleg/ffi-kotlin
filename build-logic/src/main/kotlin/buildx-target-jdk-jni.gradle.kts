@@ -5,7 +5,7 @@ plugins {
 }
 
 kotlin {
-    jvm("jvmJni") {
+    jvm("jvmJdkJni") {
         attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
         compilations.all {
             compilerOptions.configure {

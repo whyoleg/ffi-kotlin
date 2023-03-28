@@ -89,4 +89,5 @@ Then generate declarations and continue work with JVM (faster dev cycle) while s
 
 ### Future ideas
 
+* somehow integrate with local/class properties via property reference
 * integration with https://conan.io for providing/building native libraries

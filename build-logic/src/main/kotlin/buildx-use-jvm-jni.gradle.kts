@@ -1,5 +1,5 @@
 plugins {
-    id("buildx-target-jvm-jni")
+    id("buildx-target-jdk-jni")
 }
 
 val buildJni by tasks.registering(jni.DefaultBuildJni::class)
