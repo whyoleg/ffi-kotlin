@@ -4,27 +4,24 @@ import java.lang.foreign.*
 import java.lang.foreign.MemorySegment as JMemorySegment
 
 public actual abstract class MemoryScope {
+    protected abstract val scope: SegmentScope
+
     @ForeignMemoryApi
-    public actual abstract fun allocateMemory(layout: MemoryLayout): MemorySegment
-
-    public actual class Closeable actual constructor() : MemoryScope() {
-        //TODO: confined vs shared
-        private val arena = Arena.openShared()
-
-        @ForeignMemoryApi
-        override fun allocateMemory(layout: MemoryLayout): MemorySegment {
-            return MemorySegment(JMemorySegment.allocateNative(layout.size, layout.alignment, arena.scope()))
-        }
-
-        public actual fun close() {
-            arena.close()
-        }
+    public actual fun allocateMemory(layout: MemoryLayout): MemorySegment {
+        return MemorySegment(JMemorySegment.allocateNative(layout.size, layout.alignment, scope))
     }
 
-    public actual object Auto : MemoryScope() {
-        @ForeignMemoryApi
-        override fun allocateMemory(layout: MemoryLayout): MemorySegment {
-            return MemorySegment(JMemorySegment.allocateNative(layout.size, layout.alignment, SegmentScope.auto()))
-        }
+    public actual abstract class Closeable internal constructor(
+        private val arena: Arena
+    ) : MemoryScope() {
+        final override val scope: SegmentScope get() = arena.scope()
+        public actual fun close(): Unit = arena.close()
     }
+
+    internal object Auto : MemoryScope() {
+        override val scope: SegmentScope get() = SegmentScope.auto()
+    }
+
+    //TODO: confined vs shared
+    internal class Impl : Closeable(Arena.openShared())
 }

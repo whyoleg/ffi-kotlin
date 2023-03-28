@@ -4,6 +4,7 @@ import dev.whyoleg.foreign.memory.*
 import dev.whyoleg.foreign.platform.*
 import kotlin.reflect.*
 
+//KT - Kotlin representation, could be: Primitive(Int, Long, etc), Opaque, Struct, Union, Unit(?) or CPointer
 @ForeignMemoryApi
 public sealed class MemoryAccessor<KT : Any>(public val offset: MemoryAddressSize) {
     public abstract val layout: MemoryLayout

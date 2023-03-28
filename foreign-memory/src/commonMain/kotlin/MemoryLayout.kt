@@ -2,7 +2,6 @@ package dev.whyoleg.foreign.memory
 
 import dev.whyoleg.foreign.platform.PlatformInt as PInt
 
-//KT - Kotlin representation, could be: Primitive(Int, Long, etc), Opaque, Struct, Union, Unit(?) or CPointer
 @ForeignMemoryApi
 public interface MemoryLayout {
     public val alignment: MemoryAddressSize
@@ -38,11 +37,4 @@ public interface MemoryLayout {
         override val alignment: MemoryAddressSize get() = memoryAddressSize(MemoryAddressSize.SIZE_BYTES)
         override val size: MemoryAddressSize get() = memoryAddressSize(MemoryAddressSize.SIZE_BYTES)
     }
-
-//    public object UByte : Primitive<kotlin.Byte>(kotlin.UByte.SIZE_BYTES)
-//    public object Int : Primitive<kotlin.Int>(kotlin.Int.SIZE_BYTES)
-//    public object UInt : Primitive<kotlin.Int>(kotlin.UInt.SIZE_BYTES)
-//    public object Long : Primitive<kotlin.Long>(kotlin.Long.SIZE_BYTES)
-//    public object ULong : Primitive<kotlin.Long>(kotlin.ULong.SIZE_BYTES)
-//    public object PlatformInt : Primitive<dev.whyoleg.foreign.platform.PlatformInt>(dev.whyoleg.foreign.platform.PlatformInt.SIZE_BYTES)
 }
