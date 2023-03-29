@@ -5,7 +5,14 @@ import java.lang.foreign.*
 import java.lang.foreign.MemorySegment as JMemorySegment
 
 @ForeignMemoryApi
-public actual class MemorySegment internal constructor(
+public inline fun foreignMemory(block: (allocator: SegmentAllocator) -> MemoryAddress): MemorySegment {
+    return MemorySegment(block(FFI.autoAllocator))
+}
+
+@ForeignMemoryApi
+public actual class MemorySegment
+@PublishedApi
+internal constructor(
     private val segment: JMemorySegment
 ) {
     public actual val address: MemoryAddress get() = segment

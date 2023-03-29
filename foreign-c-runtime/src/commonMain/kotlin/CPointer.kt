@@ -11,7 +11,9 @@ public class CPointer<KT : Any>
 internal constructor(
     public val accessor: MemoryAccessor<KT>,
     segment: MemorySegment,
-) : MemoryReference(segment)
+) : MemoryReference(segment) {
+    public companion object
+}
 
 // those should be extensions on CPointer and not members to be able to use declarations for primitives to avoid boxing
 @get:JvmName("getAnyValue")

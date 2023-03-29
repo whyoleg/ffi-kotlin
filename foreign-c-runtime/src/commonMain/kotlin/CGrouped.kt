@@ -10,6 +10,8 @@ public abstract class CStruct<Self : CStruct<Self>>
 @ForeignMemoryApi
 constructor(segment: MemorySegment) : CGrouped<Self>(segment) {
     public abstract override val type: CType.Struct<Self>
+
+    public companion object
 }
 
 @OptIn(ForeignMemoryApi::class)
@@ -17,6 +19,8 @@ public abstract class CUnion<Self : CUnion<Self>>
 @ForeignMemoryApi
 constructor(segment: MemorySegment) : CGrouped<Self>(segment) {
     public abstract override val type: CType.Union<Self>
+
+    public companion object
 }
 
 @OptIn(ForeignMemoryApi::class)
