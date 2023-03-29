@@ -5,7 +5,7 @@ import kotlin.reflect.*
 
 @ForeignMemoryApi
 public abstract class ValueMemoryAccessor<KT : MemoryValue>(offset: MemoryAddressSize) : MemoryAccessor<KT>(offset) {
-    protected abstract fun wrap(segment: MemorySegment): KT
+    public abstract fun wrap(segment: MemorySegment): KT
 
     final override fun get(segment: MemorySegment): KT =
         wrap(segment.loadSegment(offset, layout))

@@ -3,6 +3,13 @@ package dev.whyoleg.foreign.memory
 import dev.whyoleg.foreign.platform.*
 
 @ForeignMemoryApi
+public inline fun foreignMemory(block: (address: MemoryAddress) -> Unit): MemorySegment {
+    val segment = MemoryObject.Default.autoScope.allocateMemory(OSSL_PARAM.layout)
+    ffi_OSSL_PARAM_construct_utf8_string(key.address, buf.address, bsize.toInt(), segment.address)
+    return OSSL_PARAM.accessor.wrap(segment)
+}
+
+@ForeignMemoryApi
 public actual class MemorySegment internal constructor(
     public actual val address: MemoryAddress,
     public actual val size: MemoryAddressSize,
