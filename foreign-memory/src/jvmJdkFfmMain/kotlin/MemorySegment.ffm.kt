@@ -1,17 +1,15 @@
 package dev.whyoleg.foreign.memory
 
-import dev.whyoleg.foreign.platform.*
 import java.lang.foreign.*
 import java.lang.foreign.MemorySegment as JMemorySegment
 
-@ForeignMemoryApi
-public inline fun foreignMemory(block: (allocator: SegmentAllocator) -> MemoryAddress): MemorySegment {
-    return MemorySegment(block(FFI.autoAllocator))
-}
+//@ForeignMemoryApi
+//public inline fun foreignMemory(block: (allocator: SegmentAllocator) -> MemoryAddress): MemorySegment {
+//    return MemorySegment(block(FFI.autoAllocator))
+//}
 
 @ForeignMemoryApi
 public actual class MemorySegment
-@PublishedApi
 internal constructor(
     private val segment: JMemorySegment
 ) {
@@ -27,10 +25,6 @@ internal constructor(
 
     public actual fun loadLong(offset: MemoryAddressSize): Long = segment.get(ValueLayout.JAVA_LONG, offset)
     public actual fun storeLong(offset: MemoryAddressSize, value: Long): Unit = segment.set(ValueLayout.JAVA_LONG, offset, value)
-
-    public actual fun loadPlatformInt(offset: MemoryAddressSize): PlatformInt = segment.get(ValueLayout.JAVA_LONG, offset)
-    public actual fun storePlatformInt(offset: MemoryAddressSize, value: PlatformInt): Unit =
-        segment.set(ValueLayout.JAVA_LONG, offset, value)
 
     public actual fun loadString(offset: MemoryAddressSize): String = segment.getUtf8String(offset)
     public actual fun storeString(offset: MemoryAddressSize, value: String): Unit = segment.setUtf8String(offset, value)

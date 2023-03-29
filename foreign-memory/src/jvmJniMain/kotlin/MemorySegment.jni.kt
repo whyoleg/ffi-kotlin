@@ -1,6 +1,5 @@
 package dev.whyoleg.foreign.memory
 
-import dev.whyoleg.foreign.platform.*
 import java.nio.*
 
 @ForeignMemoryApi
@@ -28,9 +27,6 @@ public actual class MemorySegment internal constructor(
     public actual fun storeLong(offset: MemoryAddressSize, value: Long) {
         buffer.putLong(offset.toInt(), value)
     }
-
-    public actual fun loadPlatformInt(offset: MemoryAddressSize): PlatformInt = loadLong(offset)
-    public actual fun storePlatformInt(offset: MemoryAddressSize, value: PlatformInt): Unit = storeLong(offset, value)
 
     public actual fun loadString(offset: MemoryAddressSize): String {
         return JNI.getStringFromPointer(address + offset)!!

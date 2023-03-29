@@ -21,9 +21,6 @@ public expect class MemorySegment {
     public fun loadLong(offset: MemoryAddressSize): Long
     public fun storeLong(offset: MemoryAddressSize, value: Long)
 
-    public fun loadPlatformInt(offset: MemoryAddressSize): PlatformInt
-    public fun storePlatformInt(offset: MemoryAddressSize, value: PlatformInt)
-
     public fun loadString(offset: MemoryAddressSize): String
     public fun storeString(offset: MemoryAddressSize, value: String)
 
@@ -45,3 +42,9 @@ public expect class MemorySegment {
         public val Empty: MemorySegment
     }
 }
+
+@ForeignMemoryApi
+public expect inline fun MemorySegment.loadPlatformInt(offset: MemoryAddressSize): PlatformInt
+
+@ForeignMemoryApi
+public expect inline fun MemorySegment.storePlatformInt(offset: MemoryAddressSize, value: PlatformInt)
