@@ -1,13 +1,11 @@
 package dev.whyoleg.foreign.memory
 
-import dev.whyoleg.foreign.platform.*
-
-@ForeignMemoryApi
-public inline fun foreignMemory(block: (address: MemoryAddress) -> Unit): MemorySegment {
-    val segment = MemoryObject.Default.autoScope.allocateMemory(OSSL_PARAM.layout)
-    ffi_OSSL_PARAM_construct_utf8_string(key.address, buf.address, bsize.toInt(), segment.address)
-    return OSSL_PARAM.accessor.wrap(segment)
-}
+//@ForeignMemoryApi
+//public inline fun foreignMemory(block: (address: MemoryAddress) -> Unit): MemorySegment {
+//    val segment = MemoryObject.Default.autoScope.allocateMemory(OSSL_PARAM.layout)
+//    ffi_OSSL_PARAM_construct_utf8_string(key.address, buf.address, bsize.toInt(), segment.address)
+//    return OSSL_PARAM.accessor.wrap(segment)
+//}
 
 @ForeignMemoryApi
 public actual class MemorySegment internal constructor(
@@ -32,9 +30,6 @@ public actual class MemorySegment internal constructor(
 
     public actual fun loadLong(offset: MemoryAddressSize): Long = TODO("proper long support")
     public actual fun storeLong(offset: MemoryAddressSize, value: Long): Unit = TODO("proper long support")
-
-    public actual fun loadPlatformInt(offset: MemoryAddressSize): PlatformInt = memory.loadInt(address + offset)
-    public actual fun storePlatformInt(offset: MemoryAddressSize, value: PlatformInt): Unit = memory.storeInt(address + offset, value)
 
     public actual fun loadString(offset: MemoryAddressSize): String {
         //TODO: optimize by pre-allocating ByteArray and resizing it to not read bytes 2 times

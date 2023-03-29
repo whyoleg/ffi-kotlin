@@ -1,6 +1,5 @@
 package dev.whyoleg.foreign.memory
 
-import dev.whyoleg.foreign.platform.*
 import kotlinx.cinterop.*
 import kotlinx.cinterop.NativePtr
 import kotlin.native.internal.*
@@ -59,9 +58,6 @@ public actual class MemorySegment internal constructor(
         checkAccessFor(offset, 8)
         nativeMemUtils.putLong(pointed(offset), value)
     }
-
-    public actual fun loadPlatformInt(offset: MemoryAddressSize): PlatformInt = TODO()
-    public actual fun storePlatformInt(offset: MemoryAddressSize, value: PlatformInt): Unit = TODO()
 
     public actual fun loadString(offset: MemoryAddressSize): String {
         checkAccessFor(offset, 1) //TODO: check at least one?
