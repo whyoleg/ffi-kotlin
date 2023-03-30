@@ -28,6 +28,7 @@ public sealed class MemoryAccessor<KT : Any>(public val offset: MemoryAddressSiz
     public companion object {
         public val Void: MemoryAccessor<Unit> get() = VoidMemoryAccessor
         public val Byte: MemoryAccessor<Byte> = ByteMemoryAccessor(memoryAddressSizeZero())
+        public val UByte: MemoryAccessor<UByte> = UByteMemoryAccessor(memoryAddressSizeZero())
         public val Int: MemoryAccessor<Int> = IntMemoryAccessor(memoryAddressSizeZero())
         public val UInt: MemoryAccessor<UInt> = UIntMemoryAccessor(memoryAddressSizeZero())
         public val PlatformInt: MemoryAccessor<PlatformInt> = PlatformIntMemoryAccessor(memoryAddressSizeZero())
