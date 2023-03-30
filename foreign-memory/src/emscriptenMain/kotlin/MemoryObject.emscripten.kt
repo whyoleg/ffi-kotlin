@@ -13,6 +13,10 @@ constructor(
 
     public actual fun createScope(): MemoryScope = Scope()
 
+    @ForeignMemoryApi
+    public actual fun unsafeMemory(address: MemoryAddress, layout: MemoryLayout): MemorySegment? =
+        MemorySegment.fromAddress(address, layout, memory)
+
     public actual companion object {
         public actual val Default: MemoryObject = MemoryObject(WasmMemory.default())
     }

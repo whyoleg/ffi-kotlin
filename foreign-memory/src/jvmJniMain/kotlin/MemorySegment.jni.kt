@@ -51,13 +51,7 @@ public actual class MemorySegment internal constructor(
     }
 
     public actual fun loadPointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? {
-        val address = loadLong(offset)
-        if (address == 0L) return null
-        return MemorySegment(
-            BufferHolder.Root(
-                JNI.getByteBufferFromPointer(address + offset, pointedLayout.size.toInt())!!
-            )
-        )
+        return fromAddress(loadLong(offset), pointedLayout)
     }
 
     public actual fun storePointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?) {
@@ -82,5 +76,14 @@ public actual class MemorySegment internal constructor(
 
     public actual companion object {
         public actual val Empty: MemorySegment = MemorySegment(BufferHolder.Root(ByteBuffer.allocateDirect(0)))
+
+        internal fun fromAddress(address: MemoryAddress, layout: MemoryLayout): MemorySegment? {
+            if (address == 0L) return null
+            return MemorySegment(
+                BufferHolder.Root(
+                    JNI.getByteBufferFromPointer(address, layout.size.toInt())!!
+                )
+            )
+        }
     }
 }
