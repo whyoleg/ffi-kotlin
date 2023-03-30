@@ -7,7 +7,7 @@ import dev.whyoleg.foreign.memory.access.*
 import kotlin.jvm.*
 import kotlin.reflect.*
 
-public class CPointer<KT : Any>
+public open class CPointer<KT : Any>
 internal constructor(
     @PublishedApi
     internal val accessor: MemoryAccessor<KT>,
@@ -34,12 +34,12 @@ public inline operator fun <KT : Any> CPointer<KT>.setValue(thisRef: Any?, prope
     this.pointed = value
 }
 
-public fun <KT : Any> MemoryScope.pointerFor(type: CType<KT>): CPointer<KT> {
+public fun <KT : Any> MemoryScope.allocatePointerFor(type: CType<KT>): CPointer<KT> {
     return unsafe.CPointer(type, allocateMemory(type.layout))
 }
 
-public fun <KT : Any> MemoryScope.pointerFor(type: CType<KT>, value: KT?): CPointer<KT> {
-    return pointerFor(type).apply { pointed = value }
+public fun <KT : Any> MemoryScope.allocatePointerFor(type: CType<KT>, value: KT?): CPointer<KT> {
+    return allocatePointerFor(type).apply { pointed = value }
 }
 
 // TODO: recheck

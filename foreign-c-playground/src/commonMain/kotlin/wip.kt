@@ -5,12 +5,12 @@ import dev.whyoleg.foreign.lib.*
 import dev.whyoleg.foreign.memory.*
 
 internal fun testFunc(): Unit = memoryScoped {
-    val b = pointer(5.toByte())
+    val b = allocatePointer(5.toByte())
 
     val bb by b
 
-    val lengthVar: CPointer<Byte> = pointer(5.toByte())
-    val ptrVar: CPointer<CPointer<Byte>> = pointer(lengthVar)
+    val lengthVar: CPointer<Byte> = allocatePointer(5.toByte())
+    val ptrVar: CPointer<CPointer<Byte>> = allocatePointer(lengthVar)
 
     var ptr: CPointer<Byte>? by ptrVar
     var length: Byte by lengthVar
@@ -24,22 +24,22 @@ internal fun testFunc(): Unit = memoryScoped {
     useValue(paramPointer.pointed)
 
     val paramValue = returnValue(4)
-    val paramValuePointer = pointer(paramValue)
+    val paramValuePointer = allocatePointer(paramValue)
 
-    val s = pointerFor(OSSL_PARAM)
+    val s = allocatePointerFor(OSSL_PARAM)
 
     useValue(paramValue)
     usePointer(paramValuePointer)
 
-    val test = pointerFor(CType.Byte, 5)
-    val test2 = pointerFor(Byte)
-    val test3 = pointerFor(CType.Byte.pointer)
+    val test = allocatePointerFor(CType.Byte, 5)
+    val test2 = allocatePointerFor(Byte)
+    val test3 = allocatePointerFor(CType.Byte.pointer)
 
-    val param = pointer(OSSL_PARAM) {
+    val param = allocatePointer(OSSL_PARAM) {
         data_type = 123U
     }
 
-    val para = struct(OSSL_PARAM) {
+    val para = allocateStruct(OSSL_PARAM) {
 
     }
 }
