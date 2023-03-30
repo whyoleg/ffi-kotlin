@@ -37,11 +37,11 @@ public inline operator fun <KT : CGrouped<KT>> CPointer<KT>.setValue(thisRef: An
     this.pointed = value
 }
 
-public inline fun <KT : CGrouped<KT>> MemoryScope.pointer(value: KT): CPointer<KT> = pointerFor(value.type, value)
+public inline fun <KT : CGrouped<KT>> MemoryScope.allocatePointer(value: KT): CPointer<KT> = allocatePointerFor(value.type, value)
 
-public inline fun <KT : CGrouped<KT>> MemoryScope.pointer(type: CType.Group<KT>, block: KT.() -> Unit): CPointer<KT> =
-    pointerFor(type).apply { pointed.block() }
+public inline fun <KT : CGrouped<KT>> MemoryScope.allocatePointer(type: CType.Group<KT>, block: KT.() -> Unit): CPointer<KT> =
+    allocatePointerFor(type).apply { pointed.block() }
 
-public inline fun <KT : CGrouped<KT>> MemoryScope.struct(type: CType.Group<KT>, block: KT.() -> Unit = {}): KT {
+public inline fun <KT : CGrouped<KT>> MemoryScope.allocateStruct(type: CType.Group<KT>, block: KT.() -> Unit = {}): KT {
     return unsafe.CGrouped(type, allocateMemory(type.layout)).apply(block)
 }

@@ -20,12 +20,17 @@ public inline operator fun CPointer<Byte>.getValue(thisRef: Any?, property: KPro
 @JvmName("setByteValue")
 public inline operator fun CPointer<Byte>.setValue(thisRef: Any?, property: KProperty<*>, value: Byte): Unit = run { this.pointed = value }
 
-public inline fun MemoryScope.pointerFor(type: CType.Byte, value: Byte): CPointer<Byte> = pointerFor(type).apply { this.pointed = value }
-public inline fun MemoryScope.pointerFor(ignored: Byte.Companion, value: Byte = 0): CPointer<Byte> = pointerFor(CType.Byte, value)
-public inline fun MemoryScope.pointer(value: Byte): CPointer<Byte> = pointerFor(CType.Byte, value)
+public inline fun MemoryScope.allocatePointerFor(type: CType.Byte, value: Byte): CPointer<Byte> =
+    allocatePointerFor(type).apply { this.pointed = value }
+
+public inline fun MemoryScope.allocatePointerFor(ignored: Byte.Companion, value: Byte = 0): CPointer<Byte> =
+    allocatePointerFor(CType.Byte, value)
+
+public inline fun MemoryScope.allocatePointer(value: Byte): CPointer<Byte> = allocatePointerFor(CType.Byte, value)
 
 @JvmName("pointerByte")
-public inline fun MemoryScope.pointer(value: CPointer<Byte>?): CPointer<CPointer<Byte>> = pointerFor(CType.Byte.pointer, value)
+public inline fun MemoryScope.allocatePointer(value: CPointer<Byte>?): CPointer<CPointer<Byte>> =
+    allocatePointerFor(CType.Byte.pointer, value)
 
 @get:JvmName("getIntValue")
 @set:JvmName("setIntValue")
@@ -39,12 +44,16 @@ public inline operator fun CPointer<Int>.getValue(thisRef: Any?, property: KProp
 @JvmName("setIntValue")
 public inline operator fun CPointer<Int>.setValue(thisRef: Any?, property: KProperty<*>, value: Int): Unit = run { this.pointed = value }
 
-public inline fun MemoryScope.pointerFor(type: CType.Int, value: Int): CPointer<Int> = pointerFor(type).apply { this.pointed = value }
-public inline fun MemoryScope.pointerFor(ignored: Int.Companion, value: Int = 0): CPointer<Int> = pointerFor(CType.Int, value)
-public inline fun MemoryScope.pointer(value: Int): CPointer<Int> = pointerFor(CType.Int, value)
+public inline fun MemoryScope.allocatePointerFor(type: CType.Int, value: Int): CPointer<Int> =
+    allocatePointerFor(type).apply { this.pointed = value }
+
+public inline fun MemoryScope.allocatePointerFor(ignored: Int.Companion, value: Int = 0): CPointer<Int> =
+    allocatePointerFor(CType.Int, value)
+
+public inline fun MemoryScope.allocatePointer(value: Int): CPointer<Int> = allocatePointerFor(CType.Int, value)
 
 @JvmName("pointerInt")
-public inline fun MemoryScope.pointer(value: CPointer<Int>?): CPointer<CPointer<Int>> = pointerFor(CType.Int.pointer, value)
+public inline fun MemoryScope.allocatePointer(value: CPointer<Int>?): CPointer<CPointer<Int>> = allocatePointerFor(CType.Int.pointer, value)
 
 @get:JvmName("getUIntValue")
 @set:JvmName("setUIntValue")
@@ -58,9 +67,14 @@ public inline operator fun CPointer<UInt>.getValue(thisRef: Any?, property: KPro
 @JvmName("setUIntValue")
 public inline operator fun CPointer<UInt>.setValue(thisRef: Any?, property: KProperty<*>, value: UInt): Unit = run { this.pointed = value }
 
-public inline fun MemoryScope.pointerFor(type: CType.UInt, value: UInt): CPointer<UInt> = pointerFor(type).apply { this.pointed = value }
-public inline fun MemoryScope.pointerFor(ignored: UInt.Companion, value: UInt = 0U): CPointer<UInt> = pointerFor(CType.UInt, value)
-public inline fun MemoryScope.pointer(value: UInt): CPointer<UInt> = pointerFor(CType.UInt, value)
+public inline fun MemoryScope.allocatePointerFor(type: CType.UInt, value: UInt): CPointer<UInt> =
+    allocatePointerFor(type).apply { this.pointed = value }
+
+public inline fun MemoryScope.allocatePointerFor(ignored: UInt.Companion, value: UInt = 0U): CPointer<UInt> =
+    allocatePointerFor(CType.UInt, value)
+
+public inline fun MemoryScope.allocatePointer(value: UInt): CPointer<UInt> = allocatePointerFor(CType.UInt, value)
 
 @JvmName("pointerUInt")
-public inline fun MemoryScope.pointer(value: CPointer<UInt>?): CPointer<CPointer<UInt>> = pointerFor(CType.UInt.pointer, value)
+public inline fun MemoryScope.allocatePointer(value: CPointer<UInt>?): CPointer<CPointer<UInt>> =
+    allocatePointerFor(CType.UInt.pointer, value)
