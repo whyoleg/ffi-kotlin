@@ -27,11 +27,11 @@ public inline fun <KT : EmptyMemoryValue> MemoryAccessor<KT>.setRaw(segment: Mem
 public inline operator fun <KT : EmptyMemoryValue> MemoryAccessor<KT>.getValue(
     thisRef: MemoryHolder,
     property: KProperty<*>
-): KT = getRaw(thisRef.segment)
+): KT = getRaw(thisRef.segmentInternal)
 
 @ForeignMemoryApi
 public inline operator fun <KT : EmptyMemoryValue> MemoryAccessor<KT>.setValue(
     thisRef: MemoryHolder,
     property: KProperty<*>,
     value: KT
-): Unit = setRaw(thisRef.segment, value)
+): Unit = setRaw(thisRef.segmentInternal, value)

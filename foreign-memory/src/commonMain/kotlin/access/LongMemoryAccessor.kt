@@ -19,8 +19,8 @@ public inline fun MemoryAccessor<Long>.setRaw(segment: MemorySegment, value: Lon
 
 @ForeignMemoryApi
 public inline operator fun MemoryAccessor<Long>.getValue(thisRef: MemoryHolder, property: KProperty<*>): Long =
-    getRaw(thisRef.segment)
+    getRaw(thisRef.segmentInternal)
 
 @ForeignMemoryApi
 public inline operator fun MemoryAccessor<Long>.setValue(thisRef: MemoryHolder, property: KProperty<*>, value: Long): Unit =
-    setRaw(thisRef.segment, value)
+    setRaw(thisRef.segmentInternal, value)

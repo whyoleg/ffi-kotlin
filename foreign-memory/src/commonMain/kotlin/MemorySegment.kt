@@ -40,6 +40,8 @@ public expect class MemorySegment {
 
     public companion object {
         public val Empty: MemorySegment
+
+        public fun fromAddress(address: MemoryAddress, layout: MemoryLayout): MemorySegment?
     }
 }
 

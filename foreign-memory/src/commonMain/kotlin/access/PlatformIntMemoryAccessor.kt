@@ -19,11 +19,11 @@ public inline fun MemoryAccessor<out PlatformInt>.setRaw(segment: MemorySegment,
 public inline operator fun MemoryAccessor<out PlatformInt>.getValue(
     thisRef: MemoryHolder,
     property: KProperty<*>
-): PlatformInt = getRaw(thisRef.segment)
+): PlatformInt = getRaw(thisRef.segmentInternal)
 
 @ForeignMemoryApi
 public inline operator fun MemoryAccessor<out PlatformInt>.setValue(
     thisRef: MemoryHolder,
     property: KProperty<*>,
     value: PlatformInt
-): Unit = setRaw(thisRef.segment, value)
+): Unit = setRaw(thisRef.segmentInternal, value)

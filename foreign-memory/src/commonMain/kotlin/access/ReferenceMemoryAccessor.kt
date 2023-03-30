@@ -9,5 +9,6 @@ public abstract class ReferenceMemoryAccessor<Ref : MemoryReference, PKT : Any>(
     protected abstract fun wrapPointed(pointedSegment: MemorySegment): Ref
 
     final override fun get(segment: MemorySegment): Ref? = segment.loadPointed(offset, pointedAccessor.layout)?.let(::wrapPointed)
-    final override fun set(segment: MemorySegment, value: Ref?): Unit = segment.storePointed(offset, pointedAccessor.layout, value?.segment)
+    final override fun set(segment: MemorySegment, value: Ref?): Unit =
+        segment.storePointed(offset, pointedAccessor.layout, value?.segmentInternal)
 }

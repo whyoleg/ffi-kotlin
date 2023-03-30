@@ -1,3 +1,5 @@
+@file:OptIn(ForeignMemoryApi::class)
+
 package dev.whyoleg.foreign.c
 
 import dev.whyoleg.foreign.memory.*
@@ -8,10 +10,9 @@ import kotlin.reflect.*
 // all those re-declarations are needed to overcome boxing...
 @get:JvmName("getByteValue")
 @set:JvmName("setByteValue")
-@OptIn(ForeignMemoryApi::class)
 public inline var CPointer<Byte>.pointed: Byte
-    get() = accessor.getRaw(segment)
-    set(value) = accessor.setRaw(segment, value)
+    get() = accessor.getRaw(segmentInternal)
+    set(value) = accessor.setRaw(segmentInternal, value)
 
 @JvmName("getByteValue")
 public inline operator fun CPointer<Byte>.getValue(thisRef: Any?, property: KProperty<*>): Byte = pointed
@@ -28,10 +29,9 @@ public inline fun MemoryScope.pointer(value: CPointer<Byte>?): CPointer<CPointer
 
 @get:JvmName("getIntValue")
 @set:JvmName("setIntValue")
-@OptIn(ForeignMemoryApi::class)
 public inline var CPointer<Int>.pointed: Int
-    get() = accessor.getRaw(segment)
-    set(value) = accessor.setRaw(segment, value)
+    get() = accessor.getRaw(segmentInternal)
+    set(value) = accessor.setRaw(segmentInternal, value)
 
 @JvmName("getIntValue")
 public inline operator fun CPointer<Int>.getValue(thisRef: Any?, property: KProperty<*>): Int = pointed
@@ -48,10 +48,9 @@ public inline fun MemoryScope.pointer(value: CPointer<Int>?): CPointer<CPointer<
 
 @get:JvmName("getUIntValue")
 @set:JvmName("setUIntValue")
-@OptIn(ForeignMemoryApi::class)
 public inline var CPointer<UInt>.pointed: UInt
-    get() = accessor.getRaw(segment)
-    set(value) = accessor.setRaw(segment, value)
+    get() = accessor.getRaw(segmentInternal)
+    set(value) = accessor.setRaw(segmentInternal, value)
 
 @JvmName("getUIntValue")
 public inline operator fun CPointer<UInt>.getValue(thisRef: Any?, property: KProperty<*>): UInt = pointed

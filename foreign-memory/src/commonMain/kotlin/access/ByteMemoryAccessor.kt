@@ -20,8 +20,8 @@ public inline fun MemoryAccessor<Byte>.setRaw(segment: MemorySegment, value: Byt
 
 @ForeignMemoryApi
 public inline operator fun MemoryAccessor<Byte>.getValue(thisRef: MemoryHolder, property: KProperty<*>): Byte =
-    getRaw(thisRef.segment)
+    getRaw(thisRef.segmentInternal)
 
 @ForeignMemoryApi
 public inline operator fun MemoryAccessor<Byte>.setValue(thisRef: MemoryHolder, property: KProperty<*>, value: Byte): Unit =
-    setRaw(thisRef.segment, value)
+    setRaw(thisRef.segmentInternal, value)
