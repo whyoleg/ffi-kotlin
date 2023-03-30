@@ -4,6 +4,7 @@ package dev.whyoleg.foreign.c
 
 import dev.whyoleg.foreign.memory.*
 import dev.whyoleg.foreign.memory.access.*
+import dev.whyoleg.foreign.platform.*
 import kotlin.jvm.*
 import kotlin.reflect.*
 
@@ -78,3 +79,28 @@ public inline fun MemoryScope.allocatePointer(value: UInt): CPointer<UInt> = all
 @JvmName("pointerUInt")
 public inline fun MemoryScope.allocatePointer(value: CPointer<UInt>?): CPointer<CPointer<UInt>> =
     allocatePointerFor(CType.UInt.pointer, value)
+
+@get:JvmName("getPlatformUIntValue")
+@set:JvmName("setPlatformUIntValue")
+public inline var CPointer<out PlatformUInt>.pointed: PlatformUInt
+    get() = accessor.getRaw(segmentInternal)
+    set(value) = accessor.setRaw(segmentInternal, value)
+
+@JvmName("getPlatformUIntValue")
+public inline operator fun CPointer<out PlatformUInt>.getValue(thisRef: Any?, property: KProperty<*>): PlatformUInt = pointed
+
+@JvmName("setPlatformUIntValue")
+public inline operator fun CPointer<out PlatformUInt>.setValue(thisRef: Any?, property: KProperty<*>, value: PlatformUInt): Unit =
+    run { this.pointed = value }
+
+public inline fun MemoryScope.allocatePointerFor(type: CType.PlatformUInt, value: PlatformUInt): CPointer<PlatformUInt> =
+    allocatePointerFor(type).apply { this.pointed = value }
+
+//public inline fun MemoryScope.allocatePointerFor(ignored: PlatformUInt.Companion, value: PlatformUInt = 0U): CPointer<PlatformUInt> =
+//    allocatePointerFor(CType.PlatformUInt, value)
+
+//public inline fun MemoryScope.allocatePointer(value: PlatformUInt): CPointer<PlatformUInt> = allocatePointerFor(CType.PlatformUInt, value)
+
+//@JvmName("pointerPlatformUInt")
+//public inline fun MemoryScope.allocatePointer(value: CPointer<PlatformUInt>?): CPointer<CPointer<PlatformUInt>> =
+//    allocatePointerFor(CType.PlatformUInt.pointer, value)
