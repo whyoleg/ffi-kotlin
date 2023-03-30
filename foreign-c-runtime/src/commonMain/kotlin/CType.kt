@@ -25,6 +25,11 @@ public sealed class CType<KT : Any> {
         override val accessor: MemoryAccessor<kotlin.Byte> get() = MemoryAccessor.Byte
     }
 
+    public object UByte : CType<kotlin.UByte>() {
+        override val layout: MemoryLayout get() = MemoryLayout.Byte
+        override val accessor: MemoryAccessor<kotlin.UByte> get() = MemoryAccessor.UByte
+    }
+
     public object Int : CType<kotlin.Int>() {
         override val layout: MemoryLayout get() = MemoryLayout.Int
         override val accessor: MemoryAccessor<kotlin.Int> get() = MemoryAccessor.Int
