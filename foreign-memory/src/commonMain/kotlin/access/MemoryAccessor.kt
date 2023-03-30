@@ -37,8 +37,8 @@ public sealed class MemoryAccessor<KT : Any>(public val offset: MemoryAddressSiz
 
 @ForeignMemoryApi
 public inline operator fun <KT : Any> MemoryAccessor<KT>.getValue(thisRef: MemoryHolder, property: KProperty<*>): KT? =
-    get(thisRef.segment)
+    get(thisRef.segmentInternal)
 
 @ForeignMemoryApi
 public inline operator fun <KT : Any> MemoryAccessor<KT>.setValue(thisRef: MemoryHolder, property: KProperty<*>, value: KT?): Unit =
-    set(thisRef.segment, value)
+    set(thisRef.segmentInternal, value)

@@ -20,7 +20,7 @@ public inline operator fun MemoryAccessor<out PlatformUInt>.getValue(
     thisRef: MemoryHolder,
     property: KProperty<*>
 ): PlatformUInt =
-    getRaw(thisRef.segment)
+    getRaw(thisRef.segmentInternal)
 
 @ForeignMemoryApi
 public inline operator fun MemoryAccessor<out PlatformUInt>.setValue(
@@ -28,4 +28,4 @@ public inline operator fun MemoryAccessor<out PlatformUInt>.setValue(
     property: KProperty<*>,
     value: PlatformUInt
 ): Unit =
-    setRaw(thisRef.segment, value)
+    setRaw(thisRef.segmentInternal, value)

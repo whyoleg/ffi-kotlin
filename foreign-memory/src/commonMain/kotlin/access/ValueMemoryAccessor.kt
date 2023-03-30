@@ -11,7 +11,7 @@ public abstract class ValueMemoryAccessor<KT : MemoryValue>(offset: MemoryAddres
         wrap(segment.loadSegment(offset, layout))
 
     final override fun set(segment: MemorySegment, value: KT?): Unit =
-        segment.storeSegment(offset, layout, value?.segment ?: MemorySegment.Empty)
+        segment.storeSegment(offset, layout, value?.segmentInternal ?: MemorySegment.Empty)
 }
 
 //TODO: somehow enforce it
@@ -28,11 +28,11 @@ public inline fun <KT : MemoryValue> MemoryAccessor<KT>.setRaw(segment: MemorySe
 public inline operator fun <KT : MemoryValue> MemoryAccessor<KT>.getValue(
     thisRef: MemoryHolder,
     property: KProperty<*>
-): KT = getRaw(thisRef.segment)
+): KT = getRaw(thisRef.segmentInternal)
 
 @ForeignMemoryApi
 public inline operator fun <KT : MemoryValue> MemoryAccessor<KT>.setValue(
     thisRef: MemoryHolder,
     property: KProperty<*>,
     value: KT
-): Unit = setRaw(thisRef.segment, value)
+): Unit = setRaw(thisRef.segmentInternal, value)
