@@ -48,9 +48,7 @@ internal constructor(
     public actual fun loadPointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? {
         //TODO: with JDK 21 replace asUnbounded with target layout
         //TODO: is auto scope is ok?
-        val address = segment.get(ValueLayout.ADDRESS, offset)
-        if (address == JMemorySegment.NULL) return null
-        return MemorySegment(JMemorySegment.ofAddress(address.address(), pointedLayout.size, SegmentScope.auto()))
+        return fromAddress(segment.get(ValueLayout.ADDRESS, offset), pointedLayout)
     }
 
     public actual fun storePointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?) {
@@ -73,5 +71,10 @@ internal constructor(
 
     public actual companion object {
         public actual val Empty: MemorySegment = MemorySegment(JMemorySegment.NULL)
+
+        internal fun fromAddress(address: MemoryAddress, layout: MemoryLayout): MemorySegment? {
+            if (address == JMemorySegment.NULL) return null
+            return MemorySegment(JMemorySegment.ofAddress(address.address(), layout.size, SegmentScope.auto()))
+        }
     }
 }

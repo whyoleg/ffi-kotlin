@@ -8,37 +8,44 @@ public inline fun <R> CUnsafe(block: CUnsafe.() -> R): R = with(unsafe, block)
 
 @ForeignMemoryApi
 public sealed class CUnsafe {
-    //acccess
+    //access
 
     public val CPointer<*>?.address: MemoryAddress get() = (this?.segmentInternal ?: MemorySegment.Empty).address
 
 
     //constructors
     public fun <KT : Any> CPointer(type: CType<KT>, segment: MemorySegment): CPointer<KT> {
-        //TODO: null check?
         return CPointer(type.accessor, segment)
     }
 
-    public fun <KT : Any> CPointer(type: CType<KT>, address: MemoryAddress): CPointer<KT>? {
-        return CPointer(type, MemorySegment.fromAddress(address, type.layout) ?: return null)
+    public fun <KT : Any> CPointer(
+        type: CType<KT>,
+        address: MemoryAddress,
+        obj: MemoryObject = MemoryObject.Default
+    ): CPointer<KT>? {
+        return CPointer(type, obj.unsafeMemory(address, type.layout) ?: return null)
     }
 
     public fun <KT : CGrouped<KT>> CGrouped(type: CType.Group<KT>, segment: MemorySegment): KT {
         return type.accessor.wrap(segment)
     }
 
-    public fun <KT : CGrouped<KT>> CGrouped(type: CType.Group<KT>, address: MemoryAddress): KT {
-        return type.accessor.wrap(MemorySegment.fromAddress(address, type.layout)!!)
+    public fun <KT : CGrouped<KT>> CGrouped(
+        type: CType.Group<KT>,
+        address: MemoryAddress,
+        obj: MemoryObject = MemoryObject.Default
+    ): KT {
+        return CGrouped(type, obj.unsafeMemory(address, type.layout)!!)
     }
 
     public inline fun <KT : CGrouped<KT>> CGrouped(
         type: CType.Group<KT>,
-        allocator: MemoryAllocator,
+        obj: MemoryObject = MemoryObject.Default,
         block: (address: MemoryAddress) -> Unit
     ): KT {
-        val segment = allocator.allocateMemory(type.layout)
+        val segment = obj.autoAllocator.allocateMemory(type.layout)
         block(segment.address)
-        return type.accessor.wrap(segment)
+        return CGrouped(type, segment)
     }
 
 }

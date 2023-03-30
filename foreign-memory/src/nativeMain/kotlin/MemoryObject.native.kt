@@ -14,6 +14,10 @@ public actual class MemoryObject private constructor() {
 
     public actual fun createScope(): MemoryScope = Scope()
 
+    @ForeignMemoryApi
+    public actual fun unsafeMemory(address: MemoryAddress, layout: MemoryLayout): MemorySegment? =
+        MemorySegment.fromAddress(address, layout)
+
     public actual companion object {
         public actual val Default: MemoryObject = MemoryObject()
     }

@@ -5,6 +5,10 @@ public expect class MemoryObject {
     public val autoAllocator: MemoryAllocator
     public fun createScope(): MemoryScope
 
+    //TODO: decide on naming
+    @ForeignMemoryApi
+    public fun unsafeMemory(address: MemoryAddress, layout: MemoryLayout): MemorySegment?
+
     public companion object {
         public val Default: MemoryObject
     }

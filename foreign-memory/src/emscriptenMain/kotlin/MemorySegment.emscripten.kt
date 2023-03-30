@@ -64,9 +64,7 @@ public actual class MemorySegment internal constructor(
 
     public actual fun loadPointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? {
         //TODO: is it possible to support storing pointers to other memory?
-        val address = loadInt(offset)
-        if (address == 0) return null
-        return MemorySegment(address, pointedLayout.size, memory, null)
+        return fromAddress(loadInt(offset), pointedLayout, memory)
     }
 
     public actual fun storePointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?) {
@@ -93,5 +91,10 @@ public actual class MemorySegment internal constructor(
 
     public actual companion object {
         public actual val Empty: MemorySegment = MemorySegment(0, 0, WasmMemory.Empty, null)
+
+        internal fun fromAddress(address: MemoryAddress, layout: MemoryLayout, memory: WasmMemory): MemorySegment? {
+            if (address == 0) return null
+            return MemorySegment(address, layout.size, memory, null)
+        }
     }
 }

@@ -88,9 +88,7 @@ public actual class MemorySegment internal constructor(
     public actual fun loadPointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? {
         //TODO: use sizeOf?
         checkAccessFor(offset, 8) //TODO?
-        val ptr = nativeMemUtils.getNativePtr(pointed(offset))
-        if (ptr == NativePtr.NULL) return null
-        return MemorySegment(ptr, pointedLayout.size, null)
+        return fromAddress(nativeMemUtils.getNativePtr(pointed(offset)), pointedLayout)
     }
 
     public actual fun storePointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?) {
@@ -112,5 +110,10 @@ public actual class MemorySegment internal constructor(
 
     public actual companion object {
         public actual val Empty: MemorySegment = MemorySegment(NativePtr.NULL, 0, null)
+
+        internal fun fromAddress(address: MemoryAddress, layout: MemoryLayout): MemorySegment? {
+            if (address == NativePtr.NULL) return null
+            return MemorySegment(address, layout.size, null)
+        }
     }
 }
