@@ -8,50 +8,42 @@ import dev.whyoleg.foreign.platform.PlatformUInt as PUInt
 @OptIn(ForeignMemoryApi::class)
 public sealed class CType<KT : Any> {
     @ForeignMemoryApi
-    public abstract val layout: MemoryLayout
+    public abstract val accessor: MemoryAccessor<KT>
 
     @ForeignMemoryApi
-    public abstract val accessor: MemoryAccessor<KT>
+    public open val layout: MemoryLayout get() = accessor.layout
 
     public val pointer: CType<CPointer<KT>> by lazy { Pointer(this) }
 
     public object Void : CType<Unit>() {
-        override val layout: MemoryLayout get() = MemoryLayout.Void
         override val accessor: MemoryAccessor<Unit> get() = MemoryAccessor.Void
     }
 
     public object Byte : CType<kotlin.Byte>() {
-        override val layout: MemoryLayout get() = MemoryLayout.Byte
         override val accessor: MemoryAccessor<kotlin.Byte> get() = MemoryAccessor.Byte
     }
 
     public object UByte : CType<kotlin.UByte>() {
-        override val layout: MemoryLayout get() = MemoryLayout.Byte
         override val accessor: MemoryAccessor<kotlin.UByte> get() = MemoryAccessor.UByte
     }
 
     public object Int : CType<kotlin.Int>() {
-        override val layout: MemoryLayout get() = MemoryLayout.Int
         override val accessor: MemoryAccessor<kotlin.Int> get() = MemoryAccessor.Int
     }
 
     public object UInt : CType<kotlin.UInt>() {
-        override val layout: MemoryLayout get() = MemoryLayout.Int
         override val accessor: MemoryAccessor<kotlin.UInt> get() = MemoryAccessor.UInt
     }
 
     public object PlatformInt : CType<PInt>() {
-        override val layout: MemoryLayout get() = MemoryLayout.PlatformInt
         override val accessor: MemoryAccessor<PInt> get() = MemoryAccessor.PlatformInt
     }
 
     public object PlatformUInt : CType<PUInt>() {
-        override val layout: MemoryLayout get() = MemoryLayout.PlatformInt
         override val accessor: MemoryAccessor<PUInt> get() = MemoryAccessor.PlatformUInt
     }
 
     public abstract class Opaque<KT : COpaque>(instance: KT) : CType<KT>() {
-        final override val layout: MemoryLayout get() = MemoryLayout.Void
         final override val accessor: OpaqueMemoryAccessor<KT> = OpaqueMemoryAccessor(instance)
     }
 
@@ -117,7 +109,6 @@ public sealed class CType<KT : Any> {
     }
 
     private class Pointer<KT : Any>(pointedType: CType<KT>) : CType<CPointer<KT>>() {
-        override val layout: MemoryLayout get() = MemoryLayout.Address
         override val accessor: MemoryAccessor<CPointer<KT>> = Accessor(pointedType.accessor)
 
         private class Accessor<KT : Any>(

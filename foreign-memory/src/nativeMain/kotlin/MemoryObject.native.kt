@@ -6,10 +6,10 @@ import kotlin.native.internal.*
 
 @OptIn(ForeignMemoryApi::class)
 public actual class MemoryObject private constructor() {
-    public actual val autoAllocator: MemoryAllocator = MemoryAllocator {
-        val ptr = nativeHeap.alloc(it)
+    public actual val autoAllocator: MemoryAllocator = MemoryAllocator { size, alignment ->
+        val ptr = nativeHeap.alloc(size, alignment)
         val cleaner = createCleaner(ptr) { nativeHeap.free(it) }
-        MemorySegment(ptr, it.size, cleaner)
+        MemorySegment(ptr, size, cleaner)
     }
 
     public actual fun createScope(): MemoryScope = Scope()
@@ -24,9 +24,9 @@ public actual class MemoryObject private constructor() {
 
     private class Scope : MemoryScope {
         private val arena = Arena()
-        override fun allocateMemory(layout: MemoryLayout): MemorySegment {
-            val ptr = arena.alloc(layout)
-            val segment = MemorySegment(ptr, layout.size, null)
+        override fun allocateMemory(size: MemoryAddressSize, alignment: MemoryAddressSize): MemorySegment {
+            val ptr = arena.alloc(size, alignment)
+            val segment = MemorySegment(ptr, size, null)
             arena.defer { segment.makeInaccessible() }
             return segment
         }
@@ -36,4 +36,4 @@ public actual class MemoryObject private constructor() {
 }
 
 @ForeignMemoryApi
-private fun NativePlacement.alloc(layout: MemoryLayout): NativePtr = alloc(layout.size, layout.alignment.toInt()).rawPtr
+private fun NativePlacement.alloc(size: MemoryAddressSize, alignment: MemoryAddressSize): NativePtr = alloc(size, alignment.toInt()).rawPtr

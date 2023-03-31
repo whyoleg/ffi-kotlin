@@ -13,6 +13,9 @@ internal constructor(
     internal val accessor: MemoryAccessor<KT>,
     segment: MemorySegment,
 ) : MemoryReference(segment) {
+    init {
+        check(accessor.layout.size + accessor.offset < segment.size) { "out of bound accessor" }
+    }
 
     @PublishedApi
     @ForeignMemoryApi

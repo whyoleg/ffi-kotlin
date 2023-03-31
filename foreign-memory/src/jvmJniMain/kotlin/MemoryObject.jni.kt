@@ -4,8 +4,8 @@ import java.nio.*
 
 @OptIn(ForeignMemoryApi::class)
 public actual class MemoryObject private constructor() {
-    public actual val autoAllocator: MemoryAllocator = MemoryAllocator {
-        MemorySegment(BufferHolder.Root(ByteBuffer.allocateDirect(it.size.toInt())))
+    public actual val autoAllocator: MemoryAllocator = MemoryAllocator { size, _ ->
+        MemorySegment(BufferHolder.Root(ByteBuffer.allocateDirect(size.toInt())))
     }
 
     public actual fun createScope(): MemoryScope = Scope()
@@ -20,8 +20,8 @@ public actual class MemoryObject private constructor() {
 
     private class Scope : MemoryScope {
         private val roots = mutableListOf<BufferHolder.Root>()
-        override fun allocateMemory(layout: MemoryLayout): MemorySegment {
-            val holder = BufferHolder.Root(ByteBuffer.allocateDirect(layout.size.toInt()))
+        override fun allocateMemory(size: MemoryAddressSize, alignment: MemoryAddressSize): MemorySegment {
+            val holder = BufferHolder.Root(ByteBuffer.allocateDirect(size.toInt()))
             roots.add(holder)
             return MemorySegment(holder)
         }

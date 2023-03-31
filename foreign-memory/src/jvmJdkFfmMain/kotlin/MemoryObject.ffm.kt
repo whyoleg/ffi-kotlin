@@ -4,7 +4,10 @@ import java.lang.foreign.*
 
 @OptIn(ForeignMemoryApi::class)
 public actual class MemoryObject private constructor() {
-    public actual val autoAllocator: MemoryAllocator = MemoryAllocator { SegmentScope.auto().alloc(it) }
+    public actual val autoAllocator: MemoryAllocator = MemoryAllocator { size, alignment ->
+        SegmentScope.auto().alloc(size, alignment)
+    }
+
     public actual fun createScope(): MemoryScope = Scope()
 
     @ForeignMemoryApi
@@ -18,12 +21,16 @@ public actual class MemoryObject private constructor() {
     private class Scope : MemoryScope {
         //TODO: confined vs shared
         private val arena = Arena.openShared()
-        override fun allocateMemory(layout: MemoryLayout): MemorySegment = arena.scope().alloc(layout)
+
+        override fun allocateMemory(size: MemoryAddressSize, alignment: MemoryAddressSize): MemorySegment {
+            return arena.scope().alloc(size, alignment)
+        }
+
         override fun close() = arena.close()
     }
 }
 
 @ForeignMemoryApi
-private fun SegmentScope.alloc(layout: MemoryLayout): MemorySegment {
-    return MemorySegment(java.lang.foreign.MemorySegment.allocateNative(layout.size, layout.alignment, this))
+private fun SegmentScope.alloc(size: MemoryAddressSize, alignment: MemoryAddressSize): MemorySegment {
+    return MemorySegment(java.lang.foreign.MemorySegment.allocateNative(size, alignment, this))
 }

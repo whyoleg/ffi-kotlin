@@ -6,9 +6,9 @@ public actual class MemoryObject
 constructor(
     private val memory: WasmMemory
 ) {
-    public actual val autoAllocator: MemoryAllocator = MemoryAllocator { layout ->
-        val address = memory.malloc(layout.size)
-        MemorySegment(address, layout.size, memory, createCleaner { memory.free(address) })
+    public actual val autoAllocator: MemoryAllocator = MemoryAllocator { size, _ ->
+        val address = memory.malloc(size)
+        MemorySegment(address, size, memory, createCleaner { memory.free(address) })
     }
 
     public actual fun createScope(): MemoryScope = Scope()
@@ -24,9 +24,9 @@ constructor(
     private inner class Scope : MemoryScope {
         private val segments = mutableListOf<MemorySegment>()
 
-        override fun allocateMemory(layout: MemoryLayout): MemorySegment {
-            val address = memory.malloc(layout.size)
-            val segment = MemorySegment(address, layout.size, memory, null)
+        override fun allocateMemory(size: MemoryAddressSize, alignment: MemoryAddressSize): MemorySegment {
+            val address = memory.malloc(size)
+            val segment = MemorySegment(address, size, memory, null)
             segments.add(segment)
             return segment
         }
