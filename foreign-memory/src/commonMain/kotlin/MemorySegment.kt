@@ -24,6 +24,7 @@ public expect class MemorySegment {
     public fun loadString(offset: MemoryAddressSize): String
     public fun storeString(offset: MemoryAddressSize, value: String)
 
+    //TODO: decide on parameters!!!
     public fun loadByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int = 0, arrayEndIndex: Int = array.size)
     public fun storeByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int = 0, arrayEndIndex: Int = array.size)
 

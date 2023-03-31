@@ -14,9 +14,27 @@ public expect class MemoryObject {
     }
 }
 
+//TODO: naming...
 public fun interface MemoryAllocator {
     @ForeignMemoryApi
-    public fun allocateMemory(layout: MemoryLayout): MemorySegment
+    public fun allocateMemory(size: MemoryAddressSize, alignment: MemoryAddressSize): MemorySegment
+
+    @ForeignMemoryApi
+    public fun allocateMemory(layout: MemoryLayout): MemorySegment = allocateMemory(layout.size, layout.alignment)
+
+    @ForeignMemoryApi
+    public fun allocateMemoryArray(elementLayout: MemoryLayout, elementsCount: Int): MemorySegment =
+        allocateMemory(elementLayout.size * elementsCount, elementLayout.alignment)
+
+    //TODO?
+    @ForeignMemoryApi
+    public fun allocateMemoryString(value: String): MemorySegment {
+        val bytes = value.encodeToByteArray()
+        return allocateMemory(memoryAddressSize(bytes.size), memoryAddressSize(1)).apply {
+            storeByteArray(memoryAddressSizeZero(), bytes)
+            storeByte(memoryAddressSize(bytes.size), 0)
+        }
+    }
 }
 
 //TODO: add AutoCloseable later, because now there is an error on jvm when using it...

@@ -21,6 +21,9 @@ constructor(segment: MemorySegment) : CGrouped<Self>(segment) {
 
 public sealed class CGrouped<Self : CGrouped<Self>>(segment: MemorySegment) : MemoryValue(segment) {
     public abstract val type: CType.Group<Self>
+
+    //TODO: check about it
+    public val pointer: CPointer<Self> get() = CPointer(type.accessor, segment)
 }
 
 @get:JvmName("getGroupValue")
