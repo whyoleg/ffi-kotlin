@@ -24,7 +24,7 @@ From the beginning, plugin should allow:
 
 * for annotated functions, generate multiplatform glue code which will allow to call C functions, f.e.:
   ```kotlin
-  @CCall
+  @ForeignCCall
   external fun EVP_MAC_fetch(
     libctx: CPointer<OSSL_LIB_CTX>?,
     algorithm: CString?,
@@ -33,7 +33,7 @@ From the beginning, plugin should allow:
   ```
 * for annotated structs, generate multiplatform glue code which will allow to allocate struct and access it properties, f.e.:
   ```kotlin
-  @CStruct
+  @ForeignCStruct
   external class OSSL_PARAM {
     var key: CString?
     var data_type: UInt
