@@ -40,6 +40,17 @@ include("foreign-c-runtime") // C types
 include("foreign-c-playground-lib") // some library declarations using C API
 include("foreign-c-playground") // some user code
 
+//foreign-c-runtime
+//foreign-c-index (mpp, serialization)
+//foreign-c-indexer (K/N cli, uses cinterop)
+//foreign-c-generator (generates everything, that's needed to build foreign code based on index)
+//foreign-c-compiler-plugin
+
+//foreign-gradle-plugin
+//foreign-idea-plugin - tbd what will be here :)
+
+//foreign-conan
+
 fun includeLibrary(name: String) {
     listOf("api"/*, "shared", "prebuilt", "test"*/).forEach { submodule ->
         include("libraries:$name:$name-$submodule")
