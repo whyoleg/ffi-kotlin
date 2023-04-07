@@ -5,7 +5,12 @@ import dev.whyoleg.foreign.platform.*
 import kotlin.reflect.*
 
 @ForeignMemoryApi
-internal expect class PlatformUIntMemoryAccessor(offset: MemoryAddressSize) : MemoryAccessor<PlatformUInt>
+internal class PlatformUIntMemoryAccessor(offset: MemoryAddressSize) : MemoryAccessor<PlatformUInt>(offset) {
+    override val layout: MemoryLayout get() = MemoryLayout.PlatformInt
+    override fun get(segment: MemorySegment): PlatformUInt = getRaw(segment)
+    override fun set(segment: MemorySegment, value: PlatformUInt?): Unit = setRaw(segment, value ?: 0.toPlatformUInt())
+    override fun withOffset(offset: MemoryAddressSize): MemoryAccessor<PlatformUInt> = PlatformUIntMemoryAccessor(offset)
+}
 
 @ForeignMemoryApi
 public inline fun MemoryAccessor<out PlatformUInt>.getRaw(segment: MemorySegment): PlatformUInt =
