@@ -2,12 +2,19 @@ package dev.whyoleg.foreign.memory
 
 import java.nio.*
 
+@ForeignMemoryApi
+public object BufferAllocator {
+    internal fun allocate(size: MemoryAddressSize): BufferHolder.Root {
+        return BufferHolder.Root(ByteBuffer.allocateDirect(size))
+    }
+}
+
 internal sealed class BufferHolder(buffer: ByteBuffer) {
     protected var buffer: ByteBuffer? = buffer
     abstract val isAccessible: Boolean
     abstract fun view(view: ByteBuffer): BufferHolder
 
-    class Root(buffer: ByteBuffer) : BufferHolder(buffer) {
+    class Root(buffer: ByteBuffer) : BufferHolder(buffer), AutoCloseable {
         init {
             check(buffer.isDirect)
             buffer.order(ByteOrder.nativeOrder())
@@ -16,7 +23,7 @@ internal sealed class BufferHolder(buffer: ByteBuffer) {
         override val isAccessible: Boolean get() = buffer != null
         override fun view(view: ByteBuffer): BufferHolder = View(view, this)
 
-        fun makeInaccessible() {
+        override fun close() {
             buffer = null
         }
     }
