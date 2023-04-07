@@ -4,6 +4,7 @@ package dev.whyoleg.foreign.memory
 public abstract class WasmMemory {
     public abstract fun malloc(size: MemoryAddressSize): MemoryAddress
     public abstract fun free(address: MemoryAddress)
+
     public abstract fun loadByte(address: MemoryAddressSize): Byte
     public abstract fun storeByte(address: MemoryAddressSize, value: Byte)
     public abstract fun loadInt(address: MemoryAddressSize): Int

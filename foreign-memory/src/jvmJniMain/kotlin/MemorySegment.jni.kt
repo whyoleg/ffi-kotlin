@@ -9,23 +9,23 @@ public actual class MemorySegment internal constructor(
     private inline val buffer: ByteBuffer get() = holder.access()
 
     public actual val address: MemoryAddress get() = JNI.getPointerFromByteBuffer(buffer)
-    public actual val size: MemoryAddressSize get() = buffer.capacity().toLong()
+    public actual val size: MemoryAddressSize get() = buffer.capacity()
     public actual val isAccessible: Boolean get() = holder.isAccessible
 
     //TODO: copy check access and offset from native
-    public actual fun loadByte(offset: MemoryAddressSize): Byte = buffer.get(offset.toInt())
+    public actual fun loadByte(offset: MemoryAddressSize): Byte = buffer.get(offset)
     public actual fun storeByte(offset: MemoryAddressSize, value: Byte) {
-        buffer.put(offset.toInt(), value)
+        buffer.put(offset, value)
     }
 
-    public actual fun loadInt(offset: MemoryAddressSize): Int = buffer.getInt(offset.toInt())
+    public actual fun loadInt(offset: MemoryAddressSize): Int = buffer.getInt(offset)
     public actual fun storeInt(offset: MemoryAddressSize, value: Int) {
-        buffer.putInt(offset.toInt(), value)
+        buffer.putInt(offset, value)
     }
 
-    public actual fun loadLong(offset: MemoryAddressSize): Long = buffer.getLong(offset.toInt())
+    public actual fun loadLong(offset: MemoryAddressSize): Long = buffer.getLong(offset)
     public actual fun storeLong(offset: MemoryAddressSize, value: Long) {
-        buffer.putLong(offset.toInt(), value)
+        buffer.putLong(offset, value)
     }
 
     public actual fun loadString(offset: MemoryAddressSize): String {
@@ -40,13 +40,13 @@ public actual class MemorySegment internal constructor(
 
     public actual fun loadByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int, arrayEndIndex: Int) {
         buffer.clear()
-        buffer.position(offset.toInt())
+        buffer.position(offset)
         buffer.get(array, arrayStartIndex, arrayEndIndex - arrayStartIndex)
     }
 
     public actual fun storeByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int, arrayEndIndex: Int) {
         buffer.clear()
-        buffer.position(offset.toInt())
+        buffer.position(offset)
         buffer.put(array, arrayStartIndex, arrayEndIndex - arrayStartIndex)
     }
 
@@ -61,15 +61,15 @@ public actual class MemorySegment internal constructor(
 
     public actual fun loadSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout): MemorySegment {
         buffer.clear()
-        buffer.position(offset.toInt())
-        buffer.limit((offset + valueLayout.size).toInt())
+        buffer.position(offset)
+        buffer.limit((offset + valueLayout.size))
         return MemorySegment(holder.view(buffer.slice()))
     }
 
     public actual fun storeSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout, value: MemorySegment) {
         buffer.clear()
-        buffer.position(offset.toInt())
-        buffer.limit((offset + valueLayout.size).toInt())
+        buffer.position(offset)
+        buffer.limit((offset + valueLayout.size))
         value.buffer.clear()
         buffer.put(value.buffer)
     }
@@ -81,7 +81,7 @@ public actual class MemorySegment internal constructor(
             if (address == 0L) return null
             return MemorySegment(
                 BufferHolder.Root(
-                    JNI.getByteBufferFromPointer(address, layout.size.toInt())!!
+                    JNI.getByteBufferFromPointer(address, layout.size)!!
                 )
             )
         }

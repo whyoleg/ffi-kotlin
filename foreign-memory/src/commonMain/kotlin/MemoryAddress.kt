@@ -1,6 +1,6 @@
 package dev.whyoleg.foreign.memory
 
-@Suppress("NO_ACTUAL_FOR_EXPECT") //because MemorySegment on JVM is an interface
+//@Suppress("NO_ACTUAL_FOR_EXPECT") //because MemorySegment on JVM is an interface
 @ForeignMemoryApi
 public expect class MemoryAddress
 
