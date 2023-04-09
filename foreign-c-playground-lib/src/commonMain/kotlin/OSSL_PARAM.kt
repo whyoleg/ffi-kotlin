@@ -40,3 +40,17 @@ public class OSSL_PARAM private constructor(segment: MemorySegment) : CStruct<OS
         }
     }
 }
+
+public val ForeignMemory.Companion.LibCrypto: ForeignMemory get() = TODO()
+internal val libCryptoImplicitScope = ForeignCScope.implicit(ForeignMemory.LibCrypto)
+
+public fun OSSL_PARAM_construct_utf8_string(
+    key: CString?,
+    buf: CString?,
+    bsize: PlatformUInt,
+    scope: ForeignCScope = libCryptoImplicitScope
+): OSSL_PARAM = external()
+
+public fun OSSL_PARAM_construct_end(scope: ForeignCScope = libCryptoImplicitScope): OSSL_PARAM = external()
+
+private fun external(): Nothing = TODO()

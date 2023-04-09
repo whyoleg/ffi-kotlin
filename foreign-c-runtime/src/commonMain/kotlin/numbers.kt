@@ -21,17 +21,17 @@ public inline operator fun CPointer<Byte>.getValue(thisRef: Any?, property: KPro
 @JvmName("setByteValue")
 public inline operator fun CPointer<Byte>.setValue(thisRef: Any?, property: KProperty<*>, value: Byte): Unit = run { this.pointed = value }
 
-public inline fun MemoryScope.allocatePointerFor(type: CType.Byte, value: Byte): CPointer<Byte> =
-    allocatePointerFor(type).apply { this.pointed = value }
+public inline fun ForeignCScope.cPointerOf(type: CType.Byte, value: Byte): CPointer<Byte> =
+    cPointerOf(type).apply { this.pointed = value }
 
-public inline fun MemoryScope.allocatePointerFor(ignored: Byte.Companion, value: Byte = 0): CPointer<Byte> =
-    allocatePointerFor(CType.Byte, value)
+public inline fun ForeignCScope.cPointerOf(ignored: Byte.Companion, value: Byte = 0): CPointer<Byte> =
+    cPointerOf(CType.Byte, value)
 
-public inline fun MemoryScope.allocatePointer(value: Byte): CPointer<Byte> = allocatePointerFor(CType.Byte, value)
+public inline fun ForeignCScope.cPointerOf(value: Byte): CPointer<Byte> = cPointerOf(CType.Byte, value)
 
 @JvmName("pointerByte")
-public inline fun MemoryScope.allocatePointer(value: CPointer<Byte>?): CPointer<CPointer<Byte>> =
-    allocatePointerFor(CType.Byte.pointer, value)
+public inline fun ForeignCScope.cPointerOf(value: CPointer<Byte>?): CPointer<CPointer<Byte>> =
+    cPointerOf(CType.Byte.pointer).apply { pointed = value }
 
 @get:JvmName("getIntValue")
 @set:JvmName("setIntValue")
@@ -45,16 +45,17 @@ public inline operator fun CPointer<Int>.getValue(thisRef: Any?, property: KProp
 @JvmName("setIntValue")
 public inline operator fun CPointer<Int>.setValue(thisRef: Any?, property: KProperty<*>, value: Int): Unit = run { this.pointed = value }
 
-public inline fun MemoryScope.allocatePointerFor(type: CType.Int, value: Int): CPointer<Int> =
-    allocatePointerFor(type).apply { this.pointed = value }
+public inline fun ForeignCScope.cPointerOf(type: CType.Int, value: Int): CPointer<Int> =
+    cPointerOf(type).apply { this.pointed = value }
 
-public inline fun MemoryScope.allocatePointerFor(ignored: Int.Companion, value: Int = 0): CPointer<Int> =
-    allocatePointerFor(CType.Int, value)
+public inline fun ForeignCScope.cPointerOf(ignored: Int.Companion, value: Int = 0): CPointer<Int> =
+    cPointerOf(CType.Int, value)
 
-public inline fun MemoryScope.allocatePointer(value: Int): CPointer<Int> = allocatePointerFor(CType.Int, value)
+public inline fun ForeignCScope.cPointerOf(value: Int): CPointer<Int> = cPointerOf(CType.Int, value)
 
 @JvmName("pointerInt")
-public inline fun MemoryScope.allocatePointer(value: CPointer<Int>?): CPointer<CPointer<Int>> = allocatePointerFor(CType.Int.pointer, value)
+public inline fun ForeignCScope.cPointerOf(value: CPointer<Int>?): CPointer<CPointer<Int>> =
+    cPointerOf(CType.Int.pointer).apply { pointed = value }
 
 @get:JvmName("getUIntValue")
 @set:JvmName("setUIntValue")
@@ -68,17 +69,17 @@ public inline operator fun CPointer<UInt>.getValue(thisRef: Any?, property: KPro
 @JvmName("setUIntValue")
 public inline operator fun CPointer<UInt>.setValue(thisRef: Any?, property: KProperty<*>, value: UInt): Unit = run { this.pointed = value }
 
-public inline fun MemoryScope.allocatePointerFor(type: CType.UInt, value: UInt): CPointer<UInt> =
-    allocatePointerFor(type).apply { this.pointed = value }
+public inline fun ForeignCScope.cPointerOf(type: CType.UInt, value: UInt): CPointer<UInt> =
+    cPointerOf(type).apply { this.pointed = value }
 
-public inline fun MemoryScope.allocatePointerFor(ignored: UInt.Companion, value: UInt = 0U): CPointer<UInt> =
-    allocatePointerFor(CType.UInt, value)
+public inline fun ForeignCScope.cPointerOf(ignored: UInt.Companion, value: UInt = 0U): CPointer<UInt> =
+    cPointerOf(CType.UInt, value)
 
-public inline fun MemoryScope.allocatePointer(value: UInt): CPointer<UInt> = allocatePointerFor(CType.UInt, value)
+public inline fun ForeignCScope.cPointerOf(value: UInt): CPointer<UInt> = cPointerOf(CType.UInt, value)
 
 @JvmName("pointerUInt")
-public inline fun MemoryScope.allocatePointer(value: CPointer<UInt>?): CPointer<CPointer<UInt>> =
-    allocatePointerFor(CType.UInt.pointer, value)
+public inline fun ForeignCScope.cPointerOf(value: CPointer<UInt>?): CPointer<CPointer<UInt>> =
+    cPointerOf(CType.UInt.pointer).apply { pointed = value }
 
 @get:JvmName("getPlatformUIntValue")
 @set:JvmName("setPlatformUIntValue")
@@ -93,14 +94,14 @@ public inline operator fun CPointer<out PlatformUInt>.getValue(thisRef: Any?, pr
 public inline operator fun CPointer<out PlatformUInt>.setValue(thisRef: Any?, property: KProperty<*>, value: PlatformUInt): Unit =
     run { this.pointed = value }
 
-public inline fun MemoryScope.allocatePointerFor(type: CType.PlatformUInt, value: PlatformUInt): CPointer<PlatformUInt> =
-    allocatePointerFor(type).apply { this.pointed = value }
+public inline fun ForeignCScope.cPointerOf(type: CType.PlatformUInt, value: PlatformUInt): CPointer<PlatformUInt> =
+    cPointerOf(type).apply { this.pointed = value }
 
-//public inline fun MemoryScope.allocatePointerFor(ignored: PlatformUInt.Companion, value: PlatformUInt = 0U): CPointer<PlatformUInt> =
+//public inline fun ForeignCScope.allocatePointerFor(ignored: PlatformUInt.Companion, value: PlatformUInt = 0U): CPointer<PlatformUInt> =
 //    allocatePointerFor(CType.PlatformUInt, value)
 
-//public inline fun MemoryScope.allocatePointer(value: PlatformUInt): CPointer<PlatformUInt> = allocatePointerFor(CType.PlatformUInt, value)
+//public inline fun ForeignCScope.allocatePointer(value: PlatformUInt): CPointer<PlatformUInt> = allocatePointerFor(CType.PlatformUInt, value)
 
 //@JvmName("pointerPlatformUInt")
-//public inline fun MemoryScope.allocatePointer(value: CPointer<PlatformUInt>?): CPointer<CPointer<PlatformUInt>> =
+//public inline fun ForeignCScope.allocatePointer(value: CPointer<PlatformUInt>?): CPointer<CPointer<PlatformUInt>> =
 //    allocatePointerFor(CType.PlatformUInt.pointer, value)

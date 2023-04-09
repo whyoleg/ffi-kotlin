@@ -2,15 +2,14 @@ package dev.whyoleg.foreign.playground
 
 import dev.whyoleg.foreign.c.*
 import dev.whyoleg.foreign.lib.*
-import dev.whyoleg.foreign.memory.*
 
-internal fun testFunc(): Unit = memoryScoped {
-    val b = allocatePointer(5.toByte())
+internal fun testFunc(): Unit = foreignC {
+    val b = cPointerOf(5.toByte())
 
     val bb by b
 
-    val lengthVar: CPointer<Byte> = allocatePointer(5.toByte())
-    val ptrVar: CPointer<CPointer<Byte>> = allocatePointer(lengthVar)
+    val lengthVar: CPointer<Byte> = cPointerOf(5.toByte())
+    val ptrVar: CPointer<CPointer<Byte>> = cPointerOf(lengthVar)
 
     var ptr: CPointer<Byte>? by ptrVar
     var length: Byte by lengthVar
@@ -24,22 +23,28 @@ internal fun testFunc(): Unit = memoryScoped {
     useValue(paramPointer.pointed)
 
     val paramValue = returnValue(4)
-    val paramValuePointer = allocatePointer(paramValue)
+    val paramValuePointer = cPointerOf(paramValue)
 
-    val s = allocatePointerFor(OSSL_PARAM)
+    val s = cPointerOf(OSSL_PARAM)
+
+    val array = cArrayOf(OSSL_PARAM) {
+        add(OSSL_PARAM_construct_end())
+    }
 
     useValue(paramValue)
     usePointer(paramValuePointer)
 
-    val test = allocatePointerFor(CType.Byte, 5)
-    val test2 = allocatePointerFor(Byte)
-    val test3 = allocatePointerFor(CType.Byte.pointer)
+    val test = cPointerOf(CType.Byte, 5)
+    val test2 = cPointerOf(Byte)
 
-    val param = allocatePointer(OSSL_PARAM) {
+    val tt = cPointerOf(CType.PlatformUInt)
+    val test3 = cPointerOf(CType.Byte.pointer)
+
+    val param = cPointerOf(OSSL_PARAM) {
         data_type = 123U
     }
 
-    val para = allocateStruct(OSSL_PARAM) {
+    val para = cStructOf(OSSL_PARAM) {
 
     }
 }
