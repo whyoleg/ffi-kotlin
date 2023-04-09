@@ -21,9 +21,6 @@ constructor(segment: MemorySegment) : CGrouped<Self>(segment) {
 
 public sealed class CGrouped<Self : CGrouped<Self>>(segment: MemorySegment) : MemoryValue(segment) {
     public abstract val type: CType.Group<Self>
-
-    //TODO: check about it
-    public val pointer: CPointer<Self> get() = CPointer(type.accessor, segment)
 }
 
 @get:JvmName("getGroupValue")
@@ -40,11 +37,17 @@ public inline operator fun <KT : CGrouped<KT>> CPointer<KT>.setValue(thisRef: An
     this.pointed = value
 }
 
-public inline fun <KT : CGrouped<KT>> MemoryScope.allocatePointer(value: KT): CPointer<KT> = allocatePointerFor(value.type, value)
+public inline fun <KT : CGrouped<KT>> ForeignCScope.cPointerOf(value: KT): CPointer<KT> =
+    cPointerOf(value.type).apply { pointed = value }
 
-public inline fun <KT : CGrouped<KT>> MemoryScope.allocatePointer(type: CType.Group<KT>, block: KT.() -> Unit): CPointer<KT> =
-    allocatePointerFor(type).apply { pointed.block() }
+public inline fun <KT : CGrouped<KT>> ForeignCScope.cPointerOf(type: CType.Group<KT>, block: KT.() -> Unit): CPointer<KT> =
+    cPointerOf(type).apply { pointed.block() }
 
-public inline fun <KT : CGrouped<KT>> MemoryScope.allocateStruct(type: CType.Group<KT>, block: KT.() -> Unit = {}): KT {
-    return unsafe.CGrouped(type, allocateMemory(type.layout)).apply(block)
+public inline fun <KT : CGrouped<KT>> ForeignCScope.cGroupedOf(type: CType.Group<KT>, block: KT.() -> Unit = {}): KT = unsafe {
+    CGrouped(type, arena.allocate(type.layout)).apply(block)
 }
+
+public inline fun <KT : CStruct<KT>> ForeignCScope.cStructOf(type: CType.Struct<KT>, block: KT.() -> Unit = {}): KT =
+    cGroupedOf(type, block)
+
+public inline fun <KT : CUnion<KT>> ForeignCScope.cUnionOf(type: CType.Union<KT>, block: KT.() -> Unit = {}): KT = cGroupedOf(type, block)

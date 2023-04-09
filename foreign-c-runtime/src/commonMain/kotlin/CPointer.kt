@@ -37,12 +37,8 @@ public inline operator fun <KT : Any> CPointer<KT>.setValue(thisRef: Any?, prope
     this.pointed = value
 }
 
-public fun <KT : Any> MemoryScope.allocatePointerFor(type: CType<KT>): CPointer<KT> {
-    return unsafe.CPointer(type, allocateMemory(type.layout))
-}
-
-public fun <KT : Any> MemoryScope.allocatePointerFor(type: CType<KT>, value: KT?): CPointer<KT> {
-    return allocatePointerFor(type).apply { pointed = value }
+public fun <KT : Any> ForeignCScope.cPointerOf(type: CType<KT>): CPointer<KT> = unsafe {
+    CPointer(type, arena.allocate(type.layout))
 }
 
 // TODO: recheck
