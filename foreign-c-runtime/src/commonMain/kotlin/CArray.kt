@@ -1,5 +1,3 @@
-@file:OptIn(ForeignMemoryApi::class)
-
 package dev.whyoleg.foreign.c
 
 import dev.whyoleg.foreign.memory.*
@@ -7,6 +5,7 @@ import dev.whyoleg.foreign.memory.access.*
 
 public typealias CArrayPointer<KT> = CPointer<KT>
 
+@OptIn(ForeignMemoryApi::class)
 public class CArray<KT : Any>
 internal constructor(
     public val size: Int,
@@ -14,6 +13,7 @@ internal constructor(
     segment: MemorySegment,
 ) : CArrayPointer<KT>(accessor, segment)
 
+@OptIn(ForeignMemoryApi::class)
 public operator fun <KT : Any> CArray<KT>.get(index: Int): CPointer<KT> {
     if (index == 0) return this
     check(index < size) { "Array out of bound access" }
@@ -25,13 +25,18 @@ public operator fun <KT : Any> CArray<KT>.get(index: Int): CPointer<KT> {
     )
 }
 
-public fun <KT : Any> ForeignCScope.allocateArrayFor(type: CType<KT>, size: Int): CArray<KT> = unsafe {
+@OptIn(ForeignMemoryApi::class)
+public fun CArray<Byte>.ofUByte(): CArray<UByte> = CArray(size, MemoryAccessor.UByte.at(accessor.offset), segmentInternal)
+
+@OptIn(ForeignMemoryApi::class)
+public fun <KT : Any> ForeignCScope.cArray(type: CType<KT>, size: Int): CArray<KT> = unsafe {
     CArray(size, type.accessor, arena.allocateArray(type.layout, size))
 }
 
 public fun <KT : Any> ForeignCScope.cArrayOf(type: CType<KT>, elements: List<KT>): CArray<KT> {
-    return allocateArrayFor(type, elements.size).apply {
+    return cArray(type, elements.size).apply {
         elements.forEachIndexed { index, element ->
+            //TODO: Optimize
             get(index).pointed = element
         }
     }
@@ -46,16 +51,21 @@ public inline fun <KT : Any> ForeignCScope.cArrayOf(type: CType<KT>, builderActi
     return cArrayOf(type, buildList(builderAction))
 }
 
-public inline fun ForeignCScope.cArray(array: ByteArray): CArray<Byte> {
-    return allocateArrayFor(CType.Byte, array.size).apply {
+public inline fun ForeignCScope.cArrayOf(vararg elements: Byte): CArray<Byte> = cArrayCopy(elements)
+//public inline fun ForeignCScope.cArrayOf(vararg elements: Int): CArray<Int> = cArrayCopy(elements)
+
+@OptIn(ForeignMemoryApi::class)
+public inline fun ForeignCScope.cArrayCopy(array: ByteArray): CArray<Byte> {
+    return cArray(CType.Byte, array.size).apply {
         segmentInternal.storeByteArray(memoryAddressSizeZero(), array)
     }
 }
 
 //TODO: same for all primitives
-//TODO: naming
+//TODO: which parameters?
+@OptIn(ForeignMemoryApi::class)
 public fun CArray<Byte>.copyInto(destination: ByteArray, destinationOffset: Int = 0, startIndex: Int = 0, endIndex: Int = size): ByteArray {
-    segmentInternal.loadByteArray(memoryAddressSize(startIndex), destination, destinationOffset, TODO())
+    segmentInternal.loadByteArray(memoryAddressSize(startIndex), destination, destinationOffset, endIndex)
     return destination
 }
 
