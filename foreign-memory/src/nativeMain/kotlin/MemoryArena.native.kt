@@ -30,6 +30,10 @@ internal sealed class MemoryArenaImpl : MemoryArena {
         }
 
         override fun close(): Unit = arena.clear()
+
+        override fun invokeOnClose(block: () -> Unit) {
+            arena.defer(block)
+        }
     }
 
     object Implicit : MemoryArenaImpl() {
@@ -41,7 +45,11 @@ internal sealed class MemoryArenaImpl : MemoryArena {
         }
 
         override fun close() {
-            //no-op
+            TODO("should not be called on implicit scope")
+        }
+
+        override fun invokeOnClose(block: () -> Unit) {
+            TODO("should not be called on implicit scope")
         }
     }
 }

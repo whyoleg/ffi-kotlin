@@ -15,25 +15,32 @@ internal sealed class MemoryArenaImpl private constructor(
     override fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment? = TODO()
 
     class Shared(memory: WasmMemory) : MemoryArenaImpl(memory) {
-        private val segments = mutableListOf<MemorySegment>()
-        private val cleaner = createCleaner(FreeAction(memory, segments))
+        private val actions = mutableListOf<() -> Unit>()
+        private val cleaner = createCleaner(FreeAction(actions))
 
         override fun allocate(size: MemoryAddressSize, alignment: MemoryAddressSize): MemorySegment {
             val address = allocator.malloc(size)
             val segment = MemorySegment(address, size, allocator, null)
-            segments.add(segment)
+
+            //TODO: will it work correctly?
+            val memory = allocator
+            actions.add {
+                segment.makeInaccessible()
+                memory.free(segment.address)
+            }
             return segment
         }
 
         override fun close() = cleaner.clean()
 
-        private class FreeAction(private val memory: WasmMemory, private val segments: MutableList<MemorySegment>) : CleanupAction() {
+        override fun invokeOnClose(block: () -> Unit) {
+            actions.add(block)
+        }
+
+        private class FreeAction(private val actions: MutableList<() -> Unit>) : CleanupAction() {
             override fun run() {
-                segments.forEach {
-                    it.makeInaccessible()
-                    memory.free(it.address)
-                }
-                segments.clear()
+                actions.forEach { it.runCatching { invoke() } }
+                actions.clear()
             }
         }
     }
@@ -45,8 +52,12 @@ internal sealed class MemoryArenaImpl private constructor(
             return MemorySegment(address, size, allocator, cleaner)
         }
 
+        override fun invokeOnClose(block: () -> Unit) {
+            TODO("should not be called on implicit scope")
+        }
+
         override fun close() {
-            //no-op
+            TODO("should not be called on implicit scope")
         }
 
         private class FreeAction(private val memory: WasmMemory, private val address: MemoryAddress) : CleanupAction() {
