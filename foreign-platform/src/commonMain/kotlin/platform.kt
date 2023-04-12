@@ -27,6 +27,7 @@ public expect value class PlatformUInt internal constructor(internal val data: P
 public expect inline fun PlatformInt.toPlatformUInt(): PlatformUInt
 public expect inline fun PlatformUInt.toPlatformInt(): PlatformInt
 
+//TODO: is there will be boxing here?
 public expect inline fun Number.toPlatformInt(): PlatformInt
 public expect inline fun Number.toPlatformUInt(): PlatformUInt
 

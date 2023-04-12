@@ -1,5 +1,3 @@
-@file:OptIn(ForeignMemoryApi::class)
-
 package dev.whyoleg.foreign.c
 
 import dev.whyoleg.foreign.memory.*
@@ -9,6 +7,7 @@ import kotlin.jvm.*
 import kotlin.reflect.*
 
 // all those re-declarations are needed to overcome boxing...
+@OptIn(ForeignMemoryApi::class)
 @get:JvmName("getByteValue")
 @set:JvmName("setByteValue")
 public inline var CPointer<Byte>.pointed: Byte
@@ -33,6 +32,10 @@ public inline fun ForeignCScope.cPointerOf(value: Byte): CPointer<Byte> = cPoint
 public inline fun ForeignCScope.cPointerOf(value: CPointer<Byte>?): CPointer<CPointer<Byte>> =
     cPointerOf(CType.Byte.pointer).apply { pointed = value }
 
+@OptIn(ForeignMemoryApi::class)
+public fun CPointer<Byte>.ofUByte(): CPointer<UByte> = CPointer(MemoryAccessor.UByte.at(accessor.offset), segmentInternal)
+
+@OptIn(ForeignMemoryApi::class)
 @get:JvmName("getIntValue")
 @set:JvmName("setIntValue")
 public inline var CPointer<Int>.pointed: Int
@@ -57,6 +60,7 @@ public inline fun ForeignCScope.cPointerOf(value: Int): CPointer<Int> = cPointer
 public inline fun ForeignCScope.cPointerOf(value: CPointer<Int>?): CPointer<CPointer<Int>> =
     cPointerOf(CType.Int.pointer).apply { pointed = value }
 
+@OptIn(ForeignMemoryApi::class)
 @get:JvmName("getUIntValue")
 @set:JvmName("setUIntValue")
 public inline var CPointer<UInt>.pointed: UInt
@@ -81,6 +85,7 @@ public inline fun ForeignCScope.cPointerOf(value: UInt): CPointer<UInt> = cPoint
 public inline fun ForeignCScope.cPointerOf(value: CPointer<UInt>?): CPointer<CPointer<UInt>> =
     cPointerOf(CType.UInt.pointer).apply { pointed = value }
 
+@OptIn(ForeignMemoryApi::class)
 @get:JvmName("getPlatformUIntValue")
 @set:JvmName("setPlatformUIntValue")
 public inline var CPointer<out PlatformUInt>.pointed: PlatformUInt

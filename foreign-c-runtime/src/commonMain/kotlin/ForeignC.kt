@@ -12,6 +12,18 @@ public value class ForeignCScope
 private constructor(private val arena: MemoryArena) : AutoCloseable {
     override fun close(): Unit = arena.close()
 
+    //TODO: decide on function names
+    public fun cleanup(block: () -> Unit) {
+        arena.invokeOnClose(block)
+    }
+
+    public inline fun <T> cleanup(resource: T, crossinline block: (T) -> Unit): T {
+        cleanup { block(resource) }
+        return resource
+    }
+
+    public inline fun <T> T.withCleanup(crossinline block: (T) -> Unit): T = cleanup(this, block)
+
     @ForeignMemoryApi
     @PublishedApi
     internal val unsafe: UnsafeC get() = UnsafeC(arena)
@@ -33,3 +45,6 @@ public annotation class ForeignCStruct
 
 @Target(AnnotationTarget.FUNCTION)
 public annotation class ForeignCCall
+
+@Target(AnnotationTarget.FUNCTION)
+public annotation class ForeignCConst

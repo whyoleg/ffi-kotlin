@@ -14,4 +14,7 @@ public interface MemoryArena : AutoCloseable {
     public fun allocateString(value: String): MemorySegment = TODO()
 
     public fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment?
+
+    //TODO: name, contract?
+    public fun invokeOnClose(block: () -> Unit)
 }
