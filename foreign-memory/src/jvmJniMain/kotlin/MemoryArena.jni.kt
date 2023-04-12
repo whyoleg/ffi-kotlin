@@ -13,7 +13,9 @@ internal sealed class MemoryArenaImpl : MemoryArena {
     }
 
     class Shared : MemoryArenaImpl() {
+        //TODO: cleaner support?
         private val roots = mutableListOf<BufferHolder.Root>()
+        private val actions = mutableListOf<() -> Unit>()
         override fun allocate(size: MemoryAddressSize, alignment: MemoryAddressSize): MemorySegment {
             val holder = BufferAllocator.allocate(size)
             roots.add(holder)
@@ -21,9 +23,15 @@ internal sealed class MemoryArenaImpl : MemoryArena {
         }
 
         override fun close(): Unit {
+            actions.forEach { it.runCatching { invoke() } }
+            actions.clear()
             // no real cleanup for ByteBuffers for now
             roots.forEach { it.close() }
             roots.clear()
+        }
+
+        override fun invokeOnClose(block: () -> Unit) {
+            actions.add(block)
         }
     }
 
@@ -34,7 +42,11 @@ internal sealed class MemoryArenaImpl : MemoryArena {
         }
 
         override fun close() {
-            //no-op
+            TODO("should not be called on implicit scope")
+        }
+
+        override fun invokeOnClose(block: () -> Unit) {
+            TODO("should not be called on implicit scope")
         }
     }
 }
