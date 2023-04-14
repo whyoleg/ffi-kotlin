@@ -34,8 +34,7 @@ gradleEnterprise {
 rootProject.name = "ffi-kotlin"
 
 // Code is divided in separate modules depending on the layer of foreign access
-include("foreign-platform") // TBD what will be here - for now only PlatformInt
-include("foreign-memory") // foreign memory management
+include("foreign-core") // foreign memory management, library loading (for some targets), base FFI (for some targets), PlatformInt
 include("foreign-c-runtime") // C types
 include("foreign-c-playground-lib") // some library declarations using C API
 include("foreign-c-playground") // some user code
