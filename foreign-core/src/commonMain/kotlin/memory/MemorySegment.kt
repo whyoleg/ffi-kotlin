@@ -39,6 +39,12 @@ public expect class MemorySegment {
     public fun loadSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout): MemorySegment
     public fun storeSegment(offset: MemoryAddressSize, valueLayout: MemoryLayout, value: MemorySegment)
 
+    // returned segments in those calls should be linked to the same scope
+    //TODO: naming
+    public fun resize(layout: MemoryLayout): MemorySegment
+    public fun resize(elementLayout: MemoryLayout, elementsCount: Int): MemorySegment
+    public fun asUnbounded(): MemorySegment
+
     public companion object {
         public val Empty: MemorySegment
     }

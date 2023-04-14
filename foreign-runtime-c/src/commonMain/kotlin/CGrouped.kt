@@ -1,5 +1,3 @@
-@file:OptIn(ForeignMemoryApi::class)
-
 package dev.whyoleg.foreign.c
 
 import dev.whyoleg.foreign.memory.*
@@ -7,22 +5,26 @@ import dev.whyoleg.foreign.memory.access.*
 import kotlin.jvm.*
 import kotlin.reflect.*
 
+@OptIn(ForeignMemoryApi::class)
 public abstract class CStruct<Self : CStruct<Self>>
 @ForeignMemoryApi
 constructor(segment: MemorySegment) : CGrouped<Self>(segment) {
     public abstract override val type: CType.Struct<Self>
 }
 
+@OptIn(ForeignMemoryApi::class)
 public abstract class CUnion<Self : CUnion<Self>>
 @ForeignMemoryApi
 constructor(segment: MemorySegment) : CGrouped<Self>(segment) {
     public abstract override val type: CType.Union<Self>
 }
 
+@OptIn(ForeignMemoryApi::class)
 public sealed class CGrouped<Self : CGrouped<Self>>(segment: MemorySegment) : MemoryValue(segment) {
     public abstract val type: CType.Group<Self>
 }
 
+@OptIn(ForeignMemoryApi::class)
 @get:JvmName("getGroupValue")
 @set:JvmName("setGroupValue")
 public inline var <KT : CGrouped<KT>> CPointer<KT>.pointed: KT
@@ -37,12 +39,15 @@ public inline operator fun <KT : CGrouped<KT>> CPointer<KT>.setValue(thisRef: An
     this.pointed = value
 }
 
+// factory functions
+
 public inline fun <KT : CGrouped<KT>> ForeignCScope.cPointerOf(value: KT): CPointer<KT> =
     cPointerOf(value.type).apply { pointed = value }
 
 public inline fun <KT : CGrouped<KT>> ForeignCScope.cPointerOf(type: CType.Group<KT>, block: KT.() -> Unit): CPointer<KT> =
     cPointerOf(type).apply { pointed.block() }
 
+@OptIn(ForeignMemoryApi::class)
 public inline fun <KT : CGrouped<KT>> ForeignCScope.cGroupedOf(type: CType.Group<KT>, block: KT.() -> Unit = {}): KT = unsafe {
     CGrouped(type, arena.allocate(type.layout)).apply(block)
 }

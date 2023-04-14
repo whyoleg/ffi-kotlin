@@ -8,12 +8,14 @@ import dev.whyoleg.foreign.memory.access.*
 import dev.whyoleg.foreign.platform.*
 
 @OptIn(ForeignMemoryApi::class)
+@ForeignCOpaque
 public class EVP_PKEY private constructor() : COpaque() {
     public companion object Type : CType.Opaque<EVP_PKEY>(EVP_PKEY())
 }
 
 // TODO: we can use compiler plugin to generate `Type` similar to how kx.serialization works
 @OptIn(ForeignMemoryApi::class)
+@ForeignCStruct
 public class OSSL_PARAM private constructor(segment: MemorySegment) : CStruct<OSSL_PARAM>(segment) {
     override val type: CType.Struct<OSSL_PARAM> get() = Type
     public var key: CString? by Type.key
@@ -44,6 +46,7 @@ public class OSSL_PARAM private constructor(segment: MemorySegment) : CStruct<OS
 public val ForeignMemory.Companion.LibCrypto: ForeignMemory get() = TODO()
 internal val libCryptoImplicitScope = ForeignCScope.implicit(ForeignMemory.LibCrypto)
 
+@ForeignCCall
 public fun OSSL_PARAM_construct_utf8_string(
     key: CString?,
     buf: CString?,
@@ -51,6 +54,7 @@ public fun OSSL_PARAM_construct_utf8_string(
     scope: ForeignCScope = libCryptoImplicitScope
 ): OSSL_PARAM = external()
 
+@ForeignCCall
 public fun OSSL_PARAM_construct_end(scope: ForeignCScope = libCryptoImplicitScope): OSSL_PARAM = external()
 
 private fun external(): Nothing = TODO()
