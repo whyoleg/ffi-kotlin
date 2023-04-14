@@ -1,5 +1,3 @@
-@file:OptIn(ForeignMemoryApi::class)
-
 package dev.whyoleg.foreign.c
 
 import dev.whyoleg.foreign.memory.*
@@ -7,8 +5,7 @@ import dev.whyoleg.foreign.memory.access.*
 import kotlin.jvm.*
 import kotlin.reflect.*
 
-public typealias UnsafeCPointer<KT> = CPointer<KT>
-
+@OptIn(ForeignMemoryApi::class)
 public open class CPointer<KT : Any>
 internal constructor(
     @PublishedApi
@@ -32,6 +29,7 @@ internal constructor(
 }
 
 // those should be extensions on CPointer and not members to be able to use declarations for primitives to avoid boxing
+@OptIn(ForeignMemoryApi::class)
 @get:JvmName("getAnyValue")
 @set:JvmName("setAnyValue")
 public inline var <KT : Any> CPointer<KT>.pointed: KT?
@@ -46,11 +44,9 @@ public inline operator fun <KT : Any> CPointer<KT>.setValue(thisRef: Any?, prope
     this.pointed = value
 }
 
+// factory functions
+
+@OptIn(ForeignMemoryApi::class)
 public fun <KT : Any> ForeignCScope.cPointerOf(type: CType<KT>): CPointer<KT> = unsafe {
     CPointer(type, arena.allocate(type.layout))
-}
-
-// TODO: recheck
-public fun <KT : Any> CPointer<*>.reinterpret(type: CType<KT>): CPointer<KT> {
-    return type.pointer.accessor.get(segmentInternal2.loadSegment(accessor.offset, type.layout))!!
 }

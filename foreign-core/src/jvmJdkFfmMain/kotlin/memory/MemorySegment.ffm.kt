@@ -46,9 +46,7 @@ internal constructor(
     }
 
     public actual fun loadPointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout): MemorySegment? {
-        //TODO: with JDK 21 replace asUnbounded with target layout
-        //TODO: is auto scope is ok?
-        return fromAddress(segment.get(ValueLayout.ADDRESS, offset), pointedLayout)
+        return fromAddress(segment.get(ValueLayout.ADDRESS, offset), pointedLayout.size, SegmentScope.auto())
     }
 
     public actual fun storePointed(offset: MemoryAddressSize, pointedLayout: MemoryLayout, value: MemorySegment?) {
@@ -69,12 +67,23 @@ internal constructor(
         )
     }
 
+    private fun resize(size: MemoryAddressSize): MemorySegment = MemorySegment(segment.resize(size))
+
+    public actual fun resize(layout: MemoryLayout): MemorySegment = resize(layout.size)
+    public actual fun resize(elementLayout: MemoryLayout, elementsCount: Int): MemorySegment = resize(elementLayout.size * elementsCount)
+    public actual fun asUnbounded(): MemorySegment = resize(Long.MAX_VALUE)
+
     public actual companion object {
         public actual val Empty: MemorySegment = MemorySegment(JMemorySegment.NULL)
 
-        internal fun fromAddress(address: MemoryAddress, layout: MemoryLayout): MemorySegment? {
+        internal fun fromAddress(address: MemoryAddress, size: MemoryAddressSize, scope: SegmentScope): MemorySegment? {
             if (address == JMemorySegment.NULL) return null
-            return MemorySegment(JMemorySegment.ofAddress(address.address(), layout.size, SegmentScope.auto()))
+            return MemorySegment(address.resize(size, scope))
         }
     }
+}
+
+@ForeignMemoryApi
+private fun JMemorySegment.resize(size: MemoryAddressSize, scope: SegmentScope = scope()): JMemorySegment {
+    return JMemorySegment.ofAddress(address(), size, scope)
 }

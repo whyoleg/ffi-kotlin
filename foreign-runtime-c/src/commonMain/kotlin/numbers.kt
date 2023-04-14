@@ -32,6 +32,7 @@ public inline fun ForeignCScope.cPointerOf(value: Byte): CPointer<Byte> = cPoint
 public inline fun ForeignCScope.cPointerOf(value: CPointer<Byte>?): CPointer<CPointer<Byte>> =
     cPointerOf(CType.Byte.pointer).apply { pointed = value }
 
+// returned pointer has the same scope as an original pointer
 @OptIn(ForeignMemoryApi::class)
 public fun CPointer<Byte>.ofUByte(): CPointer<UByte> = CPointer(MemoryAccessor.UByte.at(accessor.offset), segmentInternal2)
 

@@ -19,10 +19,8 @@ internal sealed class MemoryArenaImpl : MemoryArena {
     }
 
     override fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment? {
-        scope
-        return MemorySegment.fromAddress(address, layout)
+        return MemorySegment.fromAddress(address, layout.size, scope)
     }
-
 
     class Shared : MemoryArenaImpl() {
         private val arena = Arena.openShared()

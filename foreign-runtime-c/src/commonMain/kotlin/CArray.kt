@@ -28,6 +28,8 @@ public operator fun <KT : Any> CArray<KT>.get(index: Int): CPointer<KT> {
 @OptIn(ForeignMemoryApi::class)
 public fun CArray<Byte>.ofUByte(): CArray<UByte> = CArray(size, MemoryAccessor.UByte.at(accessor.offset), segmentInternal2)
 
+// factory functions
+
 @OptIn(ForeignMemoryApi::class)
 public fun <KT : Any> ForeignCScope.cArray(type: CType<KT>, size: Int): CArray<KT> = unsafe {
     CArray(size, type.accessor, arena.allocateArray(type.layout, size))
@@ -60,6 +62,8 @@ public inline fun ForeignCScope.cArrayCopy(array: ByteArray): CArray<Byte> {
         segmentInternal2.storeByteArray(memoryAddressSizeZero(), array)
     }
 }
+
+// conversion back to Kotlin types
 
 //TODO: same for all primitives
 //TODO: which parameters?

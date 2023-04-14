@@ -43,6 +43,9 @@ private constructor(private val arena: MemoryArena) : AutoCloseable {
 @Target(AnnotationTarget.CLASS)
 public annotation class ForeignCStruct
 
+@Target(AnnotationTarget.CLASS)
+public annotation class ForeignCOpaque
+
 @Target(AnnotationTarget.FUNCTION)
 public annotation class ForeignCCall
 
