@@ -11,13 +11,17 @@ public actual typealias MemoryAllocator = SegmentAllocator
 internal sealed class MemoryArenaImpl : MemoryArena {
     protected abstract val scope: SegmentScope
     override fun allocate(size: MemoryAddressSize, alignment: MemoryAddressSize): MemorySegment {
-        return MemorySegment(java.lang.foreign.MemorySegment.allocateNative(size, alignment, scope))
+        return MemorySegment(allocator.allocate(size, alignment))
     }
 
-    override fun allocateArray(elementLayout: MemoryLayout, elementsCount: Int): MemorySegment = TODO()
-    override fun allocateString(value: String): MemorySegment = TODO()
+    override fun allocateString(value: String): MemorySegment {
+        return MemorySegment(allocator.allocateUtf8String(value))
+    }
 
-    override fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment? = TODO()
+    override fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment? {
+        scope
+        return MemorySegment.fromAddress(address, layout)
+    }
 
 
     class Shared : MemoryArenaImpl() {

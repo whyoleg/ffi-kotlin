@@ -26,8 +26,8 @@ public sealed class CGrouped<Self : CGrouped<Self>>(segment: MemorySegment) : Me
 @get:JvmName("getGroupValue")
 @set:JvmName("setGroupValue")
 public inline var <KT : CGrouped<KT>> CPointer<KT>.pointed: KT
-    get() = accessor.getRaw(segmentInternal)
-    set(value) = accessor.setRaw(segmentInternal, value)
+    get() = accessor.getRaw(segmentInternal2)
+    set(value) = accessor.setRaw(segmentInternal2, value)
 
 @JvmName("getGroupValue")
 public inline operator fun <KT : CGrouped<KT>> CPointer<KT>.getValue(thisRef: Any?, property: KProperty<*>): KT = pointed

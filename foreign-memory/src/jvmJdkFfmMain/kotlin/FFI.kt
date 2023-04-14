@@ -11,6 +11,10 @@ public object FFI {
     private val defaultLookup = linker.defaultLookup()
     private val lookup = SymbolLookup { loaderLookup.find(it).or { defaultLookup.find(it) } }
 
+    init {
+        loadLibraries()
+    }
+
     public fun methodHandle(name: String, result: JMemoryLayout, args: Array<JMemoryLayout> = emptyArray()): MethodHandle =
         linker.downcallHandle(lookup.find(name).get(), FunctionDescriptor.of(result, *args))
 

@@ -9,9 +9,16 @@ public interface MemoryArena : AutoCloseable {
     public val allocator: MemoryAllocator
 
     public fun allocate(size: MemoryAddressSize, alignment: MemoryAddressSize): MemorySegment
-    public fun allocate(layout: MemoryLayout): MemorySegment = allocate(layout.size, layout.alignment)
-    public fun allocateArray(elementLayout: MemoryLayout, elementsCount: Int): MemorySegment = TODO()
-    public fun allocateString(value: String): MemorySegment = TODO()
+
+    public fun allocate(layout: MemoryLayout): MemorySegment {
+        return allocate(layout.size, layout.alignment)
+    }
+
+    public fun allocateArray(elementLayout: MemoryLayout, elementsCount: Int): MemorySegment {
+        return allocate(elementLayout.size * elementsCount, elementLayout.alignment)
+    }
+
+    public fun allocateString(value: String): MemorySegment
 
     public fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment?
 

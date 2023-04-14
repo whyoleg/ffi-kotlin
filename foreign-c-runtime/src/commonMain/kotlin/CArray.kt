@@ -21,12 +21,12 @@ public operator fun <KT : Any> CArray<KT>.get(index: Int): CPointer<KT> {
     //TODO: check index ON access?
     return CPointer(
         accessor.at(accessor.offset + accessor.layout.size * index),
-        segmentInternal
+        segmentInternal2
     )
 }
 
 @OptIn(ForeignMemoryApi::class)
-public fun CArray<Byte>.ofUByte(): CArray<UByte> = CArray(size, MemoryAccessor.UByte.at(accessor.offset), segmentInternal)
+public fun CArray<Byte>.ofUByte(): CArray<UByte> = CArray(size, MemoryAccessor.UByte.at(accessor.offset), segmentInternal2)
 
 @OptIn(ForeignMemoryApi::class)
 public fun <KT : Any> ForeignCScope.cArray(type: CType<KT>, size: Int): CArray<KT> = unsafe {
@@ -57,7 +57,7 @@ public inline fun ForeignCScope.cArrayOf(vararg elements: Byte): CArray<Byte> = 
 @OptIn(ForeignMemoryApi::class)
 public inline fun ForeignCScope.cArrayCopy(array: ByteArray): CArray<Byte> {
     return cArray(CType.Byte, array.size).apply {
-        segmentInternal.storeByteArray(memoryAddressSizeZero(), array)
+        segmentInternal2.storeByteArray(memoryAddressSizeZero(), array)
     }
 }
 
@@ -65,7 +65,7 @@ public inline fun ForeignCScope.cArrayCopy(array: ByteArray): CArray<Byte> {
 //TODO: which parameters?
 @OptIn(ForeignMemoryApi::class)
 public fun CArray<Byte>.copyInto(destination: ByteArray, destinationOffset: Int = 0, startIndex: Int = 0, endIndex: Int = size): ByteArray {
-    segmentInternal.loadByteArray(memoryAddressSize(startIndex), destination, destinationOffset, endIndex)
+    segmentInternal2.loadByteArray(memoryAddressSize(startIndex), destination, destinationOffset, endIndex)
     return destination
 }
 
