@@ -62,7 +62,7 @@ Then generate declarations and continue work with JVM (faster dev cycle) while s
         * prebuilt - library is embedded and no additional configuration is needed
         * test - some basic tests which tests, that everything REALLY works
 
-## Implementation details
+## Foreign Function Interface
 
 For future auto-generated bindings we need to keep in mind platform details
 
@@ -118,6 +118,53 @@ TODO:
 ### Native
 
 Nothing interesting, just mapping for cinterop
+
+## Foreign Libraries Linking
+
+Overview:
+
+* There are 2 ways to distribute FFI:
+    * **SHARED** - native library should be available at **RUNTIME** in some system directory
+    * **PREBUILT** - native library is embedded inside artifact
+* There are 2 types of native libraries used during build:
+    * **DYNAMIC**
+    * **STATIC**
+* There are 2(3) ways to load(link) library:
+    * at **RUNTIME**
+    * at **BUILD TIME**
+
+### JVM(both FFM and JNI)
+
+* Support both **SHARED** and **PREBUILT** variants.
+* For both variants, **DYNAMIC** libraries are used
+* Loading(linking) is done at **RUNTIME** via `LibraryLoader` which under the hood uses `System.loadLibrary` to load lib from JAR or system.
+    * for JNI we still need to additionally link at **BUILD TIME**
+
+### Android
+
+* Only **PREBUILT** variant is supported.
+* **DYNAMIC** libraries are used
+* Loading(linking) is done at **RUNTIME** via `LibraryLoader` which under the hood uses `System.loadLibrary`
+  and JNI is linked/built at **BUILD TIME**
+
+### WASM/JS
+
+* Only **PREBUILT** variant is supported.
+* **STATIC** libraries are used
+* Loading(linking) is done via hacks at both **BUILD TIME** and **RUNTIME** :)
+
+### Native (desktop targets)
+
+* Support both **SHARED** and **PREBUILT** variants
+* **STATIC** libraries are used for **PREBUILT** variant and **DYNAMIC** is used for **SHARED** variant
+* Loading(linking) is done at **BUILD TIME** via cinterop(?)/compiler flags
+* When **SHARED** artifact is consumed by another project, it should have libraries available to be able to LINK final binary
+
+### Native (ios)
+
+* Only **PREBUILT** variant is supported.
+* **STATIC** libraries are used
+* Loading(linking) is done at **BUILD TIME** via cinterop(?)/compiler flags
 
 ## Future ideas
 
