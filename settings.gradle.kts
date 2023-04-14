@@ -35,7 +35,7 @@ rootProject.name = "ffi-kotlin"
 
 // Code is divided in separate modules depending on the layer of foreign access
 include("foreign-core") // foreign memory management, library loading (for some targets), base FFI (for some targets), PlatformInt
-include("foreign-c-runtime") // C types
+include("foreign-runtime-c") // C types
 include("foreign-c-playground-lib") // some library declarations using C API
 include("foreign-c-playground") // some user code
 
