@@ -2,7 +2,7 @@ plugins {
     id("build-parameters")
 }
 
-val kotlinVersion = "1.8.20-RC2"
+val kotlinVersion = "1.8.20"
 val kotlinVersionOverride = the<buildparameters.BuildParametersExtension>().kotlin.override.version.orNull
 
 if (kotlinVersionOverride != null) logger.lifecycle("Kotlin version override: $kotlinVersionOverride")
