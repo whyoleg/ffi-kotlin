@@ -1,4 +1,3 @@
-#include <string.h>
 #include <emscripten.h>
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>
@@ -88,17 +87,15 @@ EMSCRIPTEN_KEEPALIVE void ffi_OSSL_PARAM_construct_utf8_string (
   char* p_key,
   char* p_buf,
   unsigned int p_bsize,
-  void* p_returnPointer
+  OSSL_PARAM* p_returnPointer
 ) {
-    OSSL_PARAM returnStruct = OSSL_PARAM_construct_utf8_string(p_key, p_buf, p_bsize);
-    memcpy(p_returnPointer, &returnStruct, sizeof(returnStruct));
+    *p_returnPointer = OSSL_PARAM_construct_utf8_string(p_key, p_buf, p_bsize);
 }
 
 EMSCRIPTEN_KEEPALIVE void ffi_OSSL_PARAM_construct_end (
-  void* p_returnPointer
+  OSSL_PARAM* p_returnPointer
 ) {
-    OSSL_PARAM returnStruct = OSSL_PARAM_construct_end();
-    memcpy(p_returnPointer, &returnStruct, sizeof(returnStruct));
+    *p_returnPointer = OSSL_PARAM_construct_end();
 }
 
 //osslparam end
