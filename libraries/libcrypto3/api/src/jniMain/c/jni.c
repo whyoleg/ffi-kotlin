@@ -1,4 +1,3 @@
-#include <string.h>
 #include <jni.h>
 #include <openssl/opensslv.h>
 #include <openssl/crypto.h>
@@ -80,15 +79,13 @@ JNIEXPORT void JNICALL Java_dev_whyoleg_ffi_libcrypto3_osslparam_OSSL_1PARAM_1co
   jlong p_bsize,
   jlong p_returnPointer
 ) {
-    OSSL_PARAM returnStruct = OSSL_PARAM_construct_utf8_string((char*)p_key, (char*)p_buf, p_bsize);
-    memcpy((void*)p_returnPointer, &returnStruct, sizeof(returnStruct));
+    *(OSSL_PARAM*)p_returnPointer = OSSL_PARAM_construct_utf8_string((char*)p_key, (char*)p_buf, p_bsize);
 }
 
 JNIEXPORT void JNICALL Java_dev_whyoleg_ffi_libcrypto3_osslparam_OSSL_1PARAM_1construct_1end (JNIEnv* env, jclass jclss,
   jlong p_returnPointer
 ) {
-    OSSL_PARAM returnStruct = OSSL_PARAM_construct_end();
-    memcpy((void*)p_returnPointer, &returnStruct, sizeof(returnStruct));
+    *(OSSL_PARAM*)p_returnPointer = OSSL_PARAM_construct_end();
 }
 
 //osslparam end
