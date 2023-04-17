@@ -26,7 +26,10 @@ internal constructor(
     public actual fun loadLong(offset: MemoryAddressSize): Long = segment.get(ValueLayout.JAVA_LONG, offset)
     public actual fun storeLong(offset: MemoryAddressSize, value: Long): Unit = segment.set(ValueLayout.JAVA_LONG, offset, value)
 
-    public actual fun loadString(offset: MemoryAddressSize): String = segment.getUtf8String(offset)
+    public actual fun loadString(offset: MemoryAddressSize, unsafe: Boolean): String {
+        return (if (unsafe) segment.resize(Long.MAX_VALUE) else segment).getUtf8String(offset)
+    }
+
     public actual fun storeString(offset: MemoryAddressSize, value: String): Unit = segment.setUtf8String(offset, value)
 
     public actual fun loadByteArray(offset: MemoryAddressSize, array: ByteArray, arrayStartIndex: Int, arrayEndIndex: Int) {
@@ -71,7 +74,6 @@ internal constructor(
 
     public actual fun resize(layout: MemoryLayout): MemorySegment = resize(layout.size)
     public actual fun resize(elementLayout: MemoryLayout, elementsCount: Int): MemorySegment = resize(elementLayout.size * elementsCount)
-    public actual fun asUnbounded(): MemorySegment = resize(Long.MAX_VALUE)
 
     public actual companion object {
         public actual val Empty: MemorySegment = MemorySegment(JMemorySegment.NULL)

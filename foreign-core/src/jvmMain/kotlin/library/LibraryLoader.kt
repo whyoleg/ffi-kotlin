@@ -8,6 +8,10 @@ public interface LibraryLoader {
     public fun load()
 }
 
+//TODO: design better library management,
+// so library will be loaded only when it's needed.
+// f.e. if there will be multiple foreign libraries attached, now they will be loaded all at once,
+// even if only one library is needed on current moment
 internal fun loadLibraries() {
     val loaders = ServiceLoader.load(
         LibraryLoader::class.java,

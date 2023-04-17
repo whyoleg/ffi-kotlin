@@ -1,11 +1,16 @@
 package dev.whyoleg.foreign.internal
 
+import dev.whyoleg.foreign.library.*
 import java.nio.*
 
 internal object JNI {
+    init {
+        EmbeddedLibraryLoader.Current.loadLibrary("foreign-core-jni")
+    }
+
     @JvmStatic
     @JvmName("getByteBufferFromPointer")
-    internal external fun getByteBufferFromPointer(pointer: Long, size: Int): ByteBuffer?
+    internal external fun getByteBufferFromPointer(pointer: Long, size: Long): ByteBuffer?
 
     @JvmStatic
     @JvmName("getPointerFromByteBuffer")

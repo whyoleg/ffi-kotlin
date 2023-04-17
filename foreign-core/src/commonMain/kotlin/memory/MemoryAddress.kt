@@ -4,6 +4,9 @@ package dev.whyoleg.foreign.memory
 @ForeignMemoryApi
 public expect class MemoryAddress
 
+@ForeignMemoryApi
+public expect fun nullMemoryAddress(): MemoryAddress
+
 //in bytes
 @ForeignMemoryApi
 public expect class MemoryAddressSize : Comparable<MemoryAddressSize> {

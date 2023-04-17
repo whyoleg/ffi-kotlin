@@ -66,6 +66,7 @@ public inline fun ForeignCScope.cArrayCopy(array: ByteArray): CArray<Byte> {
 // conversion back to Kotlin types
 
 //TODO: same for all primitives
+//TODO: recheck indexes
 //TODO: which parameters?
 @OptIn(ForeignMemoryApi::class)
 public fun CArray<Byte>.copyInto(destination: ByteArray, destinationOffset: Int = 0, startIndex: Int = 0, endIndex: Int = size): ByteArray {
@@ -73,4 +74,5 @@ public fun CArray<Byte>.copyInto(destination: ByteArray, destinationOffset: Int 
     return destination
 }
 
+//TODO: recheck indexes
 public fun CArray<Byte>.copyOf(size: Int = this.size): ByteArray = copyInto(ByteArray(size))

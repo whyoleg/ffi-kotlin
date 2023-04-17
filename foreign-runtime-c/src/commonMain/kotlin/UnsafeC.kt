@@ -7,7 +7,11 @@ import kotlin.jvm.*
 @JvmInline
 public value class UnsafeC internal constructor(public val arena: MemoryArena) {
 
-    public val CPointer<*>?.address: MemoryAddress get() = (this?.segmentInternal2 ?: MemorySegment.Empty).address
+    public val CPointer<*>?.address: MemoryAddress
+        get() = when (this) {
+            null -> nullMemoryAddress()
+            else -> segmentInternal2.address
+        }
 
     //constructors
     public fun <KT : Any> CPointer(type: CType<KT>, segment: MemorySegment): CPointer<KT> {

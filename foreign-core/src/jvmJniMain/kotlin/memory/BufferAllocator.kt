@@ -5,7 +5,7 @@ import java.nio.*
 @ForeignMemoryApi
 public object BufferAllocator {
     internal fun allocate(size: MemoryAddressSize): BufferHolder.Root {
-        return BufferHolder.Root(ByteBuffer.allocateDirect(size))
+        return BufferHolder.Root(ByteBuffer.allocateDirect(size.toInt()))
     }
 }
 
