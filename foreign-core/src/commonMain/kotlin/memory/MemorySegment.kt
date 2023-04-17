@@ -21,7 +21,8 @@ public expect class MemorySegment {
     public fun loadLong(offset: MemoryAddressSize): Long
     public fun storeLong(offset: MemoryAddressSize, value: Long)
 
-    public fun loadString(offset: MemoryAddressSize): String
+    //TODO: decide on better way to get unsafe strings
+    public fun loadString(offset: MemoryAddressSize, unsafe: Boolean): String
     public fun storeString(offset: MemoryAddressSize, value: String)
 
     //TODO: decide on parameters!!!
@@ -43,9 +44,9 @@ public expect class MemorySegment {
     //TODO: naming
     public fun resize(layout: MemoryLayout): MemorySegment
     public fun resize(elementLayout: MemoryLayout, elementsCount: Int): MemorySegment
-    public fun asUnbounded(): MemorySegment
 
     public companion object {
+        //TODO: DROP IT!!!
         public val Empty: MemorySegment
     }
 }

@@ -10,15 +10,6 @@ public fun <KT : Any> CPointer<KT>.asCArray(size: Int): CArray<KT> {
     return CArray(size, accessor, segmentInternal2.resize(accessor.layout, size))
 }
 
-// truly unsafe function
-// should be used only(?) for converting C string (returned from function or struct) to Kotlin string, as we don't know the size of it
-// returned pointer has the same scope as an original pointer
-// TODO: naming
-@OptIn(ForeignMemoryApi::class)
-public fun <KT : Any> CPointer<KT>.asUnbounded(): CPointer<KT> {
-    return CPointer(accessor, segmentInternal2.asUnbounded())
-}
-
 // TODO: recheck
 @OptIn(ForeignMemoryApi::class)
 public fun <KT : Any> CPointer<*>.reinterpret(type: CType<KT>): CPointer<KT> {

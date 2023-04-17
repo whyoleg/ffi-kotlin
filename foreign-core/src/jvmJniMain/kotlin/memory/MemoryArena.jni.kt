@@ -8,10 +8,6 @@ public actual typealias MemoryAllocator = BufferAllocator
 internal sealed class MemoryArenaImpl : MemoryArena {
     override val allocator: MemoryAllocator get() = BufferAllocator
 
-    override fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment? {
-        TODO("Not yet implemented")
-    }
-
     class Shared : MemoryArenaImpl() {
         //TODO: cleaner support?
         private val roots = mutableListOf<BufferHolder.Root>()
@@ -22,7 +18,11 @@ internal sealed class MemoryArenaImpl : MemoryArena {
             return MemorySegment(holder)
         }
 
-        override fun close(): Unit {
+        override fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment? {
+            return MemorySegment.fromAddress(address, layout.size, roots::add)
+        }
+
+        override fun close() {
             actions.forEach { it.runCatching { invoke() } }
             actions.clear()
             // no real cleanup for ByteBuffers for now
@@ -39,6 +39,10 @@ internal sealed class MemoryArenaImpl : MemoryArena {
         override fun allocate(size: MemoryAddressSize, alignment: MemoryAddressSize): MemorySegment {
             val holder = BufferAllocator.allocate(size)
             return MemorySegment(holder)
+        }
+
+        override fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment? {
+            return MemorySegment.fromAddress(address, layout.size)
         }
 
         override fun close() {

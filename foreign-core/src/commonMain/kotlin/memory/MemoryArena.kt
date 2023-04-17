@@ -18,7 +18,13 @@ public interface MemoryArena : AutoCloseable {
         return allocate(elementLayout.size * elementsCount, elementLayout.alignment)
     }
 
-    public fun allocateString(value: String): MemorySegment
+    public fun allocateString(value: String): MemorySegment {
+        val bytes = value.encodeToByteArray()
+        return allocate(memoryAddressSize(bytes.size + 1), memoryAddressSize(1)).also {
+            it.storeByteArray(memoryAddressSizeZero(), bytes)
+            it.storeByte(memoryAddressSize(bytes.size), 0)
+        }
+    }
 
     public fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment?
 
