@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.*
 import org.jetbrains.kotlin.gradle.dsl.*
 
 plugins {
@@ -12,6 +13,17 @@ android {
         minSdk = 21
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+    @Suppress("UnstableApiUsage")
+    testOptions {
+        managedDevices {
+            devices {
+                maybeCreate<ManagedVirtualDevice>("pixel2_33").apply {
+                    device = "Pixel 2"
+                    apiLevel = 33
+                }
+            }
+        }
+    }
 }
 
 kotlin {
@@ -24,7 +36,7 @@ kotlin {
     }
     afterEvaluate {
         this@kotlin.sourceSets {
-            val androidInstrumentedTest by getting {
+            val jvmAndroidJniInstrumentedTest by getting {
                 dependsOn(commonTest.get())
                 dependencies {
                     implementation("androidx.test:runner:1.5.2")
