@@ -33,25 +33,14 @@ gradleEnterprise {
 
 rootProject.name = "ffi-kotlin"
 
-// Code is divided in separate modules depending on the layer of foreign access
-include("foreign-core") // foreign memory management, library loading (for some targets), base FFI (for some targets), PlatformInt
-include("foreign-runtime-c") // C types
-include("foreign-c-playground-lib") // some library declarations using C API
-include("foreign-c-playground") // some user code
+include("foreign-runtime:foreign-runtime-core")
+include("foreign-runtime:foreign-runtime-c")
 
-//foreign-c-runtime
-//foreign-c-index (mpp, serialization)
-//foreign-c-indexer (K/N cli, uses cinterop)
-//foreign-c-generator (generates everything, that's needed to build foreign code based on index)
-//foreign-c-compiler-plugin
-
-//foreign-gradle-plugin
-//foreign-idea-plugin - tbd what will be here :)
-
-//foreign-conan
+//include("foreign-gradle:foreign-gradle-jni")
+//include("foreign-gradle:foreign-gradle-plugin")
 
 fun includeLibrary(name: String) {
-    listOf("api"/*, "shared", "prebuilt", "test"*/).forEach { submodule ->
+    listOf("api", "shared", "prebuilt", "test").forEach { submodule ->
         include("libraries:$name:$name-$submodule")
         project(":libraries:$name:$name-$submodule").projectDir = file("libraries/$name/$submodule")
     }
