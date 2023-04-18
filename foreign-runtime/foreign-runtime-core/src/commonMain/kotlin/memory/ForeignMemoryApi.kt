@@ -1,5 +1,6 @@
 package dev.whyoleg.foreign.memory
 
+//TODO: move to root and rename to `UnsafeForeignApi`?
 @Target(
     AnnotationTarget.TYPEALIAS,
     AnnotationTarget.CLASS,

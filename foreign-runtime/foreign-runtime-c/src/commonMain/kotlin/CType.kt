@@ -69,6 +69,12 @@ public sealed class CType<KT : Any> {
 
             //TODO: recheck
             fun register(layout: MemoryLayout): MemoryAddressSize {
+                //TODO: recheck which SIZE_BYTES is needed here
+                val rem = _size % MemoryAddressSize.SIZE_BYTES
+                if (rem != memoryAddressSizeZero() && rem < layout.size) {
+                    _size += rem
+                }
+
                 val offset = _size
                 //TODO: alignment should affect offset?
                 _size += layout.size

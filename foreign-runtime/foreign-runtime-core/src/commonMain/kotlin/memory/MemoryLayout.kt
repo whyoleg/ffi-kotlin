@@ -2,6 +2,7 @@ package dev.whyoleg.foreign.memory
 
 import dev.whyoleg.foreign.platform.PlatformInt as PInt
 
+//TODO: make it abstract class
 @ForeignMemoryApi
 public interface MemoryLayout {
     public val alignment: MemoryAddressSize

@@ -33,7 +33,8 @@ public actual class MemorySegment internal constructor(
     public actual fun loadLong(offset: MemoryAddressSize): Long = TODO("proper long support")
     public actual fun storeLong(offset: MemoryAddressSize, value: Long): Unit = TODO("proper long support")
 
-    public actual fun loadString(offset: MemoryAddressSize): String {
+    public actual fun loadString(offset: MemoryAddressSize, unsafe: Boolean): String {
+        //TODO: check for unsafe flag based on size
         //TODO: optimize by pre-allocating ByteArray and resizing it to not read bytes 2 times
         var length = 0
         while (true) {
@@ -90,6 +91,13 @@ public actual class MemorySegment internal constructor(
             storeByte(offset + i, value.loadByte(i))
         }
     }
+
+    private fun resize(size: MemoryAddressSize): MemorySegment {
+        return MemorySegment(address, size, memory, cleaner)
+    }
+
+    public actual fun resize(layout: MemoryLayout): MemorySegment = resize(layout.size)
+    public actual fun resize(elementLayout: MemoryLayout, elementsCount: Int): MemorySegment = resize(elementLayout.size * elementsCount)
 
     public actual companion object {
         public actual val Empty: MemorySegment = MemorySegment(0, 0, WasmMemory.Empty, null)

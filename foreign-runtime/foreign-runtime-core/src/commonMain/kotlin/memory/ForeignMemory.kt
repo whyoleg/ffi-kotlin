@@ -1,5 +1,7 @@
 package dev.whyoleg.foreign.memory
 
+//TODO: come up with better name...
+//TODO: looks like it could be just abstract class?
 public expect class ForeignMemory {
     public companion object {
         public val Default: ForeignMemory
