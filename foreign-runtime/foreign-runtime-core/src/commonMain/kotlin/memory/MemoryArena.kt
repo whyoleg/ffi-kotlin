@@ -4,6 +4,7 @@ package dev.whyoleg.foreign.memory
 @ForeignMemoryApi
 public expect class MemoryAllocator
 
+//TODO: make it abstract class
 @ForeignMemoryApi
 public interface MemoryArena : AutoCloseable {
     public val allocator: MemoryAllocator

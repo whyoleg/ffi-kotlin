@@ -13,6 +13,7 @@ public expect class MemoryAddressSize : Comparable<MemoryAddressSize> {
 
     public operator fun plus(other: MemoryAddressSize): MemoryAddressSize
     public operator fun times(other: Int): MemoryAddressSize
+    public operator fun rem(other: Int): MemoryAddressSize
 
     public companion object {
         public val SIZE_BYTES: Int

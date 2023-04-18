@@ -4,6 +4,9 @@ package dev.whyoleg.foreign.memory
 public actual typealias MemoryAddress = Int
 
 @ForeignMemoryApi
+public actual fun nullMemoryAddress(): MemoryAddress = 0
+
+@ForeignMemoryApi
 public actual typealias MemoryAddressSize = Int
 
 @ForeignMemoryApi

@@ -10,11 +10,9 @@ public actual typealias MemoryAllocator = WasmMemory
 internal sealed class MemoryArenaImpl private constructor(
     override val allocator: MemoryAllocator
 ) : MemoryArena {
-    override fun allocate(layout: MemoryLayout): MemorySegment = TODO()
-    override fun allocateArray(elementLayout: MemoryLayout, elementsCount: Int): MemorySegment = TODO()
-    override fun allocateString(value: String): MemorySegment = TODO()
-
-    override fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment? = TODO()
+    override fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment? {
+        return MemorySegment.fromAddress(address, layout, allocator)
+    }
 
     class Shared(memory: WasmMemory) : MemoryArenaImpl(memory) {
         private val actions = mutableListOf<() -> Unit>()
@@ -33,7 +31,9 @@ internal sealed class MemoryArenaImpl private constructor(
             return segment
         }
 
-        override fun close() = cleaner.clean()
+        override fun close() {
+            cleaner.clean()
+        }
 
         override fun invokeOnClose(block: () -> Unit) {
             actions.add(block)
