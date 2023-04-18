@@ -2,11 +2,12 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.c.*
+import dev.whyoleg.foreign.c.*
+import dev.whyoleg.foreign.platform.*
 
-expect fun ERR_get_error(): PlatformDependentUInt
+expect fun ERR_get_error(): PlatformUInt
 
 expect fun ERR_error_string(
-    e: PlatformDependentUInt,
+    e: PlatformUInt,
     buf: CString?,
 ): CString?

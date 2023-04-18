@@ -1,222 +1,209 @@
 package dev.whyoleg.ffi.libcrypto3.test
 
-import dev.whyoleg.ffi.c.*
 import dev.whyoleg.ffi.libcrypto3.*
+import dev.whyoleg.foreign.c.*
+import dev.whyoleg.foreign.platform.*
 import kotlin.test.*
 
 abstract class LibCrypto3Test {
 
     @Test
     fun testVersion() {
-        val version = OpenSSL_version(OPENSSL_VERSION_STRING)?.toKString()
+        val version = OpenSSL_version(OPENSSL_VERSION_STRING)?.toKString(unsafe = true)
         assertEquals(3, version!!.first().digitToInt())
         assertEquals(3, OPENSSL_version_major().toInt())
         assertEquals("3.0.8", version)
     }
 
     @Test
-    fun testOsslParam(): Unit = cInteropScope {
-        val param = OSSL_PARAM_construct_utf8_string(alloc("digest"), alloc("ALGORITHM"), 0U.pd)
+    fun testStrings(): Unit = foreignC {
+        val ptr = cString("digest")
 
-        val p1 = allocPointerTo(param).pointed
-        assertEquals(4U, p1.data_type)
-        assertEquals(9U.pd, p1.data_size)
-        assertEquals("digest", p1.key!!.toKString())
-        assertEquals("ALGORITHM", p1.data!!.reinterpret(ByteVariableType).toKString())
-        p1.data_type = 32U
-        assertEquals(32U, p1.data_type)
+        assertEquals("digest", ptr.toKString(unsafe = true))
+        assertEquals("digest", ptr.toKString(unsafe = false))
     }
 
     @Test
-    fun testError(): Unit = cInteropScope {
-        val mac = checkNotNull(EVP_MAC_fetch(null, alloc("HMAC"), null))
-        try {
-            val context = checkNotNull(EVP_MAC_CTX_new(mac))
-            try {
-                ByteArray(1).read { keyPointer, keySize ->
-                    val message = assertFailsWith<OpensslException> {
-                        checkError(
-                            EVP_MAC_init(
-                                ctx = context,
-                                key = keyPointer.toUByte(),
-                                keylen = keySize.toUInt().pd,
-                                params = allocArrayOf(
-                                    OSSL_PARAM_Type,
-                                    OSSL_PARAM_construct_utf8_string(alloc("digest"), alloc("UNKNOWN"), 0U.pd),
-                                    OSSL_PARAM_construct_end()
-                                )
-                            )
-                        )
-                    }.message
-                    assertEquals(
-                        "OPENSSL failure [result: 0, code: 50856204]: error:0308010C:digital envelope routines::unsupported",
-                        message
+    fun testOsslParam(): Unit = foreignC {
+        val param = OSSL_PARAM_construct_utf8_string(cString("digest"), cString("ALGORITHM"), 0.toPlatformUInt(), this)
+        println(param)
+        assertEquals(4U, param.data_type)
+        assertEquals(9U, param.data_size.toUInt())
+        assertEquals("digest", param.key?.toKString(unsafe = true))
+        assertEquals("ALGORITHM", param.data?.reinterpret(CType.Byte)?.toKString(unsafe = true))
+        param.data_type = 32U
+        assertEquals(32U, param.data_type)
+    }
+
+    @Test
+    fun testArrays(): Unit = foreignC {
+        val of = cArrayOf(CType.Byte, 1, 2, 3)
+        val of2 = cArrayOf(1, 2, 3)
+        val dataArray = cArrayCopy(byteArrayOf(1, 2, 3))
+        val digestArray = cArray(CType.Byte, 10)
+    }
+
+    @Test
+    fun testError(): Unit = foreignC {
+        val mac = checkNotNull(
+            EVP_MAC_fetch(null, cString("HMAC"), null).withCleanup(::EVP_MAC_free)
+        )
+        val context = checkNotNull(
+            EVP_MAC_CTX_new(mac).withCleanup(::EVP_MAC_CTX_free)
+        )
+        val keyArray = cArrayCopy(ByteArray(1))
+        val message = assertFailsWith<OpensslException> {
+            checkError(
+                EVP_MAC_init(
+                    ctx = context,
+                    key = keyArray.ofUByte(),
+                    keylen = keyArray.size.toPlatformUInt(),
+                    params = cArrayOf(
+                        OSSL_PARAM,
+                        OSSL_PARAM_construct_utf8_string(cString("digest"), cString("UNKNOWN"), 0.toPlatformUInt(), this),
+                        OSSL_PARAM_construct_end(this)
                     )
-                }
-            } finally {
-                EVP_MAC_CTX_free(context)
-            }
-        } finally {
-            EVP_MAC_free(mac)
-        }
+                )
+            )
+        }.message
+        assertEquals(
+            "OPENSSL failure [result: 0, code: 50856204]: error:0308010C:digital envelope routines::unsupported",
+            message
+        )
     }
 
     @Test
-    fun testSha(): Unit = cInteropScope {
-        val md = checkNotNull(EVP_MD_fetch(null, alloc("SHA256"), null))
-        val digest = try {
-            val context = checkNotNull(EVP_MD_CTX_new())
-            try {
-                "Hello World".encodeToByteArray().read { dataPointer, dataSize ->
-                    val digest = ByteArray(checkError(EVP_MD_get_size(md)))
-                    digest.write { digestPointer, _ ->
-                        checkError(EVP_DigestInit(context, md))
-                        checkError(EVP_DigestUpdate(context, dataPointer, dataSize.toUInt().pd))
-                        checkError(EVP_DigestFinal(context, digestPointer.toUByte(), null))
-                    }
-                    digest
-                }
-            } finally {
-                EVP_MD_CTX_free(context)
-            }
-        } finally {
-            EVP_MD_free(md)
-        }
+    fun testSha(): Unit = foreignC {
+        val md = checkNotNull(
+            EVP_MD_fetch(null, cString("SHA256"), null).withCleanup(::EVP_MD_free)
+        )
+        val context = checkNotNull(
+            EVP_MD_CTX_new().withCleanup(::EVP_MD_CTX_free)
+        )
+        val dataArray = cArrayCopy("Hello World".encodeToByteArray())
+        val digestArray = cArray(CType.Byte, checkError(EVP_MD_get_size(md)))
+        checkError(EVP_DigestInit(context, md))
+        checkError(EVP_DigestUpdate(context, dataArray, dataArray.size.toPlatformUInt()))
+        checkError(EVP_DigestFinal(context, digestArray.ofUByte(), null))
+        val digest = digestArray.copyOf()
         assertEquals("a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e", printHexBinary(digest))
     }
 
     @Test
-    fun testHmac(): Unit = cInteropScope {
-        val mac = checkNotNull(EVP_MAC_fetch(null, alloc("HMAC"), null))
-        val signature = try {
-            val context = EVP_MAC_CTX_new(mac)
-            try {
-                parseHexBinary("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b").read { keyPointer, keySize ->
-                    "Hi There".encodeToByteArray().read { dataPointer, dataSize ->
-                        checkError(
-                            EVP_MAC_init(
-                                ctx = context,
-                                key = keyPointer.toUByte(),
-                                keylen = keySize.toUInt().pd,
-                                params = allocArrayOf(
-                                    OSSL_PARAM_Type,
-                                    OSSL_PARAM_construct_utf8_string(alloc("digest"), alloc("SHA256"), 0U.pd),
-                                    OSSL_PARAM_construct_end()
-                                )
-                            )
-                        )
-                        val signature = ByteArray(checkError(EVP_MAC_CTX_get_mac_size(context).toInt()))
-                        assertEquals(32, signature.size)
-                        signature.write { signaturePointer, signatureSize ->
-                            checkError(EVP_MAC_update(context, dataPointer.toUByte(), dataSize.toUInt().pd))
-                            val out = alloc(PlatformDependentUIntVariableType)
-                            checkError(EVP_MAC_final(context, signaturePointer.toUByte(), out.pointer, signatureSize.toUInt().pd))
-                            assertEquals(32U.pd, out.pdValue)
-                        }
-                        signature
-                    }
-                }
-            } finally {
-                EVP_MAC_CTX_free(context)
-            }
-        } finally {
-            EVP_MAC_free(mac)
-        }
+    fun testHmac(): Unit = foreignC {
+        val mac = checkNotNull(
+            EVP_MAC_fetch(null, cString("HMAC"), null).withCleanup(::EVP_MAC_free)
+        )
+        val context = checkNotNull(
+            EVP_MAC_CTX_new(mac).withCleanup(::EVP_MAC_CTX_free)
+        )
+        val keyArray = cArrayCopy(parseHexBinary("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b"))
+        val dataArray = cArrayCopy("Hi There".encodeToByteArray())
+        checkError(
+            EVP_MAC_init(
+                ctx = context,
+                key = keyArray.ofUByte(),
+                keylen = keyArray.size.toPlatformUInt(),
+                params = cArrayOf(
+                    OSSL_PARAM,
+                    OSSL_PARAM_construct_utf8_string(cString("digest"), cString("SHA256"), 0.toPlatformUInt(), this),
+                    OSSL_PARAM_construct_end(this)
+                )
+            )
+        )
+        val signatureArray = cArray(CType.Byte, checkError(EVP_MAC_CTX_get_mac_size(context).toInt()))
+        assertEquals(32, signatureArray.size)
+        checkError(EVP_MAC_update(context, dataArray.ofUByte(), dataArray.size.toPlatformUInt()))
+        val out = cPointerOf(CType.PlatformUInt)
+        checkError(EVP_MAC_final(context, signatureArray.ofUByte(), out, signatureArray.size.toPlatformUInt()))
+        assertEquals(32, out.pointed.toInt())
+        val signature = signatureArray.copyOf()
         assertEquals("b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7", printHexBinary(signature))
     }
-
 
     @Test
     fun testEcdsa() {
         val dataInput = "Hi There".encodeToByteArray()
 
-        val pkey = cInteropScope {
-            val context = checkNotNull(EVP_PKEY_CTX_new_from_name(null, alloc("EC"), null))
-            try {
-                checkError(EVP_PKEY_keygen_init(context))
-                checkError(
-                    EVP_PKEY_CTX_set_params(
-                        context, allocArrayOf(
-                            OSSL_PARAM_Type,
-                            OSSL_PARAM_construct_utf8_string(alloc("group"), alloc("P-521"), 0U.pd),
-                            OSSL_PARAM_construct_end()
-                        )
+        val pkey = foreignC {
+            val context = checkNotNull(
+                EVP_PKEY_CTX_new_from_name(null, cString("EC"), null).withCleanup(::EVP_PKEY_CTX_free)
+            )
+            checkError(EVP_PKEY_keygen_init(context))
+            checkError(
+                EVP_PKEY_CTX_set_params(
+                    context, cArrayOf(
+                        OSSL_PARAM,
+                        OSSL_PARAM_construct_utf8_string(cString("group"), cString("P-521"), 0.toPlatformUInt(), this),
+                        OSSL_PARAM_construct_end(this)
                     )
                 )
-                val pkeyVar = allocPointerTo(EVP_PKEY_Type)
-                checkError(EVP_PKEY_generate(context, pkeyVar.pointer))
-                checkNotNull(pkeyVar.value)
-            } finally {
-                EVP_PKEY_CTX_free(context)
-            }
+            )
+            val pkeyVar = cPointerOf(EVP_PKEY.pointer)
+            checkError(EVP_PKEY_generate(context, pkeyVar))
+            println(pkeyVar)
+            println(pkeyVar.pointed)
+            checkNotNull(pkeyVar.pointed)
         }
 
         checkError(EVP_PKEY_up_ref(pkey))
 
-        val signatureInput = cInteropScope {
-            val context = checkNotNull(EVP_MD_CTX_new())
-            try {
-                checkError(
-                    EVP_DigestSignInit_ex(
-                        ctx = context,
-                        pctx = null,
-                        mdname = alloc("SHA256"),
-                        libctx = null,
-                        props = null,
-                        pkey = pkey,
-                        params = null
-                    )
+        val signatureInput = foreignC {
+            val context = checkNotNull(
+                EVP_MD_CTX_new().withCleanup(::EVP_MD_CTX_free)
+            )
+            checkError(
+                EVP_DigestSignInit_ex(
+                    ctx = context,
+                    pctx = null,
+                    mdname = cString("SHA256"),
+                    libctx = null,
+                    props = null,
+                    pkey = pkey,
+                    params = null
                 )
+            )
 
-                dataInput.read { dataPointer, dataSize ->
-                    checkError(EVP_DigestSignUpdate(context, dataPointer, dataSize.toUInt().pd))
+            val data = cArrayCopy(dataInput)
+            checkError(EVP_DigestSignUpdate(context, data, data.size.toPlatformUInt()))
 
-                    val siglen = alloc(PlatformDependentUIntVariableType)
-                    checkError(EVP_DigestSignFinal(context, null, siglen.pointer))
-                    assertContains(130..140, siglen.pdValue.toInt())
-                    val signature = ByteArray(siglen.pdValue.toInt())
-                    signature.write { signaturePointer, _ ->
-                        checkError(EVP_DigestSignFinal(context, signaturePointer.toUByte(), siglen.pointer))
-                    }
-                    assertContains(130..140, siglen.pdValue.toInt())
-                    signature.copyOf(siglen.pdValue.toInt())
-                }
-            } finally {
-                EVP_MD_CTX_free(context)
-            }
+            val siglen = cPointerOf(CType.PlatformUInt)
+            checkError(EVP_DigestSignFinal(context, null, siglen))
+            assertContains(130..140, siglen.pointed.toInt())
+            val signature = cArray(CType.Byte, siglen.pointed.toInt())
+            checkError(EVP_DigestSignFinal(context, signature.ofUByte(), siglen))
+            assertContains(130..140, siglen.pointed.toInt())
+            //TODO: recheck indexes
+            signature.copyOf(siglen.pointed.toInt())
         }
 
         EVP_PKEY_free(pkey)
 
-        val result = cInteropScope {
-            val context = checkNotNull(EVP_MD_CTX_new())
-            try {
-                checkError(
-                    EVP_DigestVerifyInit_ex(
-                        ctx = context,
-                        pctx = null,
-                        mdname = alloc("SHA256"),
-                        libctx = null,
-                        props = null,
-                        pkey = pkey,
-                        params = null
-                    )
+        val result = foreignC {
+            val context = checkNotNull(
+                EVP_MD_CTX_new().withCleanup(::EVP_MD_CTX_free)
+            )
+            checkError(
+                EVP_DigestVerifyInit_ex(
+                    ctx = context,
+                    pctx = null,
+                    mdname = cString("SHA256"),
+                    libctx = null,
+                    props = null,
+                    pkey = pkey,
+                    params = null
                 )
-                dataInput.read { dataPointer, dataSize ->
-                    checkError(EVP_DigestVerifyUpdate(context, dataPointer, dataSize.toUInt().pd))
+            )
+            val data = cArrayCopy(dataInput)
+            checkError(EVP_DigestVerifyUpdate(context, data, data.size.toPlatformUInt()))
 
-                    val result = signatureInput.read { signaturePointer, signatureSize ->
-                        EVP_DigestVerifyFinal(context, signaturePointer.toUByte(), signatureSize.toUInt().pd)
-                    }
-                    // 0     - means verification failed
-                    // 1     - means verification succeeded
-                    // other - means error
-                    if (result != 0) checkError(result)
-                    result == 1
-                }
-            } finally {
-                EVP_MD_CTX_free(context)
-            }
+            val signature = cArrayCopy(signatureInput)
+            val result = EVP_DigestVerifyFinal(context, signature.ofUByte(), signature.size.toPlatformUInt())
+            // 0     - means verification failed
+            // 1     - means verification succeeded
+            // other - means error
+            if (result != 0) checkError(result)
+            result == 1
         }
 
         EVP_PKEY_free(pkey)

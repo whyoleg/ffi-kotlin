@@ -1,18 +1,12 @@
 @file:Suppress(
     "PrivatePropertyName", "FunctionName", "ClassName", "SpellCheckingInspection",
-    "ACTUAL_TYPE_ALIAS_NOT_TO_CLASS",
 )
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.c.*
-
-actual typealias EVP_MD = dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MD
-
-actual object EVP_MD_Type : COpaqueType<EVP_MD>()
-actual typealias EVP_MD_CTX = dev.whyoleg.ffi.libcrypto3.cinterop.EVP_MD_CTX
-
-actual object EVP_MD_CTX_Type : COpaqueType<EVP_MD_CTX>()
+import dev.whyoleg.foreign.c.*
+import dev.whyoleg.foreign.memory.*
+import dev.whyoleg.foreign.platform.*
 
 actual fun EVP_MD_fetch(
     ctx: CPointer<OSSL_LIB_CTX>?,
@@ -40,15 +34,15 @@ actual fun EVP_DigestInit(
 actual fun EVP_DigestUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     d: CPointer<*>?,
-    cnt: PlatformDependentUInt,
+    cnt: PlatformUInt,
 ): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_DigestUpdate(ctx, d, cnt)
 }
 
 actual fun EVP_DigestFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    md: CPointer<UByteVariable>?,
-    s: CPointer<UIntVariable>?,
+    md: CPointer<UByte>?,
+    s: CPointer<UInt>?,
 ): Int {
     return dev.whyoleg.ffi.libcrypto3.cinterop.EVP_DigestFinal(ctx, md, s)
 }

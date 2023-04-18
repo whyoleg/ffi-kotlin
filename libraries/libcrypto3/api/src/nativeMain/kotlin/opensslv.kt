@@ -2,7 +2,9 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.c.*
+import dev.whyoleg.foreign.c.*
+import dev.whyoleg.foreign.memory.*
+import dev.whyoleg.foreign.platform.*
 
 actual const val OPENSSL_VERSION_STRING: Int = dev.whyoleg.ffi.libcrypto3.cinterop.OPENSSL_VERSION_STRING
 

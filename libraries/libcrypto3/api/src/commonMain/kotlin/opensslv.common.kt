@@ -2,7 +2,7 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.c.*
+import dev.whyoleg.foreign.c.*
 
 expect val OPENSSL_VERSION_STRING: Int
 
