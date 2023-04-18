@@ -2,9 +2,9 @@ plugins {
     id("buildx-multiplatform")
 
     id("buildx-target-android")
-    id("buildx-target-web")
+    id("buildx-target-emscripten")
     id("buildx-target-native-all")
-    id("buildx-target-jvm-all")
+    id("buildx-target-jdk-all")
 }
 
 kotlin {
@@ -15,7 +15,7 @@ kotlin {
                 api(projects.libraries.libcrypto3.libcrypto3Api)
             }
         }
-        jvmAndAndroidMain {
+        jvmMain {
             dependencies {
                 api(kotlin("test-junit"))
             }

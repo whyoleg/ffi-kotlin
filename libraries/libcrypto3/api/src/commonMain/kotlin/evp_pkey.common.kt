@@ -2,19 +2,19 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.c.*
+import dev.whyoleg.foreign.c.*
 
-expect class EVP_PKEY : COpaque
-expect object EVP_PKEY_Type : COpaqueType<EVP_PKEY>
+class EVP_PKEY private constructor() : COpaque() {
+    companion object Type : CType.Opaque<EVP_PKEY>(EVP_PKEY())
+}
 
 expect fun EVP_PKEY_keygen_init(
     ctx: CPointer<EVP_PKEY_CTX>?,
 ): Int
 
-@Suppress("NO_ACTUAL_FOR_EXPECT")
 expect fun EVP_PKEY_generate(
     ctx: CPointer<EVP_PKEY_CTX>?,
-    ppkey: CPointer<CPointerVariable<EVP_PKEY>>?,
+    ppkey: CPointer<CPointer<EVP_PKEY>>?,
 ): Int
 
 expect fun EVP_PKEY_up_ref(
@@ -23,4 +23,4 @@ expect fun EVP_PKEY_up_ref(
 
 expect fun EVP_PKEY_free(
     pkey: CPointer<EVP_PKEY>?,
-): Unit
+)

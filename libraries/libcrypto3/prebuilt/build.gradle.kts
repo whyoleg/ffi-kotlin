@@ -1,23 +1,22 @@
 import com.android.build.gradle.tasks.*
-import openssl.*
-import org.jetbrains.kotlin.gradle.plugin.mpp.*
-import org.jetbrains.kotlin.gradle.tasks.*
+import org.jetbrains.kotlin.gradle.plugin.*
+import org.jetbrains.kotlin.gradle.targets.js.dsl.*
 import wasm.*
 
 plugins {
     id("buildx-multiplatform-library")
 
     id("buildx-target-android")
-    id("buildx-target-web")
+    id("buildx-target-emscripten")
     id("buildx-target-native-all")
-    id("buildx-target-jvm-all")
+    id("buildx-target-jdk-all")
 
     id("buildx-use-openssl")
 }
 
-tasks.withType<CInteropProcess>().configureEach {
-    dependsOn(openssl.prepareOpensslTaskProvider)
-}
+//tasks.withType<CInteropProcess>().configureEach {
+//    dependsOn(openssl.prepareOpensslTaskProvider)
+//}
 
 val copyLibrariesForJvm by tasks.registering(Sync::class) {
     fun fromLibraries(target: String, extension: String, action: CopySpec.() -> Unit = {}) = from(openssl.libDir(target)) {
@@ -48,7 +47,7 @@ val copyLibrariesForAndroid by tasks.registering(Sync::class) {
     into(layout.buildDirectory.dir("androidLibraries"))
 }
 
-val libname = "ffi-libcrypto"
+val libname = "foreign-crypto-wasm"
 
 val linkWasm by tasks.registering(DefaultLinkWasm::class) {
     linkLibraries.addAll("crypto", "z")
@@ -62,7 +61,7 @@ val linkWasm by tasks.registering(DefaultLinkWasm::class) {
 }
 
 val generateWasmTestRunner by tasks.registering(DefaultGenerateWasmTestRunner::class) {
-    dependsOn("wasmTestTestDevelopmentExecutableCompileSync")//TODO
+    dependsOn("emscriptenWasmTestTestDevelopmentExecutableCompileSync")//TODO
     dependsOn(linkWasm)
     inputLibraryName.set(libname)
     inputLibraryFile.set(linkWasm.flatMap { it.producedLibraryFile })
@@ -100,7 +99,7 @@ kotlin {
         jvmMain {
             resources.srcDir(copyLibrariesForJvm.map { it.destinationDir })
         }
-        jsMain {
+        emscriptenJsMain {
             dependencies {
                 api(generateWasmNpmModule.map {
                     npm(libname, it.outputDirectory.get().asFile)
@@ -109,23 +108,23 @@ kotlin {
         }
     }
     targets.all {
-        if (this is KotlinNativeTarget) {
-            val main by compilations.getting {
-                val prebuilt by cinterops.creating {
-                    defFile("src/nativeMain/interop/linking.def")
-                    extraOpts("-libraryPath", openssl.libDir(konanTarget).get())
+//        if (this is KotlinNativeTarget) {
+//            val main by compilations.getting {
+//                val prebuilt by cinterops.creating {
+//                    defFile("src/nativeMain/interop/linking.def")
+//                    extraOpts("-libraryPath", openssl.libDir(konanTarget).get())
+//                }
+//            }
+//        }
+        if (this is KotlinWasmTargetDsl && platformType == KotlinPlatformType.wasm) {
+            nodejs {
+                testTask {
+                    dependsOn(generateWasmTestRunner)
+                    val originalPath = inputFileProperty.get().asFile.absolutePath.replace(".mjs", ".uninstantiated.mjs")
+                    //TODO: what to do here???
+                    generateWasmTestRunner.get().instantiateFile.set(originalPath)
+                    inputFileProperty.set(generateWasmTestRunner.flatMap { it.testRunnerFile })
                 }
-            }
-        }
-    }
-    wasm {
-        nodejs {
-            testTask {
-                dependsOn(generateWasmTestRunner)
-                val originalPath = inputFileProperty.get().asFile.absolutePath.replace(".mjs", ".uninstantiated.mjs")
-                //TODO: what to do here???
-                generateWasmTestRunner.get().instantiateFile.set(originalPath)
-                inputFileProperty.set(generateWasmTestRunner.flatMap { it.testRunnerFile })
             }
         }
     }
@@ -133,4 +132,4 @@ kotlin {
 
 //TODO: hack to resolve dependencies
 tasks.maybeCreate("prepareKotlinIdeaImport").dependsOn(generateWasmNpmModule)
-tasks.named("compileKotlinJs") { dependsOn(generateWasmNpmModule) }
+tasks.named("compileKotlinEmscriptenJs") { dependsOn(generateWasmNpmModule) }

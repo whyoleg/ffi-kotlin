@@ -5,7 +5,7 @@ plugins {
     id("buildx-multiplatform-library")
 
     id("buildx-target-native-desktop")
-    id("buildx-target-jvm-all")
+    id("buildx-target-jdk-all")
 
     id("buildx-use-openssl")
 }
@@ -30,11 +30,11 @@ kotlin {
                 environment("DYLD_LIBRARY_PATH", openssl.libDir("macos-arm64").get())
             }
         } else if (this is KotlinNativeTarget) {
-            val main by compilations.getting {
-                val shared by cinterops.creating {
-                    defFile("src/nativeMain/interop/linking.def")
-                }
-            }
+//            val main by compilations.getting {
+//                val shared by cinterops.creating {
+//                    defFile("src/nativeMain/interop/linking.def")
+//                }
+//            }
         }
     }
 }

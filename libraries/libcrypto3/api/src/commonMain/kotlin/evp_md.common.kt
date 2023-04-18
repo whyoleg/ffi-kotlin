@@ -2,12 +2,16 @@
 
 package dev.whyoleg.ffi.libcrypto3
 
-import dev.whyoleg.ffi.c.*
+import dev.whyoleg.foreign.c.*
+import dev.whyoleg.foreign.platform.*
 
-expect class EVP_MD : COpaque
-expect object EVP_MD_Type : COpaqueType<EVP_MD>
-expect class EVP_MD_CTX : COpaque
-expect object EVP_MD_CTX_Type : COpaqueType<EVP_MD_CTX>
+class EVP_MD private constructor() : COpaque() {
+    companion object Type : CType.Opaque<EVP_MD>(EVP_MD())
+}
+
+class EVP_MD_CTX private constructor() : COpaque() {
+    companion object Type : CType.Opaque<EVP_MD_CTX>(EVP_MD_CTX())
+}
 
 expect fun EVP_MD_fetch(
     ctx: CPointer<OSSL_LIB_CTX>?,
@@ -27,13 +31,13 @@ expect fun EVP_DigestInit(
 expect fun EVP_DigestUpdate(
     ctx: CPointer<EVP_MD_CTX>?,
     d: CPointer<*>?,
-    cnt: PlatformDependentUInt,
+    cnt: PlatformUInt,
 ): Int
 
 expect fun EVP_DigestFinal(
     ctx: CPointer<EVP_MD_CTX>?,
-    md: CPointer<UByteVariable>?,
-    s: CPointer<UIntVariable>?,
+    md: CPointer<UByte>?,
+    s: CPointer<UInt>?,
 ): Int
 
 expect fun EVP_MD_CTX_free(ctx: CPointer<EVP_MD_CTX>?)

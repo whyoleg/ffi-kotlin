@@ -1,35 +1,31 @@
 import com.android.build.gradle.tasks.*
-import openssl.*
-import org.jetbrains.kotlin.gradle.plugin.mpp.*
-import org.jetbrains.kotlin.gradle.tasks.*
 
 plugins {
     id("buildx-multiplatform") //-library
 
     id("buildx-target-android")
-    id("buildx-target-web")
+    id("buildx-target-emscripten")
     id("buildx-target-native-all")
-    id("buildx-target-jvm-all")
+    id("buildx-target-jdk-all")
 
     id("buildx-use-android-jni")
     id("buildx-use-jvm-jni")
     id("buildx-use-openssl")
 }
 
-tasks.withType<CInteropProcess>().configureEach {
-    dependsOn(openssl.prepareOpensslTaskProvider)
-}
-
+//tasks.withType<CInteropProcess>().configureEach {
+//    dependsOn(openssl.prepareOpensslTaskProvider)
+//}
+//
 tasks.named<jni.BuildJni>("buildJni") {
     linkLibraries.add("crypto")
-    linkPaths.addAll(
-        "/opt/homebrew/opt/openssl@3/lib",
-        "/usr/local/opt/openssl@3/lib",
+    linkPaths.add(
+        openssl.libDir("macos-arm64").map { it.absolutePath }
     )
     includeDirs.add(
         openssl.includeDir("macos-arm64").map { it.absolutePath }
     )
-    outputFilePath.set("macos-arm64/libcrypto-ffi-jni.dylib")
+    outputFilePath.set("macos-arm64/libforeign-crypto-jni.dylib")
 }
 
 val copyLibrariesForAndroid by tasks.registering(Sync::class) {
@@ -65,20 +61,23 @@ tasks.maybeCreate("prepareKotlinIdeaImport").dependsOn(copyHeadersForAndroid, co
 
 kotlin {
     sourceSets {
+        all {
+            languageSettings.optIn("dev.whyoleg.foreign.memory.ForeignMemoryApi")
+        }
         commonMain {
             dependencies {
-                api(projects.ffiCRuntime)
+                api(projects.foreignRuntime.foreignRuntimeC)
             }
         }
     }
-    targets.all {
-        if (this is KotlinNativeTarget) {
-            val main by compilations.getting {
-                val declarations by cinterops.creating {
-                    defFile("src/nativeMain/interop/declarations.def")
-                    includeDirs(openssl.includeDir(konanTarget))
-                }
-            }
-        }
-    }
+//    targets.all {
+//        if (this is KotlinNativeTarget) {
+//            val main by compilations.getting {
+//                val declarations by cinterops.creating {
+//                    defFile("src/nativeMain/interop/declarations.def")
+//                    includeDirs(openssl.includeDir(konanTarget))
+//                }
+//            }
+//        }
+//    }
 }
