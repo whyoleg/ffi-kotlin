@@ -1,6 +1,9 @@
 import com.android.build.gradle.tasks.*
+import openssl.*
 import org.jetbrains.kotlin.gradle.plugin.*
+import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import org.jetbrains.kotlin.gradle.targets.js.dsl.*
+import org.jetbrains.kotlin.gradle.tasks.*
 import wasm.*
 
 plugins {
@@ -14,9 +17,9 @@ plugins {
     id("buildx-use-openssl")
 }
 
-//tasks.withType<CInteropProcess>().configureEach {
-//    dependsOn(openssl.prepareOpensslTaskProvider)
-//}
+tasks.withType<CInteropProcess>().configureEach {
+    dependsOn(openssl.prepareOpensslTaskProvider)
+}
 
 val copyLibrariesForJvm by tasks.registering(Sync::class) {
     fun fromLibraries(target: String, extension: String, action: CopySpec.() -> Unit = {}) = from(openssl.libDir(target)) {
@@ -108,14 +111,15 @@ kotlin {
         }
     }
     targets.all {
-//        if (this is KotlinNativeTarget) {
-//            val main by compilations.getting {
-//                val prebuilt by cinterops.creating {
-//                    defFile("src/nativeMain/interop/linking.def")
-//                    extraOpts("-libraryPath", openssl.libDir(konanTarget).get())
-//                }
-//            }
-//        }
+        if (this is KotlinNativeTarget) {
+            //TODO: drop cinterop here and path plain compiler arguments?
+            val main by compilations.getting {
+                val prebuilt by cinterops.creating {
+                    defFile("src/nativeMain/interop/linking.def")
+                    extraOpts("-libraryPath", openssl.libDir(konanTarget).get())
+                }
+            }
+        }
         if (this is KotlinWasmTargetDsl && platformType == KotlinPlatformType.wasm) {
             nodejs {
                 testTask {
