@@ -1,4 +1,5 @@
 import com.android.build.gradle.tasks.*
+import org.jetbrains.kotlin.gradle.plugin.mpp.*
 
 plugins {
     id("buildx-multiplatform") //-library
@@ -13,10 +14,6 @@ plugins {
     id("buildx-use-openssl")
 }
 
-//tasks.withType<CInteropProcess>().configureEach {
-//    dependsOn(openssl.prepareOpensslTaskProvider)
-//}
-//
 tasks.named<jni.BuildJni>("buildJni") {
     linkLibraries.add("crypto")
     linkPaths.add(
@@ -70,14 +67,17 @@ kotlin {
             }
         }
     }
-//    targets.all {
-//        if (this is KotlinNativeTarget) {
-//            val main by compilations.getting {
-//                val declarations by cinterops.creating {
-//                    defFile("src/nativeMain/interop/declarations.def")
-//                    includeDirs(openssl.includeDir(konanTarget))
-//                }
-//            }
-//        }
-//    }
+    targets.all {
+        if (this is KotlinNativeTarget) {
+            val main by compilations.getting {
+                compilerOptions.configure {
+                    freeCompilerArgs.addAll(
+                        "-native-library",
+                        "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/libraries/libcrypto3/api/src/nativeMain/c/interop2.bc"
+                    )
+                }
+            }
+        }
+    }
 }
+//bash ~/.konan/kotlin-native-prebuilt-macos-aarch64-1.8.20/bin/run_konan clang clang macos_arm64 -emit-llvm -c interop.c -o interop.bc -I/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/build/openssl/prebuilt/macos-arm64/include

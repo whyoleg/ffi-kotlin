@@ -41,6 +41,12 @@ abstract class LibCrypto3Test {
         val of2 = cArrayOf(1, 2, 3)
         val dataArray = cArrayCopy(byteArrayOf(1, 2, 3))
         val digestArray = cArray(CType.Byte, 10)
+
+        val osslArray = cArrayOf(
+            OSSL_PARAM,
+            OSSL_PARAM_construct_utf8_string(cString("digest"), cString("SHA256"), 0.toPlatformUInt(), this),
+            OSSL_PARAM_construct_end(this)
+        )
     }
 
     @Test

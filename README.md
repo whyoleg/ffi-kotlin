@@ -77,7 +77,13 @@ TODO:
 
 ### Native
 
-Nothing interesting, just mapping for cinterop (not true now, update later)
+How to use C function from K/N without cinterop:
+
+* generate C code:
+  https://github.com/JetBrains/kotlin/blob/e10e821cd47449ae2b0b4f83d34baacb84f176c6/kotlin-native/Interop/StubGenerator/src/main/kotlin/org/jetbrains/kotlin/native/interop/gen/CWrapperGenerator.kt
+* build bitcode:
+  https://github.com/JetBrains/kotlin/blob/b6fdc2dbfc51697c0ea73bbb29bf1234b224fc87/kotlin-native/Interop/StubGenerator/src/main/kotlin/org/jetbrains/kotlin/native/interop/gen/jvm/main.kt#L417
+* embed bitcode via K/N compiler args: `-native-library <path to bitcode file>`
 
 ## Foreign Libraries Linking
 
