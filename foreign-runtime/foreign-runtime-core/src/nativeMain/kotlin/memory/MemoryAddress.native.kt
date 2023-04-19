@@ -1,12 +1,10 @@
 package dev.whyoleg.foreign.memory
 
-import kotlin.native.internal.*
+@ForeignMemoryApi
+public actual typealias MemoryAddress = Long
 
 @ForeignMemoryApi
-public actual typealias MemoryAddress = NativePtr
-
-@ForeignMemoryApi
-public actual fun nullMemoryAddress(): MemoryAddress = NativePtr.NULL
+public actual fun nullMemoryAddress(): MemoryAddress = 0
 
 @ForeignMemoryApi
 public actual typealias MemoryAddressSize = Long

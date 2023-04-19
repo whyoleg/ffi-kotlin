@@ -14,7 +14,8 @@ internal sealed class MemoryArenaImpl : MemoryArena {
         allocator.alloc(size, alignment.toInt()).rawPtr
 
     override fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment? {
-        TODO("Not yet implemented")
+        //TODO: configure cleanup!!!
+        return MemorySegment.fromAddress(nativeNullPtr + address, layout)
     }
 
     class Shared : MemoryArenaImpl() {
