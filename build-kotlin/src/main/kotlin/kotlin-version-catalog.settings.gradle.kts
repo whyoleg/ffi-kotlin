@@ -25,6 +25,7 @@ dependencyResolutionManagement {
 
             plugin("multiplatform", "org.jetbrains.kotlin.multiplatform").versionRef(kotlin)
             plugin("jvm", "org.jetbrains.kotlin.jvm").versionRef(kotlin)
+            plugin("plugin.serialization", "org.jetbrains.kotlin.plugin.serialization").versionRef(kotlin)
         }
     }
 }

@@ -36,6 +36,10 @@ rootProject.name = "ffi-kotlin"
 include("foreign-runtime:foreign-runtime-core")
 include("foreign-runtime:foreign-runtime-c")
 
+include("foreign-cx-index")
+include("foreign-cx-index:foreign-cx-index-cli")
+project(":foreign-cx-index:foreign-cx-index-cli").projectDir = file("foreign-cx-index/cli")
+
 //include("foreign-gradle:foreign-gradle-jni")
 //include("foreign-gradle:foreign-gradle-plugin")
 

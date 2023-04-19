@@ -6,13 +6,10 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import org.jetbrains.kotlin.konan.target.*
 
 plugins {
-    kotlin("multiplatform")
+    id("buildx-multiplatform-base")
 }
 
 kotlin {
-    //TODO: setup 20 toolchain only for FFM compilation - is it possible?
-    jvmToolchain(20) //for FFM
-
     fun KotlinTargetHierarchyBuilder.withPlatform(platformType: KotlinPlatformType, block: (KotlinTarget) -> Boolean = { true }) {
         withCompilations { it.target.platformType == platformType && block(it.target) }
     }
@@ -50,21 +47,6 @@ kotlin {
                     }
                 }
             }
-        }
-    }
-
-    targets.all {
-        compilations.all {
-            compilerOptions.configure {
-                freeCompilerArgs.add("-Xrender-internal-diagnostic-names")
-            }
-        }
-    }
-
-    sourceSets.all {
-        languageSettings {
-            progressiveMode = true
-            optIn("kotlin.ExperimentalStdlibApi")
         }
     }
 }
