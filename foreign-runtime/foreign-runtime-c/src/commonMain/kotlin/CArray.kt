@@ -69,7 +69,12 @@ public inline fun ForeignCScope.cArrayCopy(array: ByteArray): CArray<Byte> {
 //TODO: recheck indexes
 //TODO: which parameters?
 @OptIn(ForeignMemoryApi::class)
-public fun CArray<Byte>.copyInto(destination: ByteArray, destinationOffset: Int = 0, startIndex: Int = 0, endIndex: Int = size): ByteArray {
+public fun CArray<Byte>.copyInto(
+    destination: ByteArray,
+    destinationOffset: Int = 0,
+    startIndex: Int = 0,
+    endIndex: Int = destination.size
+): ByteArray {
     segmentInternal2.loadByteArray(memoryAddressSize(startIndex), destination, destinationOffset, endIndex)
     return destination
 }

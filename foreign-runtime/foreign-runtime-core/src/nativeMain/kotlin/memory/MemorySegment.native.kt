@@ -1,8 +1,8 @@
 package dev.whyoleg.foreign.memory
 
 import kotlinx.cinterop.*
-import kotlinx.cinterop.NativePtr
 import kotlin.native.internal.*
+import kotlin.native.internal.NativePtr
 
 //TODO: decide on how to work with cleaner
 @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
@@ -12,7 +12,7 @@ public actual class MemorySegment internal constructor(
     public actual val size: MemoryAddressSize,
     private val cleaner: Cleaner?
 ) {
-    public actual val address: MemoryAddress get() = pointer
+    public actual val address: MemoryAddress get() = pointer.toLong()
 
     private var _isAccessible = true
     public actual val isAccessible: Boolean get() = _isAccessible
@@ -23,7 +23,7 @@ public actual class MemorySegment internal constructor(
 
     private inline fun checkAccessFor(offset: MemoryAddressSize, bytes: MemoryAddressSize) {
         check(isAccessible) { "Not accessible" }
-        check(offset + bytes < size) { "Out of bound access [offset=$offset, bytes=$bytes, size=$size]" }
+        check(offset + bytes <= size) { "Out of bound access [offset=$offset, bytes=$bytes, size=$size]" }
     }
 
     private inline fun pointed(offset: MemoryAddressSize): NativePointed = interpretOpaquePointed(pointer + offset)
@@ -59,7 +59,8 @@ public actual class MemorySegment internal constructor(
         nativeMemUtils.putLong(pointed(offset), value)
     }
 
-    public actual fun loadString(offset: MemoryAddressSize): String {
+    public actual fun loadString(offset: MemoryAddressSize, unsafe: Boolean): String {
+        //TODO: check unsafe
         checkAccessFor(offset, 1) //TODO: check at least one?
         return pointer<ByteVar>(offset).toKString()
     }
@@ -108,10 +109,15 @@ public actual class MemorySegment internal constructor(
         nativeMemUtils.copyMemory(pointed(offset), valueLayout.size.toInt(), value.pointed(0))
     }
 
+    private fun resize(size: MemoryAddressSize): MemorySegment = MemorySegment(pointer, size, cleaner)
+
+    public actual fun resize(layout: MemoryLayout): MemorySegment = resize(layout.size)
+    public actual fun resize(elementLayout: MemoryLayout, elementsCount: Int): MemorySegment = resize(elementLayout.size * elementsCount)
+
     public actual companion object {
         public actual val Empty: MemorySegment = MemorySegment(NativePtr.NULL, 0, null)
 
-        internal fun fromAddress(address: MemoryAddress, layout: MemoryLayout): MemorySegment? {
+        internal fun fromAddress(address: NativePtr, layout: MemoryLayout): MemorySegment? {
             if (address == NativePtr.NULL) return null
             return MemorySegment(address, layout.size, null)
         }
