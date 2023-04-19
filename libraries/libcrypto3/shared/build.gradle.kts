@@ -1,3 +1,4 @@
+import openssl.*
 import org.jetbrains.kotlin.gradle.plugin.*
 import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import org.jetbrains.kotlin.gradle.targets.jvm.*
@@ -42,14 +43,14 @@ kotlin {
                 compilerOptions.configure {
                     freeCompilerArgs.addAll("-linker-option", "-lcrypto")
                     freeCompilerArgs.add("-linker-option")
-                    freeCompilerArgs.add(openssl.libDir("macos-arm64").map { "-L${it.absolutePath}" })
+                    freeCompilerArgs.add(openssl.libDir(konanTarget).map { "-L${it.absolutePath}" })
                 }
             }
 
             if (this is KotlinNativeTargetWithTests<*>) testRuns.all {
                 (this as ExecutionTaskHolder<KotlinNativeTest>).executionTask.configure {
                     dependsOn(openssl.prepareOpensslTaskProvider)
-                    environment("DYLD_LIBRARY_PATH", openssl.libDir("macos-arm64").get())
+                    environment("DYLD_LIBRARY_PATH", openssl.libDir(konanTarget).get())
                 }
             }
         }
