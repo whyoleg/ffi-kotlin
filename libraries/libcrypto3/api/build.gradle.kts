@@ -1,4 +1,5 @@
 import com.android.build.gradle.tasks.*
+import openssl.*
 import org.jetbrains.kotlin.gradle.plugin.mpp.*
 
 plugins {
@@ -69,15 +70,25 @@ kotlin {
     }
     targets.all {
         if (this is KotlinNativeTarget) {
+            val knTarget = konanTarget
+            val bitcodeTask = tasks.register<bitcode.DefaultBuildBitcode>("buildBitcodeFor$knTarget") {
+                konanTarget.set(knTarget.name)
+                includeDirs.add(
+                    openssl.includeDir(knTarget).map { it.absolutePath }
+                )
+                outputFilePath.set("$knTarget/interop.bc")
+            }
             val main by compilations.getting {
+                compileTaskProvider.configure {
+                    dependsOn(bitcodeTask)
+                }
                 compilerOptions.configure {
-                    freeCompilerArgs.addAll(
-                        "-native-library",
-                        "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/libraries/libcrypto3/api/src/nativeMain/c/interop2.bc"
+                    freeCompilerArgs.add("-native-library")
+                    freeCompilerArgs.add(
+                        bitcodeTask.flatMap { it.outputFile.map { it.asFile.absolutePath } }
                     )
                 }
             }
         }
     }
 }
-//bash ~/.konan/kotlin-native-prebuilt-macos-aarch64-1.8.20/bin/run_konan clang clang macos_arm64 -emit-llvm -c interop.c -o interop.bc -I/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/build/openssl/prebuilt/macos-arm64/include
