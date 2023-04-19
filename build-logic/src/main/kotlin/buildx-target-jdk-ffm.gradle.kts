@@ -5,6 +5,9 @@ plugins {
 }
 
 kotlin {
+    //TODO: setup 20 toolchain only for FFM compilation - is it possible?
+    jvmToolchain(20) //for FFM
+
     jvm("jvmJdkFfm") {
         attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 20)
         compilations.all {

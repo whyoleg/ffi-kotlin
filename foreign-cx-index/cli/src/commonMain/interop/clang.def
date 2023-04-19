@@ -1,4 +1,4 @@
-package = dev.whyoleg.ffi.c.index.clang
+package = dev.whyoleg.foreign.cx.index.clang
 headerFilter = clang-c/**
 headers = clang-c/Index.h
 
@@ -11,6 +11,7 @@ strictEnums = CXErrorCode \
               CXSymbolRole \
               CXDiagnosticSeverity
 
+# TODO: static linking
 linkerOpts = -lclang
 linkerOpts.osx = -L/opt/homebrew/opt/llvm/lib
 compilerOpts.osx = -I/opt/homebrew/opt/llvm/include
