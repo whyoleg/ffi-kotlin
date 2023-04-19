@@ -11,7 +11,7 @@ Support for all kotlin platforms:
         * in future (somewhere in August 2023, based on https://openjdk.org/projects/jdk/21/)
           strictly JDK 21 (JEP: https://openjdk.org/jeps/442)
 * Android via JNI (minSdk 21)
-* Native via cinterop
+* Native via cinterop-like solution
 * WASM via emscripten
 * JS via emscripten
 
