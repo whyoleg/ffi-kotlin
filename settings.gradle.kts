@@ -33,14 +33,18 @@ gradleEnterprise {
 
 rootProject.name = "ffi-kotlin"
 
-include("foreign-runtime:foreign-runtime-core")
-include("foreign-runtime:foreign-runtime-c")
-
 include("foreign-cx-index")
 include("foreign-cx-index:foreign-cx-index-cli")
 project(":foreign-cx-index:foreign-cx-index-cli").projectDir = file("foreign-cx-index/cli")
 
-//include("foreign-gradle:foreign-gradle-jni")
+//include("foreign-runtime:foreign-runtime-core")
+//include("foreign-runtime:foreign-runtime-c")
+
+include("foreign-generator:foreign-generator-c")
+
+//include("foreign-gradle:foreign-gradle-jni") //both jvm and android
+//include("foreign-gradle:foreign-gradle-emscripten") //both js and wasm
+//include("foreign-gradle:foreign-gradle-kn-bitcode") //K/N only
 //include("foreign-gradle:foreign-gradle-plugin")
 
 fun includeLibrary(name: String) {
@@ -50,4 +54,4 @@ fun includeLibrary(name: String) {
     }
 }
 
-includeLibrary("libcrypto3")
+//includeLibrary("libcrypto3")

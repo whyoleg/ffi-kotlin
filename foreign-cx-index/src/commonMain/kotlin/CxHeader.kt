@@ -18,4 +18,7 @@ public data class CxHeaderInfo(
     val structs: List<CxStructInfo> = emptyList(),
     val enums: List<CxEnumInfo> = emptyList(),
     val functions: List<CxFunctionInfo> = emptyList(),
-)
+) {
+    public fun isEmpty(): Boolean = typedefs.isEmpty() && structs.isEmpty() && enums.isEmpty() && functions.isEmpty()
+    public fun isNotEmpty(): Boolean = !isEmpty()
+}
