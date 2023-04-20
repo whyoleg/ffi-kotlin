@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.targets.js.nodejs.*
-import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.*
 import org.jetbrains.kotlin.gradle.targets.js.yarn.*
 
 plugins {
@@ -18,14 +17,10 @@ plugins.withType<YarnPlugin> {
 
 plugins.withType<NodeJsRootPlugin> {
     the<NodeJsRootExtension>().apply {
-        //from https://github.com/skuzmich/kotlin-wasi-bindings-experiments
-        nodeVersion = "20.0.0-v8-canary2022112061c569ba0d"
-        nodeDownloadBaseUrl = "https://nodejs.org/download/v8-canary"
+        nodeVersion = "20.0.0"
     }
 }
-tasks.withType<KotlinNpmInstallTask> {
-    args.add("--ignore-engines")
-}
+
 val skipTest = buildParameters.skip.test
 val skipLink = buildParameters.skip.link
 subprojects {
