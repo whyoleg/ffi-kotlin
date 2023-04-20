@@ -10,33 +10,48 @@ public fun main() {
     )
 
     index.filter {
-        typedefs {
+//        includeHeaders { it.name.value.startsWith("openssl/") }
+        includeFunctions(recursive = true) {
             when (it.name.value) {
-                "OSSL_PARAM", "EVP_MAC" -> true
+                "EVP_DigestSignInit_ex" -> true
                 else                    -> false
             }
         }
-        structs { false }
-        enums { false }
-        functions { false }
-    }.toPrettyString().also(::println)
-
+    }.also {
+        FileSystem.SYSTEM.writeCxIndexVerbose(
+            "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-generator/foreign-generator-c/build/index.json".toPath(),
+            it
+        )
+    }
     return
 
-    ForeignCGenerator(index, "dev.whyoleg.ffi.libcrypto3", "libcrypto3") {
-        headers { it.name.value.startsWith("openssl/") }
-        typedefs {
+    val generator = ForeignCGenerator(
+        index = index,
+        kotlinPackage = "dev.whyoleg.ffi.libcrypto3",
+        libraryName = "libcrypto3",
+        visibility = Visibility.public
+    ) {
+//        headers { it.name.value.startsWith("openssl/") }
+//        typedefs {
+//            when (it.name.value) {
+//                "OSSL_PARAM", "EVP_MAC" -> true
+//                else                    -> false
+//            }
+//        }
+        includeFunctions(recursive = true) {
             when (it.name.value) {
-                "OSSL_PARAM", "EVP_MAC" -> true
+//                "ERR_error_string", "ERR_get_error" -> true
+                "EVP_DigestSignInit_ex" -> true
                 else                    -> false
             }
         }
-        functions {
-            when (it.name.value) {
-                "ERR_error_string", "ERR_get_error" -> true
-                else                                -> false
-            }
-        }
+    }
+
+    generator.generateCommon().forEach {
+        println("Path: '${it.path}'")
+        println("Content:")
+        println(it.content)
+        println("--------------------------------------")
     }
 }
 
@@ -49,7 +64,7 @@ private fun test(index: CxIndex) {
                 header.typedefs.forEach { typedef ->
                     when (typedef.name.value) {
                         "OSSL_PARAM", "EVP_MAC" -> {
-                            println(typedef.toKotlinDeclaration(index))
+                            println(typedef.toKotlinDeclaration(index, Visibility.public))
                             println()
                         }
                     }
@@ -76,7 +91,7 @@ private fun test(index: CxIndex) {
                 header.functions.forEach { function ->
                     when (function.name.value) {
                         "ERR_error_string", "ERR_get_error" -> {
-                            println(function.toKotlinCommonDeclaration(index, expect = true, Visibility.public))
+                            println(function.toKotlinExpectDeclaration(index, Visibility.public))
                             println()
                             println(function.toKotlinJniDeclaration(index, "libCrypto3", actual = true, Visibility.public))
 

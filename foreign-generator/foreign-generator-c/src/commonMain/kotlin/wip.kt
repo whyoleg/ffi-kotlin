@@ -8,7 +8,7 @@ internal const val PREFIX = "foreign_"
 internal val CxDeclarationInfo.prefixedName get() = "$PREFIX${name.value}"
 
 @Suppress("EnumEntryName")
-internal enum class Visibility {
+public enum class Visibility {
     public, internal
 }
 
