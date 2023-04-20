@@ -2,29 +2,33 @@ package dev.whyoleg.foreign.cx.index
 
 import kotlinx.serialization.*
 
+//TODO: drop builtIn!
 @Serializable
 public data class CxIndex(
     val builtIn: CxHeaderInfo,
     val headers: List<CxHeaderInfo> = emptyList()
 ) {
     private val declarations: Declarations by lazy {
-        val typedefs = mutableMapOf<CxDeclarationId, CxTypedefInfo>()
-        val structs = mutableMapOf<CxDeclarationId, CxStructInfo>()
-        val enums = mutableMapOf<CxDeclarationId, CxEnumInfo>()
-        val functions = mutableMapOf<CxDeclarationId, CxFunctionInfo>()
+        val typedefs = mutableMapOf<CxDeclarationId, Pair<CxHeaderInfo, CxTypedefInfo>>()
+        val structs = mutableMapOf<CxDeclarationId, Pair<CxHeaderInfo, CxStructInfo>>()
+        val enums = mutableMapOf<CxDeclarationId, Pair<CxHeaderInfo, CxEnumInfo>>()
+        val functions = mutableMapOf<CxDeclarationId, Pair<CxHeaderInfo, CxFunctionInfo>>()
         (headers + builtIn).forEach { header ->
-            header.typedefs.forEach { typedefs[it.id] = it }
-            header.structs.forEach { structs[it.id] = it }
-            header.enums.forEach { enums[it.id] = it }
-            header.functions.forEach { functions[it.id] = it }
+            header.typedefs.forEach { typedefs[it.id] = header to it }
+            header.structs.forEach { structs[it.id] = header to it }
+            header.enums.forEach { enums[it.id] = header to it }
+            header.functions.forEach { functions[it.id] = header to it }
         }
         Declarations(typedefs, structs, enums, functions)
     }
 
-    public fun typedef(id: CxDeclarationId): CxTypedefInfo = declarations.typedefs.getValue(id)
-    public fun struct(id: CxDeclarationId): CxStructInfo = declarations.structs.getValue(id)
-    public fun enum(id: CxDeclarationId): CxEnumInfo = declarations.enums.getValue(id)
-    public fun function(id: CxDeclarationId): CxFunctionInfo = declarations.functions.getValue(id)
+    public fun typedefWithHeader(id: CxDeclarationId): Pair<CxHeaderInfo, CxTypedefInfo> = declarations.typedefs.getValue(id)
+
+    //TODO!!!
+    public fun typedef(id: CxDeclarationId): CxTypedefInfo = typedefWithHeader(id).second
+    public fun struct(id: CxDeclarationId): CxStructInfo = declarations.structs.getValue(id).second
+    public fun enum(id: CxDeclarationId): CxEnumInfo = declarations.enums.getValue(id).second
+    public fun function(id: CxDeclarationId): CxFunctionInfo = declarations.functions.getValue(id).second
 
     public fun filter(block: Filter.() -> Unit): CxIndex = Filter().apply(block).applyTo(this)
 
@@ -44,6 +48,8 @@ public data class CxIndex(
         private val functionIncludeFilters = mutableListOf<DeclarationIncludeFilter<CxFunctionInfo>>()
         private val functionExcludeFilters = mutableListOf<DeclarationExcludeFilter<CxFunctionInfo>>()
 
+        private val typedefInlinePredicates = mutableListOf<TypedefInlinePredicate>()
+
         public fun includeHeaders(block: (info: CxHeaderInfo) -> Boolean) {
             headerIncludeFilters += HeaderFilter(block)
         }
@@ -60,42 +66,52 @@ public data class CxIndex(
         public fun excludeHeaders(headers: List<String>): Unit = excludeHeaders(headers.toSet())
         public fun excludeHeaders(vararg headers: String): Unit = excludeHeaders(headers.toSet())
 
-        public fun includeTypedefs(recursive: Boolean = true, block: (info: CxTypedefInfo) -> Boolean) {
+        //TODO: may be provide just CxHeaderName?
+        public fun includeTypedefs(recursive: Boolean = true, block: (header: CxHeaderInfo, info: CxTypedefInfo) -> Boolean) {
             typedefIncludeFilters += DeclarationIncludeFilter(recursive, block)
         }
 
-        public fun excludeTypedefs(block: (info: CxTypedefInfo) -> Boolean) {
+        public fun excludeTypedefs(block: (header: CxHeaderInfo, info: CxTypedefInfo) -> Boolean) {
             typedefExcludeFilters += DeclarationExcludeFilter(block)
         }
 
-        public fun includeStructs(recursive: Boolean = true, block: (info: CxStructInfo) -> Boolean) {
+        public fun includeStructs(recursive: Boolean = true, block: (header: CxHeaderInfo, info: CxStructInfo) -> Boolean) {
             structIncludeFilters += DeclarationIncludeFilter(recursive, block)
         }
 
-        public fun excludeStructs(block: (info: CxStructInfo) -> Boolean) {
+        public fun excludeStructs(block: (header: CxHeaderInfo, info: CxStructInfo) -> Boolean) {
             structExcludeFilters += DeclarationExcludeFilter(block)
         }
 
-        public fun includeEnums(recursive: Boolean = true, block: (info: CxEnumInfo) -> Boolean) {
+        public fun includeEnums(recursive: Boolean = true, block: (header: CxHeaderInfo, info: CxEnumInfo) -> Boolean) {
             enumIncludeFilters += DeclarationIncludeFilter(recursive, block)
         }
 
-        public fun excludeEnums(block: (info: CxEnumInfo) -> Boolean) {
+        public fun excludeEnums(block: (header: CxHeaderInfo, info: CxEnumInfo) -> Boolean) {
             enumExcludeFilters += DeclarationExcludeFilter(block)
         }
 
-        public fun includeFunctions(recursive: Boolean = true, block: (info: CxFunctionInfo) -> Boolean) {
+        public fun includeFunctions(recursive: Boolean = true, block: (header: CxHeaderInfo, info: CxFunctionInfo) -> Boolean) {
             functionIncludeFilters += DeclarationIncludeFilter(recursive, block)
         }
 
-        public fun excludeFunctions(block: (info: CxFunctionInfo) -> Boolean) {
+        public fun excludeFunctions(block: (header: CxHeaderInfo, info: CxFunctionInfo) -> Boolean) {
             functionExcludeFilters += DeclarationExcludeFilter(block)
         }
 
-        internal fun applyTo(index: CxIndex): CxIndex {
-            val ids = Ids(index.declarations)
+        public fun inlineTypedefs(block: (header: CxHeaderInfo, info: CxTypedefInfo) -> Boolean) {
+            typedefInlinePredicates += TypedefInlinePredicate(block)
+        }
 
-            fun <T : CxDeclarationInfo> collect(
+        internal fun applyTo(index: CxIndex): CxIndex = index
+            .applyFilters()
+            .inlineTypedefs()
+            .run { CxIndex(builtIn, headers.filter(CxHeaderInfo::isNotEmpty)) }
+
+        private fun CxIndex.applyFilters(): CxIndex {
+            val ids = Ids(this)
+
+            fun <T : CxDeclarationInfo> CxHeaderInfo.collect(
                 declarations: List<T>,
                 includeFilters: List<DeclarationIncludeFilter<T>>,
                 excludeFilters: List<DeclarationExcludeFilter<T>>,
@@ -104,11 +120,11 @@ public data class CxIndex(
                 declarations.forEach iterating@{ element ->
                     excludeFilters.forEach { filter ->
                         //matching exclude filter, means declaration will not be included at all, so no reasons to check `include` filters
-                        if (filter.predicate(element)) return@iterating
+                        if (filter.predicate(this, element)) return@iterating
                     }
 
                     includeFilters.forEach filtering@{ filter ->
-                        if (!filter.predicate(element)) return@filtering // go to next filter
+                        if (!filter.predicate(this, element)) return@filtering // go to next filter
                         ids.addElement(element, filter.recursive)
                         // we added an element recursively, so there is no sense to filter it more
                         if (filter.recursive) return@iterating
@@ -167,84 +183,139 @@ public data class CxIndex(
                 functions = functions.filter { ids.hasFunction(it.id) },
             )
 
-            (index.headers + index.builtIn).forEach(CxHeaderInfo::collect)
+            (headers + builtIn).forEach(CxHeaderInfo::collect)
 
             return CxIndex(
-                builtIn = index.builtIn.applyFilter(),
-                headers = index.headers
-                    .map(CxHeaderInfo::applyFilter)
-                    .filter(CxHeaderInfo::isNotEmpty)
+                builtIn = builtIn.applyFilter(),
+                headers = headers.map(CxHeaderInfo::applyFilter)
             )
         }
 
+        private fun CxIndex.inlineTypedefs(): CxIndex {
+            if (typedefInlinePredicates.isEmpty()) return this
+
+            fun CxTypedefInfo.needInline(header: CxHeaderInfo): Boolean {
+                typedefInlinePredicates.forEach {
+                    if (it.predicate(header, this)) return true
+                }
+                return false
+            }
+
+            fun CxType.inlineTypedefs(): CxType = when (this) {
+                is CxType.ConstArray      -> copy(elementType = elementType.inlineTypedefs())
+                is CxType.IncompleteArray -> copy(elementType = elementType.inlineTypedefs())
+                is CxType.Pointer         -> copy(pointed = pointed.inlineTypedefs())
+                is CxType.Function        -> copy(
+                    returnType = returnType.inlineTypedefs(),
+                    parameters = parameters.map(CxType::inlineTypedefs)
+                )
+                is CxType.Typedef         -> {
+                    val (header, typedef) = typedefWithHeader(id)
+                    when {
+                        typedef.needInline(header) -> typedef.aliased.type.inlineTypedefs()
+                        else                       -> this
+                    }
+                }
+                else                      -> this
+            }
+
+            fun CxTypeInfo.inlineTypedefs(): CxTypeInfo = copy(type = type.inlineTypedefs())
+
+            fun CxHeaderInfo.inlineTypedefs(): CxHeaderInfo = CxHeaderInfo(
+                name = name,
+                typedefs = typedefs.filter { !it.needInline(this) },
+                structs = structs.map { struct ->
+                    struct.copy(fields = struct.fields.map { field ->
+                        field.copy(type = field.type.inlineTypedefs())
+                    })
+                },
+                enums = enums,
+                functions = functions.map { function ->
+                    function.copy(
+                        returnType = function.returnType.inlineTypedefs(),
+                        parameters = function.parameters.map { parameter ->
+                            parameter.copy(type = parameter.type.inlineTypedefs())
+                        }
+                    )
+                },
+            )
+
+            return CxIndex(
+                builtIn = builtIn.inlineTypedefs(),
+                headers = headers.map(CxHeaderInfo::inlineTypedefs)
+            )
+        }
+
+        private class TypedefInlinePredicate(
+            val predicate: (header: CxHeaderInfo, info: CxTypedefInfo) -> Boolean
+        )
+
         private class DeclarationIncludeFilter<T : CxDeclarationInfo>(
             val recursive: Boolean,
-            val predicate: (T) -> Boolean
+            val predicate: (CxHeaderInfo, T) -> Boolean
         )
 
         private class DeclarationExcludeFilter<T : CxDeclarationInfo>(
-            val predicate: (T) -> Boolean
+            val predicate: (CxHeaderInfo, T) -> Boolean
         )
 
         private class HeaderFilter(
             val predicate: (CxHeaderInfo) -> Boolean
         )
+
+        private class Ids(private val index: CxIndex) {
+            private val typedefs = mutableSetOf<CxDeclarationId>()
+            private val enums = mutableSetOf<CxDeclarationId>()
+            private val structs = mutableSetOf<CxDeclarationId>()
+            private val functions = mutableSetOf<CxDeclarationId>()
+
+            fun hasTypedef(id: CxDeclarationId) = id in typedefs
+            fun hasEnum(id: CxDeclarationId) = id in enums
+            fun hasStruct(id: CxDeclarationId) = id in structs
+            fun hasFunction(id: CxDeclarationId) = id in functions
+
+            fun addTypedef(typedef: CxTypedefInfo, recursive: Boolean) {
+                typedefs += typedef.id
+                if (recursive) addTypeRecursive(typedef.aliased.type)
+            }
+
+            fun addEnum(enum: CxEnumInfo, recursive: Boolean) {
+                enums += enum.id
+            }
+
+            fun addStruct(struct: CxStructInfo, recursive: Boolean) {
+                structs += struct.id
+                if (recursive) struct.fields.forEach { field ->
+                    addTypeRecursive(field.type.type)
+                }
+            }
+
+            fun addFunction(function: CxFunctionInfo, recursive: Boolean) {
+                functions += function.id
+                if (recursive) {
+                    addTypeRecursive(function.returnType.type)
+                    function.parameters.forEach { parameter ->
+                        addTypeRecursive(parameter.type.type)
+                    }
+                }
+            }
+
+            private tailrec fun addTypeRecursive(type: CxType): Unit = when (type) {
+                is CxType.Array    -> addTypeRecursive(type.elementType)
+                is CxType.Pointer  -> addTypeRecursive(type.pointed)
+                is CxType.Function -> (type.parameters + type.returnType).forEach(::addTypeRecursive)
+                is CxType.Enum     -> addEnum(index.enum(type.id), recursive = true)
+                is CxType.Struct   -> addStruct(index.struct(type.id), recursive = true)
+                is CxType.Typedef  -> addTypedef(index.typedef(type.id), recursive = true)
+                else               -> Unit
+            }
+        }
     }
 
     private class Declarations(
-        val typedefs: Map<CxDeclarationId, CxTypedefInfo>,
-        val structs: Map<CxDeclarationId, CxStructInfo>,
-        val enums: Map<CxDeclarationId, CxEnumInfo>,
-        val functions: Map<CxDeclarationId, CxFunctionInfo>,
+        val typedefs: Map<CxDeclarationId, Pair<CxHeaderInfo, CxTypedefInfo>>,
+        val structs: Map<CxDeclarationId, Pair<CxHeaderInfo, CxStructInfo>>,
+        val enums: Map<CxDeclarationId, Pair<CxHeaderInfo, CxEnumInfo>>,
+        val functions: Map<CxDeclarationId, Pair<CxHeaderInfo, CxFunctionInfo>>,
     )
-
-    private class Ids(
-        private val declarations: Declarations
-    ) {
-        private val typedefs = mutableSetOf<CxDeclarationId>()
-        private val enums = mutableSetOf<CxDeclarationId>()
-        private val structs = mutableSetOf<CxDeclarationId>()
-        private val functions = mutableSetOf<CxDeclarationId>()
-
-        fun hasTypedef(id: CxDeclarationId) = id in typedefs
-        fun hasEnum(id: CxDeclarationId) = id in enums
-        fun hasStruct(id: CxDeclarationId) = id in structs
-        fun hasFunction(id: CxDeclarationId) = id in functions
-
-        fun addTypedef(typedef: CxTypedefInfo, recursive: Boolean) {
-            typedefs += typedef.id
-            if (recursive) addTypeRecursive(typedef.aliased.type)
-        }
-
-        fun addEnum(enum: CxEnumInfo, recursive: Boolean) {
-            enums += enum.id
-        }
-
-        fun addStruct(struct: CxStructInfo, recursive: Boolean) {
-            structs += struct.id
-            if (recursive) struct.fields.forEach { field ->
-                addTypeRecursive(field.type.type)
-            }
-        }
-
-        fun addFunction(function: CxFunctionInfo, recursive: Boolean) {
-            functions += function.id
-            if (recursive) {
-                addTypeRecursive(function.returnType.type)
-                function.parameters.forEach { parameter ->
-                    addTypeRecursive(parameter.type.type)
-                }
-            }
-        }
-
-        private tailrec fun addTypeRecursive(type: CxType): Unit = when (type) {
-            is CxType.Array    -> addTypeRecursive(type.elementType)
-            is CxType.Pointer  -> addTypeRecursive(type.pointed)
-            is CxType.Function -> (type.parameters + type.returnType).forEach(::addTypeRecursive)
-            is CxType.Enum     -> addEnum(declarations.enums.getValue(type.id), recursive = true)
-            is CxType.Struct   -> addStruct(declarations.structs.getValue(type.id), recursive = true)
-            is CxType.Typedef  -> addTypedef(declarations.typedefs.getValue(type.id), recursive = true)
-            else               -> Unit
-        }
-    }
 }

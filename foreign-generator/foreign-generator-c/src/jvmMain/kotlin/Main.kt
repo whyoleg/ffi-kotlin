@@ -11,8 +11,11 @@ public fun main() {
 
     index.filter {
 //        includeHeaders { it.name.value.startsWith("openssl/") }
-        includeFunctions(recursive = true) {
-            when (it.name.value) {
+        inlineTypedefs { header, typedef ->
+            !header.name.value.startsWith("openssl/")
+        }
+        includeFunctions(recursive = true) { _, function ->
+            when (function.name.value) {
                 "EVP_DigestSignInit_ex" -> true
                 else                    -> false
             }
@@ -38,7 +41,7 @@ public fun main() {
 //                else                    -> false
 //            }
 //        }
-        includeFunctions(recursive = true) {
+        includeFunctions(recursive = true) { _, it ->
             when (it.name.value) {
 //                "ERR_error_string", "ERR_get_error" -> true
                 "EVP_DigestSignInit_ex" -> true
