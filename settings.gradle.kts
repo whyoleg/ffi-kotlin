@@ -38,7 +38,8 @@ include("foreign-cx-index:foreign-cx-index-cli")
 project(":foreign-cx-index:foreign-cx-index-cli").projectDir = file("foreign-cx-index/cli")
 
 //include("foreign-runtime:foreign-runtime-core")
-//include("foreign-runtime:foreign-runtime-c")
+//include("foreign-runtime:foreign-runtime-c") // all new API
+//include("foreign-runtime:foreign-runtime-kotlinx-cinterop") // API based on kotlinx.cinterop
 
 include("foreign-generator:foreign-generator-c")
 
