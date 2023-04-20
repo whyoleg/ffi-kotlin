@@ -77,15 +77,7 @@ class CxIndexBuilder {
 
         return CxIndex(
             builtIn = builtIn.cx(),
-            headers = headerByPath.mapNotNull { (_, header) ->
-                if (
-                    header.typedefs.isEmpty() &&
-                    header.structs.isEmpty() &&
-                    header.enums.isEmpty() &&
-                    header.functions.isEmpty()
-                ) null
-                else header.cx()
-            }
+            headers = headerByPath.map { it.value.cx() }.filter(CxHeaderInfo::isNotEmpty)
         )
     }
 }

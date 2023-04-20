@@ -199,7 +199,7 @@ Then generate declarations and continue work with JVM (faster dev cycle) while s
         * foreign-compiler-kn - uses K/N toolchain (as it provides cross-compilation capabilities)
     * C INTEROP BINDINGS GENERATION:
         * foreign-cx-index - provides models that are retrieved from C headers via `libclang`
-        * foreign-cx-indexer - provides K/N(or MPP in future) CLI to retrieve data from C headers via `libclang`
+        * foreign-cx-index-cli - provides K/N(or MPP in future) CLI to retrieve data from C headers via `libclang`
 * foreign-idea-plugin - in future may provide additional functionality, like:
     * ctrl+click from declaration to C header (if available)
     * C2K converter (paste C code -> convert to Kotlin interop code) using `libclang`
