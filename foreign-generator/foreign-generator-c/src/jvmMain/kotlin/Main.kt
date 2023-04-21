@@ -14,11 +14,13 @@ public fun main() {
         inlineTypedefs { header, typedef ->
             !header.name.value.startsWith("openssl/")
         }
-        includeFunctions(recursive = true) { _, function ->
-            when (function.name.value) {
-                "EVP_DigestSignInit_ex" -> true
-                else                    -> false
-            }
+        includeFunctions(recursive = true) { header, function ->
+            header.name.value.startsWith("openssl/")
+//            when (function.name.value) {
+//                "EVP_DigestSignInit_ex" -> true
+//                else                    -> false
+//            }
+//            true
         }
     }.also {
         FileSystem.SYSTEM.writeCxIndexVerbose(

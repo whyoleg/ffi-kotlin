@@ -269,14 +269,24 @@ public data class CxIndex(
             private val structs = mutableSetOf<CxDeclarationId>()
             private val functions = mutableSetOf<CxDeclarationId>()
 
+            private val recursiveIds = mutableSetOf<CxDeclarationId>()
+
             fun hasTypedef(id: CxDeclarationId) = id in typedefs
             fun hasEnum(id: CxDeclarationId) = id in enums
             fun hasStruct(id: CxDeclarationId) = id in structs
             fun hasFunction(id: CxDeclarationId) = id in functions
 
             fun addTypedef(typedef: CxTypedefInfo, recursive: Boolean) {
-                typedefs += typedef.id
-                if (recursive) addTypeRecursive(typedef.aliased.type)
+                val id = typedef.id
+
+                typedefs += id
+
+                if (!recursive) return
+                if (id in recursiveIds) return
+
+                recursiveIds += id
+
+                addTypeRecursive(typedef.aliased.type)
             }
 
             fun addEnum(enum: CxEnumInfo, recursive: Boolean) {
@@ -284,19 +294,32 @@ public data class CxIndex(
             }
 
             fun addStruct(struct: CxStructInfo, recursive: Boolean) {
-                structs += struct.id
-                if (recursive) struct.fields.forEach { field ->
+                val id = struct.id
+
+                structs += id
+
+                if (!recursive) return
+                if (id in recursiveIds) return
+
+                recursiveIds += id
+
+                struct.fields.forEach { field ->
                     addTypeRecursive(field.type.type)
                 }
             }
 
             fun addFunction(function: CxFunctionInfo, recursive: Boolean) {
-                functions += function.id
-                if (recursive) {
-                    addTypeRecursive(function.returnType.type)
-                    function.parameters.forEach { parameter ->
-                        addTypeRecursive(parameter.type.type)
-                    }
+                val id = function.id
+                functions += id
+
+                if (!recursive) return
+                if (id in recursiveIds) return
+
+                recursiveIds += id
+
+                addTypeRecursive(function.returnType.type)
+                function.parameters.forEach { parameter ->
+                    addTypeRecursive(parameter.type.type)
                 }
             }
 
