@@ -11,6 +11,16 @@ public value class CxDeclarationId(public val value: String)
 @JvmInline
 public value class CxDeclarationName(public val value: String)
 
+//TODO: may be provide just CxHeaderName?
+public fun interface DeclarationPredicate<T : CxDeclarationInfo> {
+    public fun matches(header: CxHeaderInfo, declaration: T): Boolean
+}
+
+//TODO: is it needed?
+public fun interface DeclarationSelector<T : CxDeclarationInfo, R> {
+    public fun select(header: CxHeaderInfo, declaration: T): R
+}
+
 @Serializable
 public sealed class CxDeclarationInfo {
     public abstract val id: CxDeclarationId
