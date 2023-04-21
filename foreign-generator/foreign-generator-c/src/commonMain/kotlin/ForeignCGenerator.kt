@@ -6,7 +6,7 @@ public class ForeignCGenerator(
     private val index: CxIndex,
     private val kotlinPackage: String,
     private val libraryName: String,
-    private val visibility: Visibility,
+    private val visibilitySelector: DeclarationSelector<CxDeclarationInfo, Visibility>,
     filter: CxIndex.Filter.() -> Unit
 ) {
     private val filteredIndex = index.filter(filter)
@@ -24,7 +24,7 @@ public class ForeignCGenerator(
                         separator = "\n\n",
                         postfix = "\n"
                     ) { typedef ->
-                        typedef.toKotlinDeclaration(index, visibility)
+                        typedef.toKotlinDeclaration(index, visibilitySelector.select(header, typedef))
                     }
                 }
             )
@@ -39,7 +39,7 @@ public class ForeignCGenerator(
                         separator = "\n\n",
                         postfix = "\n"
                     ) { function ->
-                        function.toKotlinExpectDeclaration(index, visibility)
+                        function.toKotlinExpectDeclaration(index, visibilitySelector.select(header, function))
                     }
                 }
             )

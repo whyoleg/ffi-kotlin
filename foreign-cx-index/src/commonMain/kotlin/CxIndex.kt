@@ -66,41 +66,40 @@ public data class CxIndex(
         public fun excludeHeaders(headers: List<String>): Unit = excludeHeaders(headers.toSet())
         public fun excludeHeaders(vararg headers: String): Unit = excludeHeaders(headers.toSet())
 
-        //TODO: may be provide just CxHeaderName?
-        public fun includeTypedefs(recursive: Boolean = true, block: (header: CxHeaderInfo, info: CxTypedefInfo) -> Boolean) {
-            typedefIncludeFilters += DeclarationIncludeFilter(recursive, block)
+        public fun includeTypedefs(recursive: Boolean = true, predicate: DeclarationPredicate<CxTypedefInfo>) {
+            typedefIncludeFilters += DeclarationIncludeFilter(recursive, predicate)
         }
 
-        public fun excludeTypedefs(block: (header: CxHeaderInfo, info: CxTypedefInfo) -> Boolean) {
-            typedefExcludeFilters += DeclarationExcludeFilter(block)
+        public fun excludeTypedefs(predicate: DeclarationPredicate<CxTypedefInfo>) {
+            typedefExcludeFilters += DeclarationExcludeFilter(predicate)
         }
 
-        public fun includeStructs(recursive: Boolean = true, block: (header: CxHeaderInfo, info: CxStructInfo) -> Boolean) {
-            structIncludeFilters += DeclarationIncludeFilter(recursive, block)
+        public fun includeStructs(recursive: Boolean = true, predicate: DeclarationPredicate<CxStructInfo>) {
+            structIncludeFilters += DeclarationIncludeFilter(recursive, predicate)
         }
 
-        public fun excludeStructs(block: (header: CxHeaderInfo, info: CxStructInfo) -> Boolean) {
-            structExcludeFilters += DeclarationExcludeFilter(block)
+        public fun excludeStructs(predicate: DeclarationPredicate<CxStructInfo>) {
+            structExcludeFilters += DeclarationExcludeFilter(predicate)
         }
 
-        public fun includeEnums(recursive: Boolean = true, block: (header: CxHeaderInfo, info: CxEnumInfo) -> Boolean) {
-            enumIncludeFilters += DeclarationIncludeFilter(recursive, block)
+        public fun includeEnums(recursive: Boolean = true, predicate: DeclarationPredicate<CxEnumInfo>) {
+            enumIncludeFilters += DeclarationIncludeFilter(recursive, predicate)
         }
 
-        public fun excludeEnums(block: (header: CxHeaderInfo, info: CxEnumInfo) -> Boolean) {
-            enumExcludeFilters += DeclarationExcludeFilter(block)
+        public fun excludeEnums(predicate: DeclarationPredicate<CxEnumInfo>) {
+            enumExcludeFilters += DeclarationExcludeFilter(predicate)
         }
 
-        public fun includeFunctions(recursive: Boolean = true, block: (header: CxHeaderInfo, info: CxFunctionInfo) -> Boolean) {
-            functionIncludeFilters += DeclarationIncludeFilter(recursive, block)
+        public fun includeFunctions(recursive: Boolean = true, predicate: DeclarationPredicate<CxFunctionInfo>) {
+            functionIncludeFilters += DeclarationIncludeFilter(recursive, predicate)
         }
 
-        public fun excludeFunctions(block: (header: CxHeaderInfo, info: CxFunctionInfo) -> Boolean) {
-            functionExcludeFilters += DeclarationExcludeFilter(block)
+        public fun excludeFunctions(predicate: DeclarationPredicate<CxFunctionInfo>) {
+            functionExcludeFilters += DeclarationExcludeFilter(predicate)
         }
 
-        public fun inlineTypedefs(block: (header: CxHeaderInfo, info: CxTypedefInfo) -> Boolean) {
-            typedefInlinePredicates += TypedefInlinePredicate(block)
+        public fun inlineTypedefs(predicate: DeclarationPredicate<CxTypedefInfo>) {
+            typedefInlinePredicates += TypedefInlinePredicate(predicate)
         }
 
         internal fun applyTo(index: CxIndex): CxIndex = index
@@ -120,11 +119,11 @@ public data class CxIndex(
                 declarations.forEach iterating@{ element ->
                     excludeFilters.forEach { filter ->
                         //matching exclude filter, means declaration will not be included at all, so no reasons to check `include` filters
-                        if (filter.predicate(this, element)) return@iterating
+                        if (filter.predicate.matches(this, element)) return@iterating
                     }
 
                     includeFilters.forEach filtering@{ filter ->
-                        if (!filter.predicate(this, element)) return@filtering // go to next filter
+                        if (!filter.predicate.matches(this, element)) return@filtering // go to next filter
                         ids.addElement(element, filter.recursive)
                         // we added an element recursively, so there is no sense to filter it more
                         if (filter.recursive) return@iterating
@@ -196,7 +195,7 @@ public data class CxIndex(
 
             fun CxTypedefInfo.needInline(header: CxHeaderInfo): Boolean {
                 typedefInlinePredicates.forEach {
-                    if (it.predicate(header, this)) return true
+                    if (it.predicate.matches(header, this)) return true
                 }
                 return false
             }
@@ -247,16 +246,16 @@ public data class CxIndex(
         }
 
         private class TypedefInlinePredicate(
-            val predicate: (header: CxHeaderInfo, info: CxTypedefInfo) -> Boolean
+            val predicate: DeclarationPredicate<CxTypedefInfo>
         )
 
         private class DeclarationIncludeFilter<T : CxDeclarationInfo>(
             val recursive: Boolean,
-            val predicate: (CxHeaderInfo, T) -> Boolean
+            val predicate: DeclarationPredicate<T>
         )
 
         private class DeclarationExcludeFilter<T : CxDeclarationInfo>(
-            val predicate: (CxHeaderInfo, T) -> Boolean
+            val predicate: DeclarationPredicate<T>
         )
 
         private class HeaderFilter(

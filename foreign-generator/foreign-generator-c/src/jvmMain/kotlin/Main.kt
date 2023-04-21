@@ -9,13 +9,40 @@ public fun main() {
         "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-cx-index/build/index.json".toPath()
     )
 
+    ForeignCLibrary(
+        index,
+        kotlinPackage = "dev.whyoleg.ffi.libcrypto3",
+        libraryName = "libcrypto3",
+    ) {
+        visibility { header, _ ->
+            when (header.name.value.startsWith("openssl/")) {
+                true  -> Visibility.public
+                false -> Visibility.internal
+            }
+        }
+
+        subpackage { header, _ ->
+            header.name.value.substringBefore(".h").replace("/", ".")
+        }
+
+        filter {
+            inlineTypedefs { header, typedef ->
+                !header.name.value.startsWith("openssl/")
+            }
+            includeFunctions(recursive = true) { header, function ->
+                function.name.value.startsWith("ERR")
+            }
+        }
+    }
+
     index.filter {
 //        includeHeaders { it.name.value.startsWith("openssl/") }
         inlineTypedefs { header, typedef ->
             !header.name.value.startsWith("openssl/")
         }
         includeFunctions(recursive = true) { header, function ->
-            header.name.value.startsWith("openssl/")
+            function.name.value.startsWith("ERR")
+//            header.name.value.startsWith("openssl/")
 //            when (function.name.value) {
 //                "EVP_DigestSignInit_ex" -> true
 //                else                    -> false
@@ -28,13 +55,19 @@ public fun main() {
             it
         )
     }
-    return
+}
 
+private fun test2(index: CxIndex) {
     val generator = ForeignCGenerator(
         index = index,
         kotlinPackage = "dev.whyoleg.ffi.libcrypto3",
         libraryName = "libcrypto3",
-        visibility = Visibility.public
+        visibilitySelector = { header, _ ->
+            when (header.name.value.startsWith("openssl/")) {
+                true  -> Visibility.public
+                false -> Visibility.internal
+            }
+        }
     ) {
 //        headers { it.name.value.startsWith("openssl/") }
 //        typedefs {
@@ -65,7 +98,6 @@ private fun test(index: CxIndex) {
         when (header.name.value) {
             "openssl/types.h",
             "openssl/core.h" -> {
-                return@forEach
                 header.typedefs.forEach { typedef ->
                     when (typedef.name.value) {
                         "OSSL_PARAM", "EVP_MAC" -> {
