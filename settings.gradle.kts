@@ -41,6 +41,8 @@ project(":foreign-cx-index:foreign-cx-index-cli").projectDir = file("foreign-cx-
 //include("foreign-runtime:foreign-runtime-c") // all new API
 //include("foreign-runtime:foreign-runtime-kotlinx-cinterop") // API based on kotlinx.cinterop
 
+//TODO: better name?
+include("foreign-schema:foreign-schema-c")
 include("foreign-generator:foreign-generator-c")
 
 //include("foreign-gradle:foreign-gradle-jni") //both jvm and android
