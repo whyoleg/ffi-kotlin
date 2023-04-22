@@ -2,10 +2,9 @@ package dev.whyoleg.foreign.cx.index
 
 import kotlinx.serialization.*
 
-//TODO: drop builtIn!
+//TODO: add parameters with which index was generated?
 @Serializable
 public data class CxIndex(
-    val builtIn: CxHeaderInfo,
     val headers: List<CxHeaderInfo> = emptyList()
 ) {
     private val declarations: Declarations by lazy {
@@ -13,7 +12,7 @@ public data class CxIndex(
         val structs = mutableMapOf<CxDeclarationId, Pair<CxHeaderInfo, CxStructInfo>>()
         val enums = mutableMapOf<CxDeclarationId, Pair<CxHeaderInfo, CxEnumInfo>>()
         val functions = mutableMapOf<CxDeclarationId, Pair<CxHeaderInfo, CxFunctionInfo>>()
-        (headers + builtIn).forEach { header ->
+        headers.forEach { header ->
             header.typedefs.forEach { typedefs[it.id] = header to it }
             header.structs.forEach { structs[it.id] = header to it }
             header.enums.forEach { enums[it.id] = header to it }
@@ -105,7 +104,7 @@ public data class CxIndex(
         internal fun applyTo(index: CxIndex): CxIndex = index
             .applyFilters()
             .inlineTypedefs()
-            .run { CxIndex(builtIn, headers.filter(CxHeaderInfo::isNotEmpty)) }
+            .run { CxIndex(headers.filter(CxHeaderInfo::isNotEmpty)) }
 
         private fun CxIndex.applyFilters(): CxIndex {
             val ids = Ids(this)
@@ -182,12 +181,9 @@ public data class CxIndex(
                 functions = functions.filter { ids.hasFunction(it.id) },
             )
 
-            (headers + builtIn).forEach(CxHeaderInfo::collect)
+            headers.forEach(CxHeaderInfo::collect)
 
-            return CxIndex(
-                builtIn = builtIn.applyFilter(),
-                headers = headers.map(CxHeaderInfo::applyFilter)
-            )
+            return CxIndex(headers = headers.map(CxHeaderInfo::applyFilter))
         }
 
         private fun CxIndex.inlineTypedefs(): CxIndex {
@@ -239,10 +235,7 @@ public data class CxIndex(
                 },
             )
 
-            return CxIndex(
-                builtIn = builtIn.inlineTypedefs(),
-                headers = headers.map(CxHeaderInfo::inlineTypedefs)
-            )
+            return CxIndex(headers = headers.map(CxHeaderInfo::inlineTypedefs))
         }
 
         private class TypedefInlinePredicate(

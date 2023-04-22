@@ -37,7 +37,6 @@ public fun FileSystem.writeCxIndexVerbose(path: Path, index: CxIndex) {
     }
 
     deleteRecursively(path)
-    writeHeader(path.resolve("_.json"), index.builtIn)
     index.headers.forEach { header ->
         writeHeader(path.resolve(header.name.value.replace(".h", ".json")), header)
     }
