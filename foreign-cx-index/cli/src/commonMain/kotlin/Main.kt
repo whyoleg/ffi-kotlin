@@ -14,7 +14,7 @@ private val testArgs = listOf(
     "--header", "openssl/evp.h",
     "--include", "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/build/openssl/prebuilt/macos-arm64/include",
     "--include", "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Kernel.framework/Headers/",
-    "--output", "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-cx-index/build/index.json",
+    "--output", "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-cx-index/build/libcrypto3.json",
 )
 
 fun main(args: Array<String>): Unit = Main().main(testArgs)

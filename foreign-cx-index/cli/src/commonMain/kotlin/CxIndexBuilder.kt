@@ -15,8 +15,9 @@ class CxIndexBuilder {
     }
 
     private val all = DeclarationRegistry(CxHeaderName(""))
-    private val builtIn = DeclarationRegistry(CxHeaderName.BuiltIn)
-    private val headerByPath = mutableMapOf<String, DeclarationRegistry>()
+    private val headerByPath = mutableMapOf<String?, DeclarationRegistry>(
+        null to DeclarationRegistry(CxHeaderName.BuiltIn)
+    )
 
     private val dummyStruct = CxStructInfo(CxDeclarationId(""), CxDeclarationName(""), Long.MIN_VALUE, Long.MIN_VALUE, emptyList())
 
@@ -59,7 +60,7 @@ class CxIndexBuilder {
             }
         }
         val headerDeclarations = getDeclarations(
-            clang_getFileName(cursor.locationFile).useString()?.let(headerByPath::getValue) ?: builtIn
+            headerByPath.getValue(clang_getFileName(cursor.locationFile).useString())
         )
         headerDeclarations[id] = info
         allDeclarations[id] = info
@@ -75,9 +76,6 @@ class CxIndexBuilder {
             functions = functions.values.toList()
         )
 
-        return CxIndex(
-            builtIn = builtIn.cx(),
-            headers = headerByPath.map { it.value.cx() }.filter(CxHeaderInfo::isNotEmpty)
-        )
+        return CxIndex(headers = headerByPath.map { it.value.cx() }.filter(CxHeaderInfo::isNotEmpty))
     }
 }

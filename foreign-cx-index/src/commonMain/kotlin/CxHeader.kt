@@ -7,7 +7,7 @@ import kotlin.jvm.*
 @JvmInline
 public value class CxHeaderName(public val value: String) {
     public companion object {
-        public val BuiltIn: CxHeaderName = CxHeaderName("_")
+        public val BuiltIn: CxHeaderName = CxHeaderName("_.h")
     }
 }
 
