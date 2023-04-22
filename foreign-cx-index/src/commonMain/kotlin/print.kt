@@ -20,6 +20,11 @@ public fun <T> T.toPrettyString(serializer: KSerializer<T>): String = prettyJson
 public inline fun <reified T> T.toPrettyString(): String = toPrettyString(serializer())
 
 @OptIn(ExperimentalSerializationApi::class)
+public fun FileSystem.readCxIndex(path: Path): CxIndex = read(path) {
+    json.decodeFromBufferedSource(CxIndex.serializer(), this)
+}
+
+@OptIn(ExperimentalSerializationApi::class)
 public fun FileSystem.writeCxIndex(path: Path, index: CxIndex) {
     createDirectories(path.parent!!)
     write(path) {
@@ -40,9 +45,4 @@ public fun FileSystem.writeCxIndexVerbose(path: Path, index: CxIndex) {
     index.headers.forEach { header ->
         writeHeader(path.resolve(header.name.value.replace(".h", ".json")), header)
     }
-}
-
-@OptIn(ExperimentalSerializationApi::class)
-public fun FileSystem.readCxIndex(path: Path): CxIndex = read(path) {
-    json.decodeFromBufferedSource(CxIndex.serializer(), this)
 }
