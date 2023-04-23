@@ -1,13 +1,7 @@
 package dev.whyoleg.foreign.generator.c
 
 import dev.whyoleg.foreign.cx.index.*
-
-public class FileStub(
-    public val path: String,
-    public val content: String
-) {
-    override fun toString(): String = "FileStub($path)"
-}
+import dev.whyoleg.foreign.schema.c.*
 
 internal enum class KotlinImports(
     vararg val imports: String
@@ -49,7 +43,7 @@ internal fun kotlinFile(
 
 internal fun CxTypedefInfo.toKotlinDeclaration(
     index: CxIndex,
-    visibility: Visibility
+    visibility: ForeignCDeclaration.Visibility
 ): String = buildString {
     append(visibility.name)
     append(" typealias ").append(name.value).append(" = ").append(aliased.type.toKotlinType(index))
@@ -77,7 +71,7 @@ internal fun CxStructInfo.toKotlinDeclaration(
             separator = "\n",
             postfix = "\n\n"
         ) { field ->
-            "${INDENT}var${field.name}: ${field.type.type.toKotlinType(index)} by Type.${field.name}"
+            "${INDENT}var ${field.name}: ${field.type.type.toKotlinType(index)} by Type.${field.name}"
         }
 
         append(INDENT)
@@ -129,7 +123,7 @@ internal fun CxStructInfo.toKotlinDeclaration(
 //TODO: struct support
 internal fun CxFunctionInfo.toKotlinExpectDeclaration(
     index: CxIndex,
-    visibility: Visibility
+    visibility: ForeignCDeclaration.Visibility
 ): String = buildString {
     append(visibility).append(" ")
     append("expect ")
@@ -182,20 +176,20 @@ internal fun CxType.toKotlinType(
 //    CxType.Int128             -> TODO()
 //    CxType.Long               -> TODO()
 //    CxType.LongDouble         -> TODO()
-//    CxType.LongLong           -> TODO()
+    CxType.LongLong           -> "Long"
     is CxType.IncompleteArray -> "CArrayPointer<${elementType.toKotlinType(index).replace("?", "")}>?"
     is CxType.ConstArray      -> "CArrayPointer<${elementType.toKotlinType(index).replace("?", "")}>?"
     is CxType.Pointer         -> when (pointed) {
         CxType.Char -> "CString?"
         else        -> "CPointer<${pointed.toKotlinType(index).replace("?", "")}>?"
     }
-//    CxType.Short              -> TODO()
+    CxType.Short              -> "Short"
     is CxType.Struct          -> index.struct(id).name.value
     is CxType.Typedef         -> index.typedef(id).name.value
     CxType.UInt               -> "UInt"
 //    CxType.UInt128            -> TODO()
     CxType.ULong              -> "PlatformUInt"
-//    CxType.ULongLong          -> TODO()
+    CxType.ULongLong          -> "Long"
 //    CxType.UShort             -> TODO()
 //    is CxType.Unknown         -> TODO()
     CxType.Void               -> "Unit" //TODO
@@ -205,31 +199,31 @@ internal fun CxType.toKotlinType(
 internal fun CxType.toKotlinAccessor(
     index: CxIndex
 ): String = when (this) {
-//    is CxType.ConstArray      -> TODO()
-//    is CxType.IncompleteArray -> TODO()
 //    CxType.Boolean            -> TODO()
-//    CxType.Byte               -> TODO()
-    CxType.Char       -> "Byte"
+    CxType.Byte               -> "Byte"
+    CxType.Char               -> "Byte"
 //    CxType.Double             -> TODO()
 //    is CxType.Enum            -> TODO()
 //    CxType.Float              -> TODO()
-//    is CxType.Function        -> TODO()
-//    CxType.Int                -> TODO()
+    is CxType.Function        -> "CFUNCTION"
+    CxType.Int                -> "Int"
 //    CxType.Int128             -> TODO()
 //    CxType.Long               -> TODO()
 //    CxType.LongDouble         -> TODO()
-//    CxType.LongLong           -> TODO()
-    is CxType.Pointer -> "${pointed.toKotlinAccessor(index)}.pointer"
-//    CxType.Short              -> TODO()
-//    is CxType.Struct          -> TODO()
-    is CxType.Typedef -> index.typedef(id).name.value //TODO!!!
-//    CxType.UByte              -> TODO()
-    CxType.UInt       -> "UInt"
+    CxType.LongLong           -> "Long"
+    is CxType.ConstArray      -> "${elementType.toKotlinAccessor(index)}.pointer"
+    is CxType.IncompleteArray -> "${elementType.toKotlinAccessor(index)}.pointer"
+    is CxType.Pointer         -> "${pointed.toKotlinAccessor(index)}.pointer"
+    CxType.Short              -> "Short"
+    is CxType.Struct          -> "CSTRUCT"
+    is CxType.Typedef         -> index.typedef(id).name.value //TODO!!!
+    CxType.UByte              -> "UByte"
+    CxType.UInt               -> "UInt"
 //    CxType.UInt128            -> TODO()
-    CxType.ULong      -> "PlatformUInt"
-//    CxType.ULongLong          -> TODO()
+    CxType.ULong              -> "PlatformUInt"
+    CxType.ULongLong          -> "Long"
 //    CxType.UShort             -> TODO()
 //    is CxType.Unknown         -> TODO()
-    CxType.Void       -> "Unit"
-    else              -> TODO(toString())
+    CxType.Void               -> "Unit"
+    else                      -> TODO(toString())
 }

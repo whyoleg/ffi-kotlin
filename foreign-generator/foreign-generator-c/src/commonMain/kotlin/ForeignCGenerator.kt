@@ -1,48 +1,58 @@
 package dev.whyoleg.foreign.generator.c
 
-import dev.whyoleg.foreign.cx.index.*
+import dev.whyoleg.foreign.schema.c.*
 
 public class ForeignCGenerator(
-    private val index: CxIndex,
-    private val kotlinPackage: String,
-    private val libraryName: String,
-    private val visibilitySelector: DeclarationSelector<CxDeclarationInfo, Visibility>,
-    filter: CxIndex.Filter.() -> Unit
+    private val library: ForeignCLibrary
 ) {
-    private val filteredIndex = index.filter(filter)
-
     public fun generateCommon(): List<FileStub> = buildList {
-        filteredIndex.headers.forEach { header ->
-            if (header.typedefs.isNotEmpty()) add(
+        library.packages.forEach { pkg ->
+            val path = pkg.name.replace(".", "/")
+            val pkgRoot = pkg.name.substringAfterLast(".")
+            if (pkg.typedefs.isNotEmpty()) add(
                 kotlinFile(
-                    path = header.name.value.replace(".h", ".typedefs.kt"),
-                    kotlinPackage = kotlinPackage,
+                    path = "$path/$pkgRoot.typedefs.kt",
+                    kotlinPackage = pkg.name,
                     imports = KotlinImports.Empty
                 ) {
-                    header.typedefs.joinTo(
+                    pkg.typedefs.joinTo(
                         this,
                         separator = "\n\n",
                         postfix = "\n"
-                    ) { typedef ->
-                        typedef.toKotlinDeclaration(index, visibilitySelector.select(header, typedef))
+                    ) { declaration ->
+                        val typedef = library.index.typedef(declaration.id)
+                        typedef.toKotlinDeclaration(library.index, declaration.visibility)
                     }
                 }
             )
-            if (header.functions.isNotEmpty()) add(
+            if (pkg.functions.isNotEmpty()) add(
                 kotlinFile(
-                    path = header.name.value.replace(".h", ".functions.kt"),
-                    kotlinPackage = kotlinPackage,
+                    path = "$path/$pkgRoot.functions.kt",
+                    kotlinPackage = pkg.name,
                     imports = KotlinImports.Default
                 ) {
-                    header.functions.joinTo(
+                    pkg.functions.joinTo(
                         this,
                         separator = "\n\n",
                         postfix = "\n"
-                    ) { function ->
-                        function.toKotlinExpectDeclaration(index, visibilitySelector.select(header, function))
+                    ) { declaration ->
+                        val function = library.index.function(declaration.id)
+                        function.toKotlinExpectDeclaration(library.index, declaration.visibility)
                     }
                 }
             )
+            pkg.structs.forEach { declaration ->
+                val struct = library.index.struct(declaration.id)
+                add(
+                    kotlinFile(
+                        path = "$path/${struct.name.value}.kt",
+                        kotlinPackage = pkg.name,
+                        imports = KotlinImports.Default
+                    ) {
+                        append(struct.toKotlinDeclaration(library.index))
+                    }
+                )
+            }
         }
     }
 

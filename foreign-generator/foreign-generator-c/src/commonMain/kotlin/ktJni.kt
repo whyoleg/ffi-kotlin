@@ -1,12 +1,13 @@
 package dev.whyoleg.foreign.generator.c
 
 import dev.whyoleg.foreign.cx.index.*
+import dev.whyoleg.foreign.schema.c.*
 
 internal fun CxFunctionInfo.toKotlinJniDeclaration(
     index: CxIndex,
     libraryName: String,
     actual: Boolean,
-    visibility: Visibility
+    visibility: ForeignCDeclaration.Visibility
 ): String = buildString {
     append("@JvmStatic private external fun ").append(prefixedName).append("(")
     if (parameters.isNotEmpty()) parameters.joinTo(
