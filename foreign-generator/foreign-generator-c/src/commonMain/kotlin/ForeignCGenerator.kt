@@ -11,7 +11,7 @@ public class ForeignCGenerator(
             val pkgRoot = pkg.name.substringAfterLast(".")
             if (pkg.typedefs.isNotEmpty()) add(
                 kotlinFile(
-                    path = "$path/$pkgRoot.typedefs.kt",
+                    path = "$path/typedefs.kt",
                     kotlinPackage = pkg.name,
                     imports = KotlinImports.Empty
                 ) {
@@ -27,7 +27,7 @@ public class ForeignCGenerator(
             )
             if (pkg.functions.isNotEmpty()) add(
                 kotlinFile(
-                    path = "$path/$pkgRoot.functions.kt",
+                    path = "$path/functions.kt",
                     kotlinPackage = pkg.name,
                     imports = KotlinImports.Default
                 ) {

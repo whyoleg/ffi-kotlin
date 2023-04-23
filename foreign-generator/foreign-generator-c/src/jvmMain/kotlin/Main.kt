@@ -29,7 +29,10 @@ public fun main() {
     ) {
         visibility { header, declaration -> ForeignCDeclaration.Visibility.public }
         subpackage { header, _ ->
-            header.name.value.substringBefore(".h").replace("/", ".")
+            header.name.value
+                .substringBefore(".h")
+                .substringBeforeLast("/")
+                .replace("/", ".")
         }
     }
 
