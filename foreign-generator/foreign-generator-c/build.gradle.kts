@@ -16,6 +16,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.foreignCxIndex)
+                api(projects.foreignSchema.foreignSchemaC)
             }
         }
     }

@@ -15,7 +15,6 @@ public fun ForeignCLibrary(
 @Serializable
 public data class ForeignCLibrary(
     public val name: String,
-    public val rootPackage: String,
     public val index: CxIndex,
     public val packages: List<ForeignCPackage> = emptyList()
 ) {
@@ -65,11 +64,14 @@ public data class ForeignCLibrary(
 
             return ForeignCLibrary(
                 name = name,
-                rootPackage = rootPackage,
                 index = index,
                 packages = packages.map { (name, builder) ->
                     ForeignCPackage(
-                        name = if (name.isEmpty()) rootPackage else "$rootPackage.$name",
+                        name = when {
+                            name.isEmpty()        -> rootPackage
+                            rootPackage.isEmpty() -> name
+                            else                  -> "$rootPackage.$name"
+                        },
                         typedefs = builder.typedefs,
                         structs = builder.structs,
                         enums = builder.enums,

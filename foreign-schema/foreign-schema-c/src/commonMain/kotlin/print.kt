@@ -17,7 +17,7 @@ private val prettyJson = Json(json) {
 }
 
 @OptIn(ExperimentalSerializationApi::class)
-public fun FileSystem.readCLibrary(path: Path): ForeignCLibrary = read(path) {
+public fun FileSystem.readForeignCLibrary(path: Path): ForeignCLibrary = read(path) {
     json.decodeFromBufferedSource(ForeignCLibrary.serializer(), this)
 }
 
@@ -41,6 +41,6 @@ public fun FileSystem.writeForeignCLibraryVerbose(path: Path, library: ForeignCL
     deleteRecursively(path)
     writeCxIndexVerbose(path.resolve("index"), library.index)
     library.packages.forEach { pkg ->
-        writePackage(path.resolve("packages").resolve(pkg.name.replace(".", "_") + ".json"), pkg)
+        writePackage(path.resolve("packages").resolve(pkg.name.replace(".", "/") + ".json"), pkg)
     }
 }
