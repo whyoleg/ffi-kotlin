@@ -36,7 +36,7 @@ public data class ForeignCLibrary(
         internal fun build(name: String, rootPackage: String, index: CxIndex): ForeignCLibrary {
             class PackageBuilder {
                 val typedefs = mutableListOf<ForeignCDeclaration>()
-                val structs = mutableListOf<ForeignCDeclaration>()
+                val records = mutableListOf<ForeignCDeclaration>()
                 val enums = mutableListOf<ForeignCDeclaration>()
                 val functions = mutableListOf<ForeignCDeclaration>()
             }
@@ -57,7 +57,7 @@ public data class ForeignCLibrary(
                     }
                 }
                 add(header.typedefs, PackageBuilder::typedefs)
-                add(header.structs, PackageBuilder::structs)
+                add(header.records, PackageBuilder::records)
                 add(header.enums, PackageBuilder::enums)
                 add(header.functions, PackageBuilder::functions)
             }
@@ -73,7 +73,7 @@ public data class ForeignCLibrary(
                             else                  -> "$rootPackage.$name"
                         },
                         typedefs = builder.typedefs,
-                        structs = builder.structs,
+                        records = builder.records,
                         enums = builder.enums,
                         functions = builder.functions
                     )
@@ -87,7 +87,7 @@ public data class ForeignCLibrary(
 public data class ForeignCPackage(
     public val name: String,
     public val typedefs: List<ForeignCDeclaration> = emptyList(),
-    public val structs: List<ForeignCDeclaration> = emptyList(),
+    public val records: List<ForeignCDeclaration> = emptyList(),
     public val enums: List<ForeignCDeclaration> = emptyList(),
     public val functions: List<ForeignCDeclaration> = emptyList(),
 )

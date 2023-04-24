@@ -9,23 +9,23 @@ public data class CxIndex(
 ) {
     private val declarations: Declarations by lazy {
         val typedefs = mutableMapOf<CxDeclarationId, Pair<CxHeaderInfo, CxTypedefInfo>>()
-        val structs = mutableMapOf<CxDeclarationId, Pair<CxHeaderInfo, CxStructInfo>>()
+        val records = mutableMapOf<CxDeclarationId, Pair<CxHeaderInfo, CxRecordInfo>>()
         val enums = mutableMapOf<CxDeclarationId, Pair<CxHeaderInfo, CxEnumInfo>>()
         val functions = mutableMapOf<CxDeclarationId, Pair<CxHeaderInfo, CxFunctionInfo>>()
         headers.forEach { header ->
             header.typedefs.forEach { typedefs[it.id] = header to it }
-            header.structs.forEach { structs[it.id] = header to it }
+            header.records.forEach { records[it.id] = header to it }
             header.enums.forEach { enums[it.id] = header to it }
             header.functions.forEach { functions[it.id] = header to it }
         }
-        Declarations(typedefs, structs, enums, functions)
+        Declarations(typedefs, records, enums, functions)
     }
 
     public fun typedefWithHeader(id: CxDeclarationId): Pair<CxHeaderInfo, CxTypedefInfo> = declarations.typedefs.getValue(id)
 
     //TODO!!!
     public fun typedef(id: CxDeclarationId): CxTypedefInfo = typedefWithHeader(id).second
-    public fun struct(id: CxDeclarationId): CxStructInfo = declarations.structs.getValue(id).second
+    public fun record(id: CxDeclarationId): CxRecordInfo = declarations.records.getValue(id).second
     public fun enum(id: CxDeclarationId): CxEnumInfo = declarations.enums.getValue(id).second
     public fun function(id: CxDeclarationId): CxFunctionInfo = declarations.functions.getValue(id).second
 
@@ -38,8 +38,8 @@ public data class CxIndex(
         private val typedefIncludeFilters = mutableListOf<DeclarationIncludeFilter<CxTypedefInfo>>()
         private val typedefExcludeFilters = mutableListOf<DeclarationExcludeFilter<CxTypedefInfo>>()
 
-        private val structIncludeFilters = mutableListOf<DeclarationIncludeFilter<CxStructInfo>>()
-        private val structExcludeFilters = mutableListOf<DeclarationExcludeFilter<CxStructInfo>>()
+        private val recordIncludeFilters = mutableListOf<DeclarationIncludeFilter<CxRecordInfo>>()
+        private val recordExcludeFilters = mutableListOf<DeclarationExcludeFilter<CxRecordInfo>>()
 
         private val enumIncludeFilters = mutableListOf<DeclarationIncludeFilter<CxEnumInfo>>()
         private val enumExcludeFilters = mutableListOf<DeclarationExcludeFilter<CxEnumInfo>>()
@@ -75,12 +75,12 @@ public data class CxIndex(
             typedefExcludeFilters += DeclarationExcludeFilter(predicate)
         }
 
-        public fun includeStructs(recursive: Boolean = true, predicate: DeclarationPredicate<CxStructInfo>) {
-            structIncludeFilters += DeclarationIncludeFilter(recursive, predicate)
+        public fun includeRecords(recursive: Boolean = true, predicate: DeclarationPredicate<CxRecordInfo>) {
+            recordIncludeFilters += DeclarationIncludeFilter(recursive, predicate)
         }
 
-        public fun excludeStructs(predicate: DeclarationPredicate<CxStructInfo>) {
-            structExcludeFilters += DeclarationExcludeFilter(predicate)
+        public fun excludeRecords(predicate: DeclarationPredicate<CxRecordInfo>) {
+            recordExcludeFilters += DeclarationExcludeFilter(predicate)
         }
 
         public fun includeEnums(recursive: Boolean = true, predicate: DeclarationPredicate<CxEnumInfo>) {
@@ -159,10 +159,10 @@ public data class CxIndex(
                 )
 
                 collect(
-                    declarations = structs,
-                    includeFilters = structIncludeFilters,
-                    excludeFilters = structExcludeFilters,
-                    addElement = Ids::addStruct
+                    declarations = records,
+                    includeFilters = recordIncludeFilters,
+                    excludeFilters = recordExcludeFilters,
+                    addElement = Ids::addRecord
                 )
 
                 collect(
@@ -183,7 +183,7 @@ public data class CxIndex(
             fun CxHeaderInfo.applyFilter(): CxHeaderInfo = CxHeaderInfo(
                 name = name,
                 typedefs = typedefs.filter { ids.hasTypedef(it.id) },
-                structs = structs.filter { ids.hasStruct(it.id) },
+                records = records.filter { ids.hasRecord(it.id) },
                 enums = enums.filter { ids.hasEnum(it.id) },
                 functions = functions.filter { ids.hasFunction(it.id) },
             )
@@ -226,8 +226,8 @@ public data class CxIndex(
             fun CxHeaderInfo.inlineTypedefs(): CxHeaderInfo = CxHeaderInfo(
                 name = name,
                 typedefs = typedefs.filter { !it.needInline(this) },
-                structs = structs.map { struct ->
-                    struct.copy(fields = struct.fields.map { field ->
+                records = records.map { record ->
+                    record.copy(fields = record.fields.map { field ->
                         field.copy(type = field.type.inlineTypedefs())
                     })
                 },
@@ -252,7 +252,7 @@ public data class CxIndex(
                 is CxType.Function -> true
                 is CxType.Array    -> elementType.hasFunctionArgument()
                 is CxType.Pointer  -> pointed.hasFunctionArgument()
-                is CxType.Struct   -> struct(id).fields.any { it.type.type.hasFunctionArgument() }
+                is CxType.Record   -> record(id).fields.any { it.type.type.hasFunctionArgument() }
                 is CxType.Typedef  -> typedef(id).aliased.type.hasFunctionArgument()
                 else               -> false
             }
@@ -260,7 +260,7 @@ public data class CxIndex(
             fun CxHeaderInfo.excludeFunctionArguments(): CxHeaderInfo = CxHeaderInfo(
                 name = name,
                 typedefs = typedefs.filterNot { it.aliased.type.hasFunctionArgument() },
-                structs = structs.filterNot { it.fields.any { it.type.type.hasFunctionArgument() } },
+                records = records.filterNot { it.fields.any { it.type.type.hasFunctionArgument() } },
                 enums = enums,
                 functions = functions.filterNot { function ->
                     function.returnType.type.hasFunctionArgument() || function.parameters.any { it.type.type.hasFunctionArgument() }
@@ -290,14 +290,14 @@ public data class CxIndex(
         private class Ids(private val index: CxIndex) {
             private val typedefs = mutableSetOf<CxDeclarationId>()
             private val enums = mutableSetOf<CxDeclarationId>()
-            private val structs = mutableSetOf<CxDeclarationId>()
+            private val records = mutableSetOf<CxDeclarationId>()
             private val functions = mutableSetOf<CxDeclarationId>()
 
             private val recursiveIds = mutableSetOf<CxDeclarationId>()
 
             fun hasTypedef(id: CxDeclarationId) = id in typedefs
             fun hasEnum(id: CxDeclarationId) = id in enums
-            fun hasStruct(id: CxDeclarationId) = id in structs
+            fun hasRecord(id: CxDeclarationId) = id in records
             fun hasFunction(id: CxDeclarationId) = id in functions
 
             fun addTypedef(typedef: CxTypedefInfo, recursive: Boolean) {
@@ -317,17 +317,17 @@ public data class CxIndex(
                 enums += enum.id
             }
 
-            fun addStruct(struct: CxStructInfo, recursive: Boolean) {
-                val id = struct.id
+            fun addRecord(record: CxRecordInfo, recursive: Boolean) {
+                val id = record.id
 
-                structs += id
+                records += id
 
                 if (!recursive) return
                 if (id in recursiveIds) return
 
                 recursiveIds += id
 
-                struct.fields.forEach { field ->
+                record.fields.forEach { field ->
                     addTypeRecursive(field.type.type)
                 }
             }
@@ -352,7 +352,7 @@ public data class CxIndex(
                 is CxType.Pointer  -> addTypeRecursive(type.pointed)
                 is CxType.Function -> (type.parameters + type.returnType).forEach(::addTypeRecursive)
                 is CxType.Enum     -> addEnum(index.enum(type.id), recursive = true)
-                is CxType.Struct   -> addStruct(index.struct(type.id), recursive = true)
+                is CxType.Record   -> addRecord(index.record(type.id), recursive = true)
                 is CxType.Typedef  -> addTypedef(index.typedef(type.id), recursive = true)
                 else               -> Unit
             }
@@ -361,7 +361,7 @@ public data class CxIndex(
 
     private class Declarations(
         val typedefs: Map<CxDeclarationId, Pair<CxHeaderInfo, CxTypedefInfo>>,
-        val structs: Map<CxDeclarationId, Pair<CxHeaderInfo, CxStructInfo>>,
+        val records: Map<CxDeclarationId, Pair<CxHeaderInfo, CxRecordInfo>>,
         val enums: Map<CxDeclarationId, Pair<CxHeaderInfo, CxEnumInfo>>,
         val functions: Map<CxDeclarationId, Pair<CxHeaderInfo, CxFunctionInfo>>,
     )

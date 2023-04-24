@@ -42,18 +42,16 @@ class CxIndexRunner(
         val entityInfo = declarationInfo.entityInfo!!.pointed
         val cursor = declarationInfo.cursor.readValue()
         when (entityInfo.kind) {
-            CXIdxEntityKind.CXIdxEntity_Function  -> builder.function(cursor)
+            CXIdxEntityKind.CXIdxEntity_Function     -> builder.function(cursor)
             CXIdxEntityKind.CXIdxEntity_Struct,
-            CXIdxEntityKind.CXIdxEntity_Union,
-                                                  -> builder.struct(cursor)
-            CXIdxEntityKind.CXIdxEntity_Typedef   -> builder.typedef(cursor)
-            CXIdxEntityKind.CXIdxEntity_Enum      -> builder.enum(cursor)
+            CXIdxEntityKind.CXIdxEntity_Union        -> builder.record(cursor)
+            CXIdxEntityKind.CXIdxEntity_Typedef      -> builder.typedef(cursor)
+            CXIdxEntityKind.CXIdxEntity_Enum         -> builder.enum(cursor)
             CXIdxEntityKind.CXIdxEntity_Field,
-            CXIdxEntityKind.CXIdxEntity_EnumConstant,
-                                                  -> {
+            CXIdxEntityKind.CXIdxEntity_EnumConstant -> {
             } //TODO: ignore?
-            CXIdxEntityKind.CXIdxEntity_Unexposed -> {}//TODO("CXIdxEntity_Unexposed")
-            CXIdxEntityKind.CXIdxEntity_Variable  -> {}//TODO("CXIdxEntity_Variable")
+            CXIdxEntityKind.CXIdxEntity_Unexposed    -> {}//TODO("CXIdxEntity_Unexposed")
+            CXIdxEntityKind.CXIdxEntity_Variable     -> {}//TODO("CXIdxEntity_Variable")
 
             CXIdxEntityKind.CXIdxEntity_ObjCClass,
             CXIdxEntityKind.CXIdxEntity_ObjCProtocol,
@@ -61,8 +59,7 @@ class CxIndexRunner(
             CXIdxEntityKind.CXIdxEntity_ObjCInstanceMethod,
             CXIdxEntityKind.CXIdxEntity_ObjCClassMethod,
             CXIdxEntityKind.CXIdxEntity_ObjCProperty,
-            CXIdxEntityKind.CXIdxEntity_ObjCIvar,
-                                                  -> println("SKIP OBJ-C DECLARATION")
+            CXIdxEntityKind.CXIdxEntity_ObjCIvar     -> println("SKIP OBJ-C DECLARATION")
             CXIdxEntityKind.CXIdxEntity_CXXClass,
             CXIdxEntityKind.CXIdxEntity_CXXNamespace,
             CXIdxEntityKind.CXIdxEntity_CXXNamespaceAlias,
@@ -74,8 +71,7 @@ class CxIndexRunner(
             CXIdxEntityKind.CXIdxEntity_CXXConversionFunction,
             CXIdxEntityKind.CXIdxEntity_CXXTypeAlias,
             CXIdxEntityKind.CXIdxEntity_CXXInterface,
-            CXIdxEntityKind.CXIdxEntity_CXXConcept,
-                                                  -> println("SKIP C++ DECLARATION")
+            CXIdxEntityKind.CXIdxEntity_CXXConcept   -> println("SKIP C++ DECLARATION")
         }
     }
 

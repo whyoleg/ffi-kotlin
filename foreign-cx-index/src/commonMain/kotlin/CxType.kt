@@ -2,9 +2,10 @@ package dev.whyoleg.foreign.cx.index
 
 import kotlinx.serialization.*
 
+//TODO: decide on nullability of name and overall - is it needed, or we can just get name from type?
 @Serializable
 public data class CxTypeInfo(
-    val name: String,
+    val name: String?,
     val type: CxType,
 )
 
@@ -77,7 +78,7 @@ public sealed class CxType {
     public data class Typedef(val id: CxDeclarationId) : CxType()
 
     @Serializable
-    public data class Struct(val id: CxDeclarationId) : CxType()
+    public data class Record(val id: CxDeclarationId) : CxType()
 
     @Serializable
     public data class Function(val returnType: CxType, val parameters: List<CxType>) : CxType()

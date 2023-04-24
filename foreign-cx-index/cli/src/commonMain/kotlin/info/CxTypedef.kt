@@ -7,10 +7,10 @@ import kotlinx.cinterop.*
 
 fun CxIndexBuilder.buildTypedefInfo(
     id: CxDeclarationId,
-    name: CxDeclarationName,
+    name: CxDeclarationName?,
     cursor: CValue<CXCursor>,
 ): CxTypedefInfo = CxTypedefInfo(
     id = id,
-    name = name,
+    name = checkNotNull(name) { "typedef can not be unnamed" },
     aliased = buildTypeInfo(clang_getTypedefDeclUnderlyingType(cursor))
 )

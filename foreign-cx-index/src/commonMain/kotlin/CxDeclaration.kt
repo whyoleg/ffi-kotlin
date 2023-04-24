@@ -24,7 +24,7 @@ public fun interface DeclarationSelector<T : CxDeclarationInfo, R> {
 @Serializable
 public sealed class CxDeclarationInfo {
     public abstract val id: CxDeclarationId
-    public abstract val name: CxDeclarationName
+    public abstract val name: CxDeclarationName?
 }
 
 @Serializable
@@ -35,11 +35,12 @@ public data class CxTypedefInfo(
 ) : CxDeclarationInfo()
 
 @Serializable
-public data class CxStructInfo(
+public data class CxRecordInfo(
     override val id: CxDeclarationId,
-    override val name: CxDeclarationName,
+    override val name: CxDeclarationName?,
     val size: Long, //TODO: what is -2?
     val align: Long,
+    val isUnion: Boolean,
     val fields: List<Field>,
 ) : CxDeclarationInfo() {
     @Serializable
@@ -52,7 +53,7 @@ public data class CxStructInfo(
 @Serializable
 public data class CxEnumInfo(
     override val id: CxDeclarationId,
-    override val name: CxDeclarationName,
+    override val name: CxDeclarationName?,
     val constants: List<Constant>,
 ) : CxDeclarationInfo() {
     @Serializable

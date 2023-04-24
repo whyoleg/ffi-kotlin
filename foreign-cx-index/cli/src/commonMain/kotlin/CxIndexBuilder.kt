@@ -10,7 +10,7 @@ class CxIndexBuilder {
     private class DeclarationRegistry(val name: CxHeaderName) {
         val functions = mutableMapOf<CxDeclarationId, CxFunctionInfo>()
         val typedefs = mutableMapOf<CxDeclarationId, CxTypedefInfo>()
-        val structs = mutableMapOf<CxDeclarationId, CxStructInfo>()
+        val records = mutableMapOf<CxDeclarationId, CxRecordInfo>()
         val enums = mutableMapOf<CxDeclarationId, CxEnumInfo>()
     }
 
@@ -19,11 +19,18 @@ class CxIndexBuilder {
         null to DeclarationRegistry(CxHeaderName.BuiltIn)
     )
 
-    private val dummyStruct = CxStructInfo(CxDeclarationId(""), CxDeclarationName(""), Long.MIN_VALUE, Long.MIN_VALUE, emptyList())
+    private val dummyRecord = CxRecordInfo(
+        id = CxDeclarationId(""),
+        name = null,
+        size = Long.MIN_VALUE,
+        align = Long.MIN_VALUE,
+        isUnion = false,
+        fields = emptyList()
+    )
 
     fun function(cursor: CValue<CXCursor>): CxDeclarationId = save(DeclarationRegistry::functions, cursor, null, ::buildFunctionInfo)
     fun typedef(cursor: CValue<CXCursor>): CxDeclarationId = save(DeclarationRegistry::typedefs, cursor, null, ::buildTypedefInfo)
-    fun struct(cursor: CValue<CXCursor>): CxDeclarationId = save(DeclarationRegistry::structs, cursor, dummyStruct, ::buildStructInfo)
+    fun record(cursor: CValue<CXCursor>): CxDeclarationId = save(DeclarationRegistry::records, cursor, dummyRecord, ::buildRecordInfo)
     fun enum(cursor: CValue<CXCursor>): CxDeclarationId = save(DeclarationRegistry::enums, cursor, null, ::buildEnumInfo)
 
     fun include(name: String, path: String) {
@@ -34,7 +41,7 @@ class CxIndexBuilder {
         getDeclarations: (DeclarationRegistry) -> MutableMap<CxDeclarationId, T>,
         cursor: CValue<CXCursor>,
         dummy: T?,
-        block: (id: CxDeclarationId, name: CxDeclarationName, cursor: CValue<CXCursor>) -> T,
+        block: (id: CxDeclarationId, name: CxDeclarationName?, cursor: CValue<CXCursor>) -> T,
     ): CxDeclarationId {
         val id = clang_getCursorUSR(cursor).useString().let {
             checkNotNull(it) { "USR = null" }
@@ -44,11 +51,14 @@ class CxIndexBuilder {
         val allDeclarations = getDeclarations(all)
         if (id in allDeclarations) return id
 
-        val name = CxDeclarationName(cursor.spelling)
+        val name = when (clang_Cursor_isAnonymous(cursor)) {
+            1U   -> null
+            else -> CxDeclarationName(cursor.spelling)
+        }
         val info = when (dummy) {
             null -> block(id, name, cursor)
             else -> {
-                //save dummy to be able to reference it in recursive structs
+                //save dummy to be able to reference it in recursive records
                 allDeclarations[id] = dummy
                 try {
                     block(id, name, cursor)
@@ -71,7 +81,7 @@ class CxIndexBuilder {
         fun DeclarationRegistry.cx(): CxHeaderInfo = CxHeaderInfo(
             name = name,
             typedefs = typedefs.values.toList(),
-            structs = structs.values.toList(),
+            records = records.values.toList(),
             enums = enums.values.toList(),
             functions = functions.values.toList()
         )

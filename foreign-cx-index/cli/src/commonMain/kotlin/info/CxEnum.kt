@@ -8,7 +8,7 @@ import kotlinx.cinterop.*
 
 fun CxIndexBuilder.buildEnumInfo(
     id: CxDeclarationId,
-    name: CxDeclarationName,
+    name: CxDeclarationName?,
     cursor: CValue<CXCursor>,
 ): CxEnumInfo = CxEnumInfo(
     id = id,
