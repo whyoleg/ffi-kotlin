@@ -11,13 +11,21 @@ internal fun CxFunctionInfo.toKotlinJniDeclaration(
     visibility: ForeignCDeclaration.Visibility
 ): String = buildString {
     append("@JvmStatic private external fun ").append(prefixedName).append("(")
-    if (parameters.isNotEmpty()) parameters.joinTo(
+    val parameterDefinitions = buildList {
+        parameters.forEach { parameter ->
+            add("p_${parameter.name}: ${parameter.type.type.toKotlinJniType(index)}")
+        }
+        if (returnType.type.isRecord(index)) {
+            add("p_return_pointer: Long")
+        }
+    }
+    if (parameterDefinitions.isNotEmpty()) parameterDefinitions.joinTo(
         this,
         prefix = "\n",
         separator = "\n",
         postfix = "\n"
-    ) { parameter ->
-        "${INDENT}p_${parameter.name}: ${parameter.type.type.toKotlinJniType(index)},"
+    ) { definition ->
+        "$INDENT${definition},"
     }
     append("): ").append(returnType.type.toKotlinJniType(index))
         .appendLine()
@@ -25,22 +33,50 @@ internal fun CxFunctionInfo.toKotlinJniDeclaration(
 
     append(visibility.name).append(" ")
     if (actual) append("actual ")
-    append(toKotlinDeclaration(index)).append(" = ").append(libraryName).append("ImplicitScope.unsafe {")
-        .appendLine()
+    append(toKotlinDeclaration(index, libraryName, !actual)).append(" = ")
 
-    append(INDENT).append(prefixedName).append("(")
-    if (parameters.isNotEmpty()) parameters.joinTo(
-        this,
-        prefix = "\n",
-        separator = "\n",
-        postfix = "\n$INDENT"
-    ) { parameter ->
-        "$INDENT${INDENT}p_${parameter.name} = ${parameter.name}${parameter.type.type.convertToKotlinJniParameterType(index)},"
+    fun appendJniCall(indent: String) {
+        val parameterUsage = buildList {
+            parameters.forEach { parameter ->
+                add("p_${parameter.name} = ${parameter.name}${parameter.type.type.convertToKotlinJniParameterType(index)}")
+            }
+            if (returnType.type.isRecord(index)) {
+                add("p_return_pointer = address")
+            }
+        }
+
+        append(indent).append(prefixedName).append("(")
+        if (parameterUsage.isNotEmpty()) parameterUsage.joinTo(
+            this,
+            prefix = "\n",
+            separator = "\n",
+            postfix = "\n$indent"
+        ) { usage ->
+            "$indent${INDENT}$usage,"
+        }
+        append(")").append(returnType.type.convertToKotlinJniReturnType(index))
+            .appendLine()
     }
-    append(")").append(returnType.type.convertToKotlinJniReturnType(index))
-        .appendLine()
+
+    if (returnType.type.isRecord(index)) {
+        append("scope.unsafe {").appendLine()
+        append(INDENT)
+            .append("CGrouped(").append(returnType.type.toKotlinType(index)).append(") { address ->")
+            .appendLine()
+        appendJniCall(INDENT + INDENT)
+        append(INDENT)
+            .append("}")
+            .appendLine()
+    } else {
+        append(libraryName).append("ImplicitScope.unsafe {").appendLine()
+        appendJniCall(INDENT)
+    }
     append("}")
 }
+
+//CGrouped(OSSL_PARAM) { address ->
+//        osslparam.OSSL_PARAM_construct_utf8_string(key.address, buf.address, bsize.toLong(), address)
+//    }
 
 private fun CxType.toKotlinJniType(index: CxIndex): String = when (this) {
     CxType.Char               -> "Byte"
@@ -54,10 +90,13 @@ private fun CxType.toKotlinJniType(index: CxIndex): String = when (this) {
     CxType.ULong              -> "PlatformInt"
     CxType.LongLong           -> "Long"
     CxType.ULongLong          -> "Long"
+    CxType.Float              -> "Float"
+    CxType.Double             -> "Double"
     CxType.Void               -> "Unit" //TODO
 
     is CxType.Typedef         -> index.typedef(id).aliased.type.toKotlinJniType(index)
-//    is CxType.Struct          -> index.struct(id).name.value
+    is CxType.Record          -> "Unit" // we return it via a pointer
+    is CxType.Enum            -> "ENUM"
     is CxType.ConstArray      -> "Long"
     is CxType.IncompleteArray -> "Long"
     is CxType.Pointer         -> "Long"
@@ -76,10 +115,13 @@ private fun CxType.convertToKotlinJniReturnType(index: CxIndex): String = when (
     CxType.ULong              -> ".toPlatformUInt()"
     CxType.LongLong           -> ""
     CxType.ULongLong          -> ".toULong()"
+    CxType.Float              -> ""
+    CxType.Double             -> ""
     CxType.Void               -> ""
 
     is CxType.Typedef         -> index.typedef(id).aliased.type.convertToKotlinJniReturnType(index)
-//    is CxType.Struct          -> index.struct(id).name.value
+    is CxType.Record          -> ""
+    is CxType.Enum            -> "ENUM"
     //TODO: Array types?
     is CxType.ConstArray      -> ".also { address -> CPointer(${elementType.toKotlinType(index)}, address) }"
     is CxType.IncompleteArray -> ".also { address -> CPointer(${elementType.toKotlinType(index)}, address) }"
@@ -99,11 +141,12 @@ private fun CxType.convertToKotlinJniParameterType(index: CxIndex): String = whe
     CxType.ULong              -> ".toPlatformInt()"
     CxType.LongLong           -> ""
     CxType.ULongLong          -> ".toLong()"
-//    CxType.Void               -> "" //TODO?
+    CxType.Float              -> ""
+    CxType.Double             -> ""
 
     is CxType.Typedef         -> index.typedef(id).aliased.type.convertToKotlinJniParameterType(index)
 //    is CxType.Struct          -> index.struct(id).name.value
-
+    is CxType.Enum            -> "ENUM"
     is CxType.ConstArray      -> ".address"
     is CxType.IncompleteArray -> ".address"
     is CxType.Pointer         -> ".address"

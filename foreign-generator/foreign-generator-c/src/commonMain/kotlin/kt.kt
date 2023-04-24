@@ -128,26 +128,43 @@ internal fun CxRecordInfo.toKotlinDeclaration(
 
 internal fun CxFunctionInfo.toKotlinExpectDeclaration(
     index: CxIndex,
+    libraryName: String,
     visibility: ForeignCDeclaration.Visibility
 ): String = buildString {
     append(visibility).append(" ")
     append("expect ")
-    append(toKotlinDeclaration(index))
+    append(toKotlinDeclaration(index, libraryName, true))
 }
 
-//TODO: struct support
 internal fun CxFunctionInfo.toKotlinDeclaration(
-    index: CxIndex
+    index: CxIndex,
+    libraryName: String,
+    needDefaultScopeValue: Boolean
 ): String = buildString {
     append("fun ").append(name.value).append("(")
-    if (parameters.isNotEmpty()) parameters.joinTo(
+    val parameterDefinitions = buildList {
+        parameters.forEach { parameter ->
+            add("${parameter.name}: ${parameter.type.type.toKotlinType(index)}")
+        }
+        if (returnType.type.isRecord(index)) {
+            //TODO: name clash
+            add(
+                when (needDefaultScopeValue) {
+                    true  -> "scope: ForeignCScope = ${libraryName}ImplicitScope"
+                    false -> "scope: ForeignCScope"
+                }
+            )
+        }
+    }
+    if (parameterDefinitions.isNotEmpty()) parameterDefinitions.joinTo(
         this,
         prefix = "\n",
         separator = "\n",
         postfix = "\n"
-    ) { parameter ->
-        "$INDENT${parameter.name}: ${parameter.type.type.toKotlinType(index)},"
+    ) { definition ->
+        "$INDENT${definition},"
     }
+
     append("): ").append(returnType.type.toKotlinType(index))
 }
 
@@ -175,16 +192,20 @@ private fun CxType.toKotlinTypeOrNull(index: CxIndex): String? = when (this) {
     CxType.ULong              -> "PlatformUInt"
     CxType.LongLong           -> "Long"
     CxType.ULongLong          -> "ULong"
+    CxType.Float              -> "Float"
+    CxType.Double             -> "Double"
     CxType.Void               -> "Unit"
 
     is CxType.Typedef         -> index.typedef(id).name.value
     is CxType.Record          -> index.record(id).name?.value
+    is CxType.Enum            -> "ENUM"
     is CxType.IncompleteArray -> "CArrayPointer<${elementType.toKotlinType(index).replace("?", "")}>?"
     is CxType.ConstArray      -> "CArrayPointer<${elementType.toKotlinType(index).replace("?", "")}>?"
     is CxType.Pointer         -> when (pointed) {
         CxType.Char -> "CString?"
         else        -> "CPointer<${pointed.toKotlinType(index).replace("?", "")}>?"
     }
+
     else                      -> TODO(toString())
 }
 
@@ -209,12 +230,22 @@ private fun CxType.toKotlinAccessorOrNull(index: CxIndex): String? = when (this)
     CxType.ULong              -> "PlatformUInt"
     CxType.LongLong           -> "Long"
     CxType.ULongLong          -> "ULong"
+    CxType.Float              -> "Float"
+    CxType.Double             -> "Double"
     CxType.Void               -> "Unit"
 
     is CxType.Typedef         -> index.typedef(id).aliased.type.toKotlinAccessor(index)
     is CxType.Record          -> index.record(id).name?.value
+    is CxType.Enum            -> "ENUM"
     is CxType.ConstArray      -> "${elementType.toKotlinAccessor(index)}.pointer"
     is CxType.IncompleteArray -> "${elementType.toKotlinAccessor(index)}.pointer"
     is CxType.Pointer         -> "${pointed.toKotlinAccessor(index)}.pointer"
+
     else                      -> TODO(toString())
+}
+
+internal fun CxType.isRecord(index: CxIndex): Boolean = when (this) {
+    is CxType.Typedef -> index.typedef(id).aliased.type.isRecord(index)
+    is CxType.Record  -> true
+    else              -> false
 }

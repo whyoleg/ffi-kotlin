@@ -13,16 +13,29 @@ internal fun CxFunctionInfo.toCJniDeclaration(
     append(kotlinClassName).append("_")
     append(prefixedName.replace("_", "_1"))
     append("(JNIEnv* env, jclass jclss")
-    if (parameters.isNotEmpty()) parameters.joinTo(
+
+    val parameterDefinitions = buildList {
+        parameters.forEach { parameter ->
+            add("${parameter.type.type.toCJniType(index)} p_${parameter.name}")
+        }
+        if (returnType.type.isRecord(index)) {
+            add("jlong p_return_pointer")
+        }
+    }
+    if (parameterDefinitions.isNotEmpty()) parameterDefinitions.joinTo(
         this,
         prefix = ",\n",
         separator = ",\n",
         postfix = "\n"
-    ) { parameter ->
-        "$INDENT${parameter.type.type.toCJniType(index)} p_${parameter.name}"
+    ) { definition ->
+        "$INDENT${definition}"
     }
     append(") {\n")
-    append(INDENT).append("return (").append(returnType.type.toCJniType(index)).append(") ").append(name.value).append("(")
+    if (returnType.type.isRecord(index)) {
+        append(INDENT).append("*(").append(returnType.name).append(" *) p_return_pointer = ").append(name.value).append("(")
+    } else {
+        append(INDENT).append("return (").append(returnType.type.toCJniType(index)).append(") ").append(name.value).append("(")
+    }
 
     if (parameters.isNotEmpty()) parameters.joinTo(
         this,
@@ -48,10 +61,13 @@ private fun CxType.toCJniType(index: CxIndex): String = when (this) {
     CxType.ULong              -> "jlong"
     CxType.LongLong           -> "jlong"
     CxType.ULongLong          -> "jlong"
+    CxType.Float              -> "jfloat"
+    CxType.Double             -> "jdouble"
     CxType.Void               -> "void"
 
     is CxType.Typedef         -> index.typedef(id).aliased.type.toCJniType(index)
-//    is CxType.Struct          -> index.struct(id).name.value
+    is CxType.Record          -> "void" // we return it via a pointer
+    is CxType.Enum            -> "ENUM"
     is CxType.ConstArray      -> "jlong"
     is CxType.IncompleteArray -> "jlong"
     is CxType.Pointer         -> "jlong"
