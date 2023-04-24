@@ -49,7 +49,7 @@ public data class CxIndex(
 
         private val typedefInlinePredicates = mutableListOf<TypedefInlinePredicate>()
 
-        private var excludeFunctionArguments = false
+        private var excludeUnsupportedDeclarations = false
 
         public fun includeHeaders(block: (info: CxHeaderInfo) -> Boolean) {
             headerIncludeFilters += HeaderFilter(block)
@@ -103,14 +103,14 @@ public data class CxIndex(
             typedefInlinePredicates += TypedefInlinePredicate(predicate)
         }
 
-        public fun excludeFunctionArguments() {
-            excludeFunctionArguments = true
+        public fun excludeUnsupportedDeclarations() {
+            excludeUnsupportedDeclarations = true
         }
 
         internal fun applyTo(index: CxIndex): CxIndex = index
             .applyFilters()
             .inlineTypedefs()
-            .excludeFunctionArguments()
+            .excludeUnsupportedDeclarations()
             .run { CxIndex(headers.filter(CxHeaderInfo::isNotEmpty)) }
 
         private fun CxIndex.applyFilters(): CxIndex {
@@ -247,8 +247,8 @@ public data class CxIndex(
             return CxIndex(headers = headers.map(CxHeaderInfo::inlineTypedefs))
         }
 
-        private fun CxIndex.excludeFunctionArguments(): CxIndex {
-            if (!excludeFunctionArguments) return this
+        private fun CxIndex.excludeUnsupportedDeclarations(): CxIndex {
+            if (!excludeUnsupportedDeclarations) return this
 
             fun CxType.hasFunctionArgument(): Boolean = when (this) {
                 is CxType.Function -> true
