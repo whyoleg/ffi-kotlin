@@ -225,7 +225,9 @@ public data class CxIndex(
 
             fun CxHeaderInfo.inlineTypedefs(): CxHeaderInfo = CxHeaderInfo(
                 name = name,
-                typedefs = typedefs.filter { !it.needInline(this) },
+                typedefs = typedefs.filter { !it.needInline(this) }.map { typedef ->
+                    typedef.copy(aliased = typedef.aliased.inlineTypedefs())
+                },
                 records = records.map { record ->
                     record.copy(fields = record.fields.map { field ->
                         field.copy(type = field.type.inlineTypedefs())
