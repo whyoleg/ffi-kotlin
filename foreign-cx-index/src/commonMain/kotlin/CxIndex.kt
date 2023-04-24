@@ -29,7 +29,7 @@ public data class CxIndex(
     public fun enum(id: CxDeclarationId): CxEnumInfo = declarations.enums.getValue(id).second
     public fun function(id: CxDeclarationId): CxFunctionInfo = declarations.functions.getValue(id).second
 
-    public fun filter(block: Filter.() -> Unit): CxIndex = Filter().apply(block).applyTo(this)
+    public fun filter(block: Filter.() -> Unit): CxIndex = Filter().apply(block).applyTo(this).dropEmptyHeaders()
 
     public class Filter internal constructor() {
         private val headerIncludeFilters = mutableListOf<HeaderFilter>()
@@ -46,10 +46,6 @@ public data class CxIndex(
 
         private val functionIncludeFilters = mutableListOf<DeclarationIncludeFilter<CxFunctionInfo>>()
         private val functionExcludeFilters = mutableListOf<DeclarationExcludeFilter<CxFunctionInfo>>()
-
-        private val typedefInlinePredicates = mutableListOf<TypedefInlinePredicate>()
-
-        private var excludeUnsupportedDeclarations = false
 
         public fun includeHeaders(block: (info: CxHeaderInfo) -> Boolean) {
             headerIncludeFilters += HeaderFilter(block)
@@ -99,19 +95,7 @@ public data class CxIndex(
             functionExcludeFilters += DeclarationExcludeFilter(predicate)
         }
 
-        public fun inlineTypedefs(predicate: DeclarationPredicate<CxTypedefInfo>) {
-            typedefInlinePredicates += TypedefInlinePredicate(predicate)
-        }
-
-        public fun excludeUnsupportedDeclarations() {
-            excludeUnsupportedDeclarations = true
-        }
-
-        internal fun applyTo(index: CxIndex): CxIndex = index
-            .applyFilters()
-            .inlineTypedefs()
-            .excludeUnsupportedDeclarations()
-            .run { CxIndex(headers.filter(CxHeaderInfo::isNotEmpty)) }
+        internal fun applyTo(index: CxIndex): CxIndex = index.applyFilters()
 
         private fun CxIndex.applyFilters(): CxIndex {
             val ids = Ids(this)
@@ -192,89 +176,6 @@ public data class CxIndex(
 
             return CxIndex(headers = headers.map(CxHeaderInfo::applyFilter))
         }
-
-        private fun CxIndex.inlineTypedefs(): CxIndex {
-            if (typedefInlinePredicates.isEmpty()) return this
-
-            fun CxTypedefInfo.needInline(header: CxHeaderInfo): Boolean {
-                typedefInlinePredicates.forEach {
-                    if (it.predicate.matches(header, this)) return true
-                }
-                return false
-            }
-
-            fun CxType.inlineTypedefs(): CxType = when (this) {
-                is CxType.ConstArray      -> copy(elementType = elementType.inlineTypedefs())
-                is CxType.IncompleteArray -> copy(elementType = elementType.inlineTypedefs())
-                is CxType.Pointer         -> copy(pointed = pointed.inlineTypedefs())
-                is CxType.Function        -> copy(
-                    returnType = returnType.inlineTypedefs(),
-                    parameters = parameters.map(CxType::inlineTypedefs)
-                )
-                is CxType.Typedef         -> {
-                    val (header, typedef) = typedefWithHeader(id)
-                    when {
-                        typedef.needInline(header) -> typedef.aliased.type.inlineTypedefs()
-                        else                       -> this
-                    }
-                }
-                else                      -> this
-            }
-
-            fun CxTypeInfo.inlineTypedefs(): CxTypeInfo = copy(type = type.inlineTypedefs())
-
-            fun CxHeaderInfo.inlineTypedefs(): CxHeaderInfo = CxHeaderInfo(
-                name = name,
-                typedefs = typedefs.filter { !it.needInline(this) }.map { typedef ->
-                    typedef.copy(aliased = typedef.aliased.inlineTypedefs())
-                },
-                records = records.map { record ->
-                    record.copy(fields = record.fields.map { field ->
-                        field.copy(type = field.type.inlineTypedefs())
-                    })
-                },
-                enums = enums,
-                functions = functions.map { function ->
-                    function.copy(
-                        returnType = function.returnType.inlineTypedefs(),
-                        parameters = function.parameters.map { parameter ->
-                            parameter.copy(type = parameter.type.inlineTypedefs())
-                        }
-                    )
-                },
-            )
-
-            return CxIndex(headers = headers.map(CxHeaderInfo::inlineTypedefs))
-        }
-
-        private fun CxIndex.excludeUnsupportedDeclarations(): CxIndex {
-            if (!excludeUnsupportedDeclarations) return this
-
-            fun CxType.hasFunctionArgument(): Boolean = when (this) {
-                is CxType.Function -> true
-                is CxType.Array    -> elementType.hasFunctionArgument()
-                is CxType.Pointer  -> pointed.hasFunctionArgument()
-                is CxType.Record   -> record(id).fields.any { it.type.type.hasFunctionArgument() }
-                is CxType.Typedef  -> typedef(id).aliased.type.hasFunctionArgument()
-                else               -> false
-            }
-
-            fun CxHeaderInfo.excludeFunctionArguments(): CxHeaderInfo = CxHeaderInfo(
-                name = name,
-                typedefs = typedefs.filterNot { it.aliased.type.hasFunctionArgument() },
-                records = records.filterNot { it.fields.any { it.type.type.hasFunctionArgument() } },
-                enums = enums,
-                functions = functions.filterNot { function ->
-                    function.returnType.type.hasFunctionArgument() || function.parameters.any { it.type.type.hasFunctionArgument() }
-                }
-            )
-
-            return CxIndex(headers = headers.map(CxHeaderInfo::excludeFunctionArguments))
-        }
-
-        private class TypedefInlinePredicate(
-            val predicate: DeclarationPredicate<CxTypedefInfo>
-        )
 
         private class DeclarationIncludeFilter<T : CxDeclarationInfo>(
             val recursive: Boolean,
@@ -360,6 +261,77 @@ public data class CxIndex(
             }
         }
     }
+
+    public fun inlineTypedefs(predicate: DeclarationPredicate<CxTypedefInfo>): CxIndex {
+        fun CxType.inlineTypedefs(): CxType = when (this) {
+            is CxType.ConstArray      -> copy(elementType = elementType.inlineTypedefs())
+            is CxType.IncompleteArray -> copy(elementType = elementType.inlineTypedefs())
+            is CxType.Pointer         -> copy(pointed = pointed.inlineTypedefs())
+            is CxType.Function        -> copy(
+                returnType = returnType.inlineTypedefs(),
+                parameters = parameters.map(CxType::inlineTypedefs)
+            )
+            is CxType.Typedef         -> {
+                val (header, typedef) = typedefWithHeader(id)
+                when {
+                    predicate.matches(header, typedef) -> typedef.aliased.type.inlineTypedefs()
+                    else                               -> this
+                }
+            }
+            else                      -> this
+        }
+
+        fun CxTypeInfo.inlineTypedefs(): CxTypeInfo = copy(type = type.inlineTypedefs())
+
+        fun CxHeaderInfo.inlineTypedefs(): CxHeaderInfo = CxHeaderInfo(
+            name = name,
+            typedefs = typedefs.filter { !predicate.matches(this, it) }.map { typedef ->
+                typedef.copy(aliased = typedef.aliased.inlineTypedefs())
+            },
+            records = records.map { record ->
+                record.copy(fields = record.fields.map { field ->
+                    field.copy(type = field.type.inlineTypedefs())
+                })
+            },
+            enums = enums,
+            functions = functions.map { function ->
+                function.copy(
+                    returnType = function.returnType.inlineTypedefs(),
+                    parameters = function.parameters.map { parameter ->
+                        parameter.copy(type = parameter.type.inlineTypedefs())
+                    }
+                )
+            },
+        )
+
+        return CxIndex(headers = headers.map(CxHeaderInfo::inlineTypedefs)).dropEmptyHeaders()
+    }
+
+    //TODO: handle recursion
+    public fun excludeUnsupportedDeclarations(): CxIndex {
+        fun CxType.hasFunctionArgument(): Boolean = when (this) {
+            is CxType.Function -> true
+            is CxType.Array    -> elementType.hasFunctionArgument()
+            is CxType.Pointer  -> pointed.hasFunctionArgument()
+            is CxType.Record   -> record(id).fields.any { it.type.type.hasFunctionArgument() }
+            is CxType.Typedef  -> typedef(id).aliased.type.hasFunctionArgument()
+            else               -> false
+        }
+
+        fun CxHeaderInfo.excludeFunctionArguments(): CxHeaderInfo = CxHeaderInfo(
+            name = name,
+            typedefs = typedefs.filterNot { it.aliased.type.hasFunctionArgument() },
+            records = records.filterNot { it.fields.any { it.type.type.hasFunctionArgument() } },
+            enums = enums,
+            functions = functions.filterNot { function ->
+                function.returnType.type.hasFunctionArgument() || function.parameters.any { it.type.type.hasFunctionArgument() }
+            }
+        )
+
+        return CxIndex(headers = headers.map(CxHeaderInfo::excludeFunctionArguments)).dropEmptyHeaders()
+    }
+
+    private fun CxIndex.dropEmptyHeaders(): CxIndex = CxIndex(headers.filter(CxHeaderInfo::isNotEmpty))
 
     private class Declarations(
         val typedefs: Map<CxDeclarationId, Pair<CxHeaderInfo, CxTypedefInfo>>,
