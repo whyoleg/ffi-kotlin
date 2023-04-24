@@ -6,9 +6,9 @@ import okio.*
 import okio.Path.Companion.toPath
 
 public fun main() {
-    val index = FileSystem.SYSTEM.readCxIndex(
-        "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-cx-index/build/libcrypto3.json".toPath()
-    )
+    val buildPath = "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-generator/foreign-generator-c/build/foreign".toPath()
+
+    val index = FileSystem.SYSTEM.readCxIndex(buildPath.resolve("libcrypto3.json"))
 
     val filteredIndex = index.filter {
         excludeFunctionArguments()
@@ -16,10 +16,7 @@ public fun main() {
             !header.name.value.startsWith("openssl/")
         }
         includeFunctions(recursive = true) { header, function ->
-            when (header.name.value) {
-                "openssl/evp.h" -> true
-                else            -> false
-            }
+            header.name.value.startsWith("openssl/")
         }
     }
 
@@ -37,24 +34,21 @@ public fun main() {
         }
     }
 
-    FileSystem.SYSTEM.writeForeignCLibraryVerbose(
-        "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-generator/foreign-generator-c/build/libcrypto3".toPath(),
-        library
-    )
+    FileSystem.SYSTEM.writeForeignCLibraryVerbose(buildPath.resolve("library"), library)
 
-    val filesPath = "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-generator/foreign-generator-c/build/files".toPath()
+    val generatedPath = buildPath.resolve("generated")
 
     ForeignCGenerator(library).apply {
         FileSystem.SYSTEM.writeFileStubs(
-            filesPath.resolve("common/kotlin"),
+            generatedPath.resolve("common/kotlin"),
             generateKotlinExpect()
         )
         FileSystem.SYSTEM.writeFileStubs(
-            filesPath.resolve("jni/kotlin"),
+            generatedPath.resolve("jni/kotlin"),
             generateKotlinJni(actual = true)
         )
         FileSystem.SYSTEM.writeFileStubs(
-            filesPath.resolve("jni/c"),
+            generatedPath.resolve("jni/c"),
             generateCJni()
         )
     }
