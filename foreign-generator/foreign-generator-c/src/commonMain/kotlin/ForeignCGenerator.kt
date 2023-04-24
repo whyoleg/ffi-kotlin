@@ -49,7 +49,7 @@ public class ForeignCGenerator(
                         postfix = "\n"
                     ) { declaration ->
                         val function = library.index.function(declaration.id)
-                        function.toKotlinExpectDeclaration(library.index, declaration.visibility)
+                        function.toKotlinExpectDeclaration(library.index, library.name, declaration.visibility)
                     }
                 }
             )
