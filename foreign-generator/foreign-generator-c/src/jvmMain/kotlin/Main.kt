@@ -11,12 +11,13 @@ public fun main() {
     )
 
     val filteredIndex = index.filter {
+        excludeFunctionArguments()
         inlineTypedefs { header, typedef ->
             !header.name.value.startsWith("openssl/")
         }
         includeFunctions(recursive = true) { header, function ->
             when (header.name.value) {
-                "openssl/err.h" -> function.name.value.startsWith("ERR")
+                "openssl/evp.h" -> true
                 else            -> false
             }
         }
@@ -41,10 +42,20 @@ public fun main() {
 //        library
 //    )
 
+    val filesPath = "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-generator/foreign-generator-c/build/files".toPath()
+
     ForeignCGenerator(library).apply {
         FileSystem.SYSTEM.writeFileStubs(
-            "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-generator/foreign-generator-c/build/files/common".toPath(),
-            generateCommon()
+            filesPath.resolve("common/kotlin"),
+            generateKotlinExpect()
+        )
+        FileSystem.SYSTEM.writeFileStubs(
+            filesPath.resolve("jni/kotlin"),
+            generateKotlinJni(actual = true)
+        )
+        FileSystem.SYSTEM.writeFileStubs(
+            filesPath.resolve("jni/c"),
+            generateCJni()
         )
     }
 }
