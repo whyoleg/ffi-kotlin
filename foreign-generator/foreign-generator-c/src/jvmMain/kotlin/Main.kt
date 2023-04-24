@@ -10,15 +10,16 @@ public fun main() {
 
     val index = FileSystem.SYSTEM.readCxIndex(buildPath.resolve("libcrypto3.json"))
 
-    val filteredIndex = index.filter {
-        excludeUnsupportedDeclarations()
-        inlineTypedefs { header, typedef ->
+    val filteredIndex = index
+        .filter {
+            includeFunctions(recursive = true) { header, function ->
+                header.name.value.startsWith("openssl/")
+            }
+        }
+        .inlineTypedefs { header, typedef ->
             !header.name.value.startsWith("openssl/")
         }
-        includeFunctions(recursive = true) { header, function ->
-            header.name.value.startsWith("openssl/")
-        }
-    }
+        .excludeUnsupportedDeclarations()
 
     val library = ForeignCLibrary(
         name = "libcrypto3",

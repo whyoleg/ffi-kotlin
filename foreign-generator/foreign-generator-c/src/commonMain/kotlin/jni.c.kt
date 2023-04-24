@@ -67,7 +67,7 @@ private fun CxType.toCJniType(index: CxIndex): String = when (this) {
 
     is CxType.Typedef         -> index.typedef(id).aliased.type.toCJniType(index)
     is CxType.Record          -> "void" // we return it via a pointer
-    is CxType.Enum            -> "ENUM"
+    is CxType.Enum            -> "jint"
     is CxType.ConstArray      -> "jlong"
     is CxType.IncompleteArray -> "jlong"
     is CxType.Pointer         -> "jlong"
