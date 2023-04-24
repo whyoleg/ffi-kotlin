@@ -6,9 +6,21 @@ public class ForeignCGenerator(
     private val library: ForeignCLibrary
 ) {
     public fun generateKotlinExpect(): List<FileStub> = buildList {
-        library.packages.forEach { pkg ->
+        library.packages.forEach packageIterating@{ pkg ->
             val path = pkg.name.replace(".", "/")
-            val pkgRoot = pkg.name.substringAfterLast(".")
+            pkg.records.forEach { declaration ->
+                val struct = library.index.record(declaration.id)
+                val name = struct.name ?: return@forEach // anonymous structs/unions
+                add(
+                    kotlinFile(
+                        path = "$path/${name.value}.kt",
+                        kotlinPackage = pkg.name,
+                        imports = KotlinImports.Struct
+                    ) {
+                        append(struct.toKotlinDeclaration(library.index, declaration.visibility, name))
+                    }
+                )
+            }
             if (pkg.typedefs.isNotEmpty()) add(
                 kotlinFile(
                     path = "$path/typedefs.kt",
@@ -41,18 +53,6 @@ public class ForeignCGenerator(
                     }
                 }
             )
-            pkg.structs.forEach { declaration ->
-                val struct = library.index.struct(declaration.id)
-                add(
-                    kotlinFile(
-                        path = "$path/${struct.name.value}.kt",
-                        kotlinPackage = pkg.name,
-                        imports = KotlinImports.Struct
-                    ) {
-                        append(struct.toKotlinDeclaration(library.index, declaration.visibility))
-                    }
-                )
-            }
         }
     }
 
