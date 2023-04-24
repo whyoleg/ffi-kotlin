@@ -8,11 +8,11 @@ import kotlinx.cinterop.*
 
 fun CxIndexBuilder.buildFunctionInfo(
     id: CxDeclarationId,
-    name: CxDeclarationName,
+    name: CxDeclarationName?,
     cursor: CValue<CXCursor>,
 ): CxFunctionInfo = CxFunctionInfo(
     id = id,
-    name = name,
+    name = checkNotNull(name) { "function can not be unnamed" },
     returnType = buildTypeInfo(clang_getCursorResultType(cursor)),
     parameters = buildList {
         repeat(clang_Cursor_getNumArguments(cursor)) { i ->

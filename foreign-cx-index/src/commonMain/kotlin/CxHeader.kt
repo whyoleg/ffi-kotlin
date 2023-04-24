@@ -15,10 +15,10 @@ public value class CxHeaderName(public val value: String) {
 public data class CxHeaderInfo(
     val name: CxHeaderName,
     val typedefs: List<CxTypedefInfo> = emptyList(),
-    val structs: List<CxStructInfo> = emptyList(),
+    val records: List<CxRecordInfo> = emptyList(),
     val enums: List<CxEnumInfo> = emptyList(),
     val functions: List<CxFunctionInfo> = emptyList(),
 ) {
-    public fun isEmpty(): Boolean = typedefs.isEmpty() && structs.isEmpty() && enums.isEmpty() && functions.isEmpty()
+    public fun isEmpty(): Boolean = typedefs.isEmpty() && records.isEmpty() && enums.isEmpty() && functions.isEmpty()
     public fun isNotEmpty(): Boolean = !isEmpty()
 }
