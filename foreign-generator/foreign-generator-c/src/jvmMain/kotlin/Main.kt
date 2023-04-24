@@ -11,7 +11,7 @@ public fun main() {
     val index = FileSystem.SYSTEM.readCxIndex(buildPath.resolve("libcrypto3.json"))
 
     val filteredIndex = index.filter {
-        excludeFunctionArguments()
+        excludeUnsupportedDeclarations()
         inlineTypedefs { header, typedef ->
             !header.name.value.startsWith("openssl/")
         }
