@@ -37,10 +37,10 @@ public fun main() {
         }
     }
 
-//    FileSystem.SYSTEM.writeForeignCLibraryVerbose(
-//        "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-generator/foreign-generator-c/build/libcrypto3".toPath(),
-//        library
-//    )
+    FileSystem.SYSTEM.writeForeignCLibraryVerbose(
+        "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-generator/foreign-generator-c/build/libcrypto3".toPath(),
+        library
+    )
 
     val filesPath = "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-generator/foreign-generator-c/build/files".toPath()
 
