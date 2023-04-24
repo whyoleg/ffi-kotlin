@@ -49,6 +49,8 @@ public data class CxIndex(
 
         private val typedefInlinePredicates = mutableListOf<TypedefInlinePredicate>()
 
+        private var excludeFunctionArguments = false
+
         public fun includeHeaders(block: (info: CxHeaderInfo) -> Boolean) {
             headerIncludeFilters += HeaderFilter(block)
         }
@@ -101,9 +103,14 @@ public data class CxIndex(
             typedefInlinePredicates += TypedefInlinePredicate(predicate)
         }
 
+        public fun excludeFunctionArguments() {
+            excludeFunctionArguments = true
+        }
+
         internal fun applyTo(index: CxIndex): CxIndex = index
             .applyFilters()
             .inlineTypedefs()
+            .excludeFunctionArguments()
             .run { CxIndex(headers.filter(CxHeaderInfo::isNotEmpty)) }
 
         private fun CxIndex.applyFilters(): CxIndex {
@@ -236,6 +243,31 @@ public data class CxIndex(
             )
 
             return CxIndex(headers = headers.map(CxHeaderInfo::inlineTypedefs))
+        }
+
+        private fun CxIndex.excludeFunctionArguments(): CxIndex {
+            if (!excludeFunctionArguments) return this
+
+            fun CxType.hasFunctionArgument(): Boolean = when (this) {
+                is CxType.Function -> true
+                is CxType.Array    -> elementType.hasFunctionArgument()
+                is CxType.Pointer  -> pointed.hasFunctionArgument()
+                is CxType.Struct   -> struct(id).fields.any { it.type.type.hasFunctionArgument() }
+                is CxType.Typedef  -> typedef(id).aliased.type.hasFunctionArgument()
+                else               -> false
+            }
+
+            fun CxHeaderInfo.excludeFunctionArguments(): CxHeaderInfo = CxHeaderInfo(
+                name = name,
+                typedefs = typedefs.filterNot { it.aliased.type.hasFunctionArgument() },
+                structs = structs.filterNot { it.fields.any { it.type.type.hasFunctionArgument() } },
+                enums = enums,
+                functions = functions.filterNot { function ->
+                    function.returnType.type.hasFunctionArgument() || function.parameters.any { it.type.type.hasFunctionArgument() }
+                }
+            )
+
+            return CxIndex(headers = headers.map(CxHeaderInfo::excludeFunctionArguments))
         }
 
         private class TypedefInlinePredicate(
