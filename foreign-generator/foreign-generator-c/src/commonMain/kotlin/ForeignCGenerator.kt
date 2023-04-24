@@ -21,6 +21,19 @@ public class ForeignCGenerator(
                     }
                 )
             }
+            pkg.enums.forEach { declaration ->
+                val enum = library.index.enum(declaration.id)
+                val name = enum.name ?: return@forEach // anonymous structs/unions
+                add(
+                    kotlinFile(
+                        path = "$path/${name.value}.kt",
+                        kotlinPackage = pkg.name,
+                        imports = KotlinImports.Enum
+                    ) {
+                        append(enum.toKotlinDeclaration(declaration.visibility, name))
+                    }
+                )
+            }
             if (pkg.typedefs.isNotEmpty()) add(
                 kotlinFile(
                     path = "$path/typedefs.kt",

@@ -103,7 +103,16 @@ internal fun CxRecordInfo.toKotlinDeclaration(
             it.name to record
         }
 
-        if (anonymousRecords.isNotEmpty()) {
+        //not really tested :)
+        val anonymousEnums = fields.mapNotNull {
+            val type = it.type.type
+            if (type !is CxType.Enum) return@mapNotNull null
+            val enum = index.enum(type.id)
+            if (enum.name != null) return@mapNotNull null
+            it.name to enum
+        }
+
+        if (anonymousRecords.isNotEmpty() || anonymousEnums.isNotEmpty()) {
             appendLine()
             append(INDENT)
                 .append(visibility.name)
@@ -112,6 +121,14 @@ internal fun CxRecordInfo.toKotlinDeclaration(
             anonymousRecords.forEach { (fieldName, record) ->
                 appendLine()
                 record.toKotlinDeclaration(index, visibility, CxDeclarationName(fieldName)).split("\n").forEach { line ->
+                    if (line.isBlank()) appendLine()
+                    else append(INDENT).append(INDENT).append(line).appendLine()
+                }
+            }
+
+            anonymousEnums.forEach { (fieldName, enum) ->
+                appendLine()
+                enum.toKotlinDeclaration(visibility, CxDeclarationName(fieldName)).split("\n").forEach { line ->
                     if (line.isBlank()) appendLine()
                     else append(INDENT).append(INDENT).append(line).appendLine()
                 }
@@ -198,7 +215,7 @@ private fun CxType.toKotlinTypeOrNull(index: CxIndex): String? = when (this) {
 
     is CxType.Typedef         -> index.typedef(id).name.value
     is CxType.Record          -> index.record(id).name?.value
-    is CxType.Enum            -> "ENUM"
+    is CxType.Enum            -> "${index.enum(id).name!!.value}.Value"
     is CxType.IncompleteArray -> "CArrayPointer<${elementType.toKotlinType(index).replace("?", "")}>?"
     is CxType.ConstArray      -> "CArrayPointer<${elementType.toKotlinType(index).replace("?", "")}>?"
     is CxType.Pointer         -> when (pointed) {
@@ -236,7 +253,7 @@ private fun CxType.toKotlinAccessorOrNull(index: CxIndex): String? = when (this)
 
     is CxType.Typedef         -> index.typedef(id).aliased.type.toKotlinAccessor(index)
     is CxType.Record          -> index.record(id).name?.value
-    is CxType.Enum            -> "ENUM"
+//    is CxType.Enum            -> "ENUM" //TODO: support accessors
     is CxType.ConstArray      -> "${elementType.toKotlinAccessor(index)}.pointer"
     is CxType.IncompleteArray -> "${elementType.toKotlinAccessor(index)}.pointer"
     is CxType.Pointer         -> "${pointed.toKotlinAccessor(index)}.pointer"

@@ -33,6 +33,9 @@ internal enum class KotlinImports(
         "dev.whyoleg.foreign.c.*",
         "dev.whyoleg.foreign.platform.*"
     ),
+    Enum(
+        "kotlin.jvm.*"
+    ),
     Struct(
         "dev.whyoleg.foreign.c.*",
         "dev.whyoleg.foreign.memory.*",

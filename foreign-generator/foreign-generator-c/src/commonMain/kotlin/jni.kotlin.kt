@@ -74,10 +74,6 @@ internal fun CxFunctionInfo.toKotlinJniDeclaration(
     append("}")
 }
 
-//CGrouped(OSSL_PARAM) { address ->
-//        osslparam.OSSL_PARAM_construct_utf8_string(key.address, buf.address, bsize.toLong(), address)
-//    }
-
 private fun CxType.toKotlinJniType(index: CxIndex): String = when (this) {
     CxType.Char               -> "Byte"
     CxType.Byte               -> "Byte"
@@ -96,7 +92,7 @@ private fun CxType.toKotlinJniType(index: CxIndex): String = when (this) {
 
     is CxType.Typedef         -> index.typedef(id).aliased.type.toKotlinJniType(index)
     is CxType.Record          -> "Unit" // we return it via a pointer
-    is CxType.Enum            -> "ENUM"
+    is CxType.Enum            -> "Int" // enum is represented as Int value
     is CxType.ConstArray      -> "Long"
     is CxType.IncompleteArray -> "Long"
     is CxType.Pointer         -> "Long"
@@ -121,7 +117,7 @@ private fun CxType.convertToKotlinJniReturnType(index: CxIndex): String = when (
 
     is CxType.Typedef         -> index.typedef(id).aliased.type.convertToKotlinJniReturnType(index)
     is CxType.Record          -> ""
-    is CxType.Enum            -> "ENUM"
+    is CxType.Enum            -> ".also(::${index.enum(id).name!!}.Value)"
     //TODO: Array types?
     is CxType.ConstArray      -> ".also { address -> CPointer(${elementType.toKotlinType(index)}, address) }"
     is CxType.IncompleteArray -> ".also { address -> CPointer(${elementType.toKotlinType(index)}, address) }"
@@ -145,8 +141,7 @@ private fun CxType.convertToKotlinJniParameterType(index: CxIndex): String = whe
     CxType.Double             -> ""
 
     is CxType.Typedef         -> index.typedef(id).aliased.type.convertToKotlinJniParameterType(index)
-//    is CxType.Struct          -> index.struct(id).name.value
-    is CxType.Enum            -> "ENUM"
+    is CxType.Enum            -> ".underlying"
     is CxType.ConstArray      -> ".address"
     is CxType.IncompleteArray -> ".address"
     is CxType.Pointer         -> ".address"
