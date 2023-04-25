@@ -13,30 +13,20 @@ internal fun CxFunctionInfo.toCJniDeclaration(
     append(prefixedName.replace("_", "_1"))
     append("(JNIEnv* env, jclass jclss")
 
-    val parameterDefinitions = buildList {
-        parameters.forEach { parameter ->
-            add("${parameter.type.type.toCJniType(index)} p_${parameter.name}")
-        }
-        if (returnType.type.isRecord(index)) {
-            add("jlong p_return_pointer")
-        }
-    }
-    if (parameterDefinitions.isNotEmpty()) parameterDefinitions.joinTo(
+    parametersWithReturnType(index).joinToIfNotEmpty(
         this,
         prefix = ",\n",
         separator = ",\n",
         postfix = "\n"
-    ) { definition ->
-        "$INDENT${definition}"
+    ) { parameter ->
+        "$INDENT${parameter.type.type.toCJniType(index)} p_${parameter.name}"
     }
     append(") {\n")
-    if (returnType.type.isRecord(index)) {
-        append(INDENT).append("*(").append(returnType.name).append(" *) p_return_pointer = ").append(name.value).append("(")
-    } else {
-        append(INDENT).append("return (").append(returnType.type.toCJniType(index)).append(") ").append(name.value).append("(")
-    }
+    append(INDENT)
+        .append(returnBlock(index, returnType.name, returnType.type.toCJniType(index)))
+        .append(name.value).append("(")
 
-    if (parameters.isNotEmpty()) parameters.joinTo(
+    parameters.joinToIfNotEmpty(
         this,
         prefix = "\n",
         separator = ",\n",
