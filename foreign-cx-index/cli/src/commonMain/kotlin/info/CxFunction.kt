@@ -19,7 +19,7 @@ fun CxIndexBuilder.buildFunctionInfo(
             val argCursor = clang_Cursor_getArgument(cursor, i.convert())
             add(
                 CxFunctionInfo.Parameter(
-                    name = argCursor.spelling,
+                    name = argCursor.spelling.takeIf(String::isNotBlank) ?: "p$i",
                     type = buildTypeInfo(argCursor.type)
                 )
             )
