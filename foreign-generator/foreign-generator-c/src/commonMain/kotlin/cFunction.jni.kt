@@ -2,7 +2,6 @@ package dev.whyoleg.foreign.generator.c
 
 import dev.whyoleg.foreign.cx.index.*
 
-//TODO: struct support
 internal fun CxFunctionInfo.toCJniDeclaration(
     index: CxIndex,
     kotlinPackage: String,
