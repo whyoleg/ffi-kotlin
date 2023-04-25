@@ -3,7 +3,6 @@ package dev.whyoleg.foreign.generator.c
 import dev.whyoleg.foreign.cx.index.*
 import dev.whyoleg.foreign.schema.c.*
 
-//TODO: struct support
 internal fun CxFunctionInfo.toKotlinJniDeclaration(
     index: CxIndex,
     libraryName: String,
