@@ -21,6 +21,7 @@ private val testArgs = listOf(
     "--output", "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-generator/foreign-generator-c/build/foreign/libcrypto3.json",
 )
 
+@Suppress("UNUSED_PARAMETER")
 fun main(args: Array<String>): Unit = Main().main(testArgs)
 
 class Main : CliktCommand() {

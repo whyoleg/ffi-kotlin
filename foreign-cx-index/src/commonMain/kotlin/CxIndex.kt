@@ -216,6 +216,7 @@ public data class CxIndex(
                 addTypeRecursive(typedef.aliased.type)
             }
 
+            @Suppress("UNUSED_PARAMETER")
             fun addEnum(enum: CxEnumInfo, recursive: Boolean) {
                 enums += enum.id
             }
