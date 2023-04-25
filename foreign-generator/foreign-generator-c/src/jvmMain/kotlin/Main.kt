@@ -52,5 +52,9 @@ public fun main() {
             generatedPath.resolve("jni/c"),
             generateCJni()
         )
+        FileSystem.SYSTEM.writeFileStubs(
+            generatedPath.resolve("emscripten/c"),
+            generateCEmscripten()
+        )
     }
 }

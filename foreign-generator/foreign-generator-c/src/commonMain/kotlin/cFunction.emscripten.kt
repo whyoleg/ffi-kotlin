@@ -2,10 +2,18 @@ package dev.whyoleg.foreign.generator.c
 
 import dev.whyoleg.foreign.cx.index.*
 
-//TODO: struct support
-internal fun CxFunctionInfo.toCEmscriptenDeclaration(): String = buildString {
-    append("EMSCRIPTEN_KEEPALIVE ").append(returnType.name).append(" ").append(prefixedName).append("(")
-    if (parameters.isNotEmpty()) parameters.joinTo(
+internal fun CxFunctionInfo.toCEmscriptenDeclaration(
+    index: CxIndex
+): String = buildString {
+    append("EMSCRIPTEN_KEEPALIVE ")
+        .append(
+            when {
+                returnType.type.isRecord(index) -> "void"
+                else                            -> returnType.name
+            }
+        ).append(" ").append(prefixedName).append("(")
+
+    parametersWithReturnType(index).joinToIfNotEmpty(
         this,
         prefix = "\n",
         separator = ",\n",
@@ -14,8 +22,10 @@ internal fun CxFunctionInfo.toCEmscriptenDeclaration(): String = buildString {
         "$INDENT${parameter.type.name} p_${parameter.name}"
     }
     append(") {\n")
-    append(INDENT).append("return ").append(name.value).append("(")
-    if (parameters.isNotEmpty()) parameters.joinTo(
+    append(INDENT)
+        .append(returnBlock(index, null, null))
+        .append(name.value).append("(")
+    parameters.joinToIfNotEmpty(
         this,
         prefix = "\n",
         separator = ",\n",

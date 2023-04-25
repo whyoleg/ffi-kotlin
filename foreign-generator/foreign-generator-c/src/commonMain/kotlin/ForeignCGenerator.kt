@@ -113,4 +113,27 @@ public class ForeignCGenerator(
             )
         }
     }
+
+    public fun generateCEmscripten(): List<FileStub> = buildList {
+        //TODO?
+        val includes = library.index.headers.map { it.name.value }
+        library.packages.forEach { pkg ->
+            val path = pkg.name.replace(".", "/")
+            if (pkg.functions.isNotEmpty()) add(
+                cFile(
+                    path = "$path/functions.emscripten.c",
+                    includes = includes
+                ) {
+                    pkg.functions.joinTo(
+                        this,
+                        separator = "\n\n",
+                        postfix = "\n"
+                    ) { declaration ->
+                        val function = library.index.function(declaration.id)
+                        function.toCEmscriptenDeclaration(library.index)
+                    }
+                }
+            )
+        }
+    }
 }
