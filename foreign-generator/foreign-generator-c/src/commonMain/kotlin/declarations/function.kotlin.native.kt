@@ -50,7 +50,7 @@ internal fun CxFunctionInfo.toKotlinNativeDeclaration(
     if (returnType.type.isRecord(index)) {
         append("scope.unsafe {").appendLine()
         append(INDENT)
-            .append("CGrouped(").append(returnType.type.toKotlinType(index)).append(") { return_pointer ->")
+            .append("CRecord(").append(returnType.type.toKotlinType(index)).append(") { return_pointer ->")
             .appendLine()
         appendNativeCall(INDENT + INDENT)
         append(INDENT)

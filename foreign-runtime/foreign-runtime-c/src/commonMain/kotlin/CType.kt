@@ -47,11 +47,11 @@ public sealed class CType<KT : Any> {
         final override val accessor: OpaqueMemoryAccessor<KT> = OpaqueMemoryAccessor(instance)
     }
 
-    public sealed class Group<KT : CGrouped<KT>> : CType<KT>() {
+    public sealed class Record<KT : CRecord<KT>> : CType<KT>() {
         abstract override val accessor: ValueMemoryAccessor<KT>
     }
 
-    public abstract class Struct<KT : CStruct<KT>> : Group<KT>() {
+    public abstract class Struct<KT : CStruct<KT>> : Record<KT>() {
         private val _layout = StructLayout()
         final override val layout: MemoryLayout get() = _layout
 
@@ -86,7 +86,7 @@ public sealed class CType<KT : Any> {
         }
     }
 
-    public abstract class Union<KT : CUnion<KT>> : Group<KT>() {
+    public abstract class Union<KT : CUnion<KT>> : Record<KT>() {
         private val _layout = UnionLayout()
         final override val layout: MemoryLayout get() = _layout
 

@@ -25,23 +25,23 @@ public value class UnsafeC internal constructor(public val arena: MemoryArena) {
         return CPointer(type, arena.wrap(address, type.layout) ?: return null)
     }
 
-    public fun <KT : CGrouped<KT>> CGrouped(type: CType.Group<KT>, segment: MemorySegment): KT {
+    public fun <KT : CRecord<KT>> CRecord(type: CType.Record<KT>, segment: MemorySegment): KT {
         return type.accessor.wrap(segment)
     }
 
-    public fun <KT : CGrouped<KT>> CGrouped(
-        type: CType.Group<KT>,
+    public fun <KT : CRecord<KT>> CRecord(
+        type: CType.Record<KT>,
         address: MemoryAddress,
     ): KT {
-        return CGrouped(type, arena.wrap(address, type.layout)!!)
+        return CRecord(type, arena.wrap(address, type.layout)!!)
     }
 
-    public inline fun <KT : CGrouped<KT>> CGrouped(
-        type: CType.Group<KT>,
+    public inline fun <KT : CRecord<KT>> CRecord(
+        type: CType.Record<KT>,
         block: (address: MemoryAddress) -> Unit
     ): KT {
         val segment = arena.allocate(type.layout)
         block(segment.address)
-        return CGrouped(type, segment)
+        return CRecord(type, segment)
     }
 }
