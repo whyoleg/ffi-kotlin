@@ -51,12 +51,17 @@ public fun main() {
             generateKotlinJni(actual = true)
         )
         FileSystem.SYSTEM.writeFileStubs(
-            generatedPath.resolve("jni/c"),
-            generateCJni()
+            generatedPath.resolve("ffm/kotlin"),
+            generateKotlinFfm(actual = true)
         )
         FileSystem.SYSTEM.writeFileStubs(
             generatedPath.resolve("native/kotlin"),
             generateKotlinNative(actual = true)
+        )
+
+        FileSystem.SYSTEM.writeFileStubs(
+            generatedPath.resolve("jni/c"),
+            generateCJni()
         )
         FileSystem.SYSTEM.writeFileStubs(
             generatedPath.resolve("native/c"),

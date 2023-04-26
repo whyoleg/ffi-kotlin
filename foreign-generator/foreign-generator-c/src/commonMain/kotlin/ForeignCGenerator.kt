@@ -92,6 +92,28 @@ public class ForeignCGenerator(
         }
     }
 
+    public fun generateKotlinFfm(actual: Boolean): List<FileStub> = buildList {
+        library.packages.forEach { pkg ->
+            val path = pkg.name.replace(".", "/")
+            if (pkg.functions.isNotEmpty()) add(
+                kotlinFile(
+                    path = "$path/functions.ffm.kt",
+                    kotlinPackage = pkg.name,
+                    imports = KotlinImports.DefaultFFM
+                ) {
+                    pkg.functions.joinTo(
+                        this,
+                        separator = "\n\n",
+                        postfix = "\n"
+                    ) { declaration ->
+                        val function = library.index.function(declaration.id)
+                        function.toKotlinFfmDeclaration(library.index, library.name, actual, declaration.visibility)
+                    }
+                }
+            )
+        }
+    }
+
     public fun generateCJni(): List<FileStub> = buildList {
         //TODO?
         val includes = library.index.headers.map { it.name.value }
@@ -182,9 +204,6 @@ public class ForeignCGenerator(
             )
         }
     }
-
-    //TODO:
-    //generateKotlinFFM
 
     //generate JVM Library + JVM resources
     //generate Android.mk file
