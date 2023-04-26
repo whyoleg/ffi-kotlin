@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.generator.c
+package dev.whyoleg.foreign.generator.c.declarations
 
 import dev.whyoleg.foreign.cx.index.*
 import dev.whyoleg.foreign.schema.c.*
@@ -51,7 +51,7 @@ internal fun CxFunctionInfo.toKotlinJniDeclaration(
             separator = "\n",
             postfix = "\n$indent"
         ) { usage ->
-            "$indent${INDENT}$usage,"
+            "$indent$INDENT$usage,"
         }
         append(")").append(returnType.type.convertToKotlinJniReturnType(index))
             .appendLine()

@@ -1,5 +1,6 @@
 package dev.whyoleg.foreign.generator.c
 
+import dev.whyoleg.foreign.generator.c.declarations.*
 import dev.whyoleg.foreign.schema.c.*
 
 public class ForeignCGenerator(
@@ -136,4 +137,16 @@ public class ForeignCGenerator(
             )
         }
     }
+
+    //TODO:
+    //generateCNative
+    //generateKotlinNative
+    //generateKotlinEmscripten
+    //generateKotlinFFM
+
+    //generate Wasm Library
+    //generate JVM Library + JVM resources
+    //generate Android.mk file
+    //etc
+    //etc
 }
