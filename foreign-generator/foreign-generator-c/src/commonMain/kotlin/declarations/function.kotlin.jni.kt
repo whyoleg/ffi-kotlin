@@ -10,21 +10,13 @@ internal fun CxFunctionInfo.toKotlinJniDeclaration(
     visibility: ForeignCDeclaration.Visibility
 ): String = buildString {
     append("@JvmStatic private external fun ").append(prefixedName).append("(")
-    val parameterDefinitions = buildList {
-        parameters.forEach { parameter ->
-            add("p_${parameter.name}: ${parameter.type.type.toKotlinJniType(index)}")
-        }
-        if (returnType.type.isRecord(index)) {
-            add("p_return_pointer: Long")
-        }
-    }
-    if (parameterDefinitions.isNotEmpty()) parameterDefinitions.joinTo(
+    parametersWithReturnType(index).joinToIfNotEmpty(
         this,
         prefix = "\n",
         separator = "\n",
         postfix = "\n"
-    ) { definition ->
-        "$INDENT${definition},"
+    ) { parameter ->
+        "${INDENT}p_${parameter.name}: ${parameter.type.type.toKotlinJniType(index)}"
     }
     append("): ").append(returnType.type.toKotlinJniType(index))
         .appendLine()
@@ -35,17 +27,15 @@ internal fun CxFunctionInfo.toKotlinJniDeclaration(
     append(toKotlinDeclaration(index, libraryName, !actual)).append(" = ")
 
     fun appendJniCall(indent: String) {
-        val parameterUsage = buildList {
+        append(indent).append(prefixedName).append("(")
+        buildList {
             parameters.forEach { parameter ->
                 add("p_${parameter.name} = ${parameter.name}${parameter.type.type.convertToKotlinJniParameterType(index)}")
             }
             if (returnType.type.isRecord(index)) {
-                add("p_return_pointer = address")
+                add("p_return_pointer = return_pointer")
             }
-        }
-
-        append(indent).append(prefixedName).append("(")
-        if (parameterUsage.isNotEmpty()) parameterUsage.joinTo(
+        }.joinToIfNotEmpty(
             this,
             prefix = "\n",
             separator = "\n",
@@ -60,7 +50,7 @@ internal fun CxFunctionInfo.toKotlinJniDeclaration(
     if (returnType.type.isRecord(index)) {
         append("scope.unsafe {").appendLine()
         append(INDENT)
-            .append("CGrouped(").append(returnType.type.toKotlinType(index)).append(") { address ->")
+            .append("CGrouped(").append(returnType.type.toKotlinType(index)).append(") { return_pointer ->")
             .appendLine()
         appendJniCall(INDENT + INDENT)
         append(INDENT)

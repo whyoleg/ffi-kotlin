@@ -23,7 +23,7 @@ internal fun CxFunctionInfo.toCJniDeclaration(
     }
     append(") {\n")
     append(INDENT)
-        .append(returnBlock(index, returnType.name, returnType.type.toCJniType(index)))
+        .append(cReturnBlock(index, returnType.name, returnType.type.toCJniType(index)))
         .append(name.value).append("(")
 
     parameters.joinToIfNotEmpty(

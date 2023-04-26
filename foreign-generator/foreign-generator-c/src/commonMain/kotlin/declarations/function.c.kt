@@ -2,18 +2,7 @@ package dev.whyoleg.foreign.generator.c.declarations
 
 import dev.whyoleg.foreign.cx.index.*
 
-internal fun CxFunctionInfo.parametersWithReturnType(index: CxIndex): List<CxFunctionInfo.Parameter> {
-    if (!returnType.type.isRecord(index)) return parameters
-    return parameters + CxFunctionInfo.Parameter(
-        name = "return_pointer",
-        type = CxTypeInfo(
-            returnType.name?.let { "$it *" },
-            CxType.Pointer(returnType.type)
-        )
-    )
-}
-
-internal fun CxFunctionInfo.returnBlock(
+internal fun CxFunctionInfo.cReturnBlock(
     index: CxIndex,
     castReturnPointer: String?,
     castReturnValue: String?
