@@ -41,6 +41,13 @@ internal enum class KotlinImports(
         "dev.whyoleg.foreign.memory.*",
         "dev.whyoleg.foreign.memory.access.*",
         "dev.whyoleg.foreign.platform.*",
+    ),
+    DefaultFFM(
+        "import dev.whyoleg.foreign.c.*",
+        "import dev.whyoleg.foreign.invoke.*",
+        "import dev.whyoleg.foreign.platform.*",
+        "import java.lang.foreign.*",
+        "import java.lang.invoke.*",
     )
 }
 

@@ -19,6 +19,7 @@ constructor(segment: MemorySegment) : CGrouped<Self>(segment) {
     public abstract override val type: CType.Union<Self>
 }
 
+//TODO: rename to CRecord
 @OptIn(ForeignMemoryApi::class)
 public sealed class CGrouped<Self : CGrouped<Self>>(segment: MemorySegment) : MemoryValue(segment) {
     public abstract val type: CType.Group<Self>
