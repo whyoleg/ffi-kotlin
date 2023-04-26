@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.generator.c
+package dev.whyoleg.foreign.generator.c.declarations
 
 
 internal fun <T> List<T>.joinToIfNotEmpty(

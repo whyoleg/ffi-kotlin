@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.generator.c
+package dev.whyoleg.foreign.generator.c.declarations
 
 import dev.whyoleg.foreign.cx.index.*
 import dev.whyoleg.foreign.schema.c.*
