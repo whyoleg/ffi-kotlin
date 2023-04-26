@@ -39,6 +39,8 @@ public fun main() {
 
     val generatedPath = buildPath.resolve("generated")
 
+    FileSystem.SYSTEM.deleteRecursively(generatedPath)
+
     ForeignCGenerator(library).apply {
         FileSystem.SYSTEM.writeFileStubs(
             generatedPath.resolve("common/kotlin"),
@@ -53,8 +55,16 @@ public fun main() {
             generateCJni()
         )
         FileSystem.SYSTEM.writeFileStubs(
-            generatedPath.resolve("emscripten/c"),
-            generateCEmscripten()
+            generatedPath.resolve("native/kotlin"),
+            generateKotlinNative(actual = true)
         )
+        FileSystem.SYSTEM.writeFileStubs(
+            generatedPath.resolve("native/c"),
+            generateCNative()
+        )
+//        FileSystem.SYSTEM.writeFileStubs(
+//            generatedPath.resolve("emscripten/c"),
+//            generateCEmscripten()
+//        )
     }
 }
