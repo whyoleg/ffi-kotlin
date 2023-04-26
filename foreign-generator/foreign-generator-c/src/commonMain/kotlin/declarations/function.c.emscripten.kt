@@ -23,7 +23,7 @@ internal fun CxFunctionInfo.toCEmscriptenDeclaration(
     }
     append(") {\n")
     append(INDENT)
-        .append(returnBlock(index, null, null))
+        .append(cReturnBlock(index, null, null))
         .append(name.value).append("(")
     parameters.joinToIfNotEmpty(
         this,
