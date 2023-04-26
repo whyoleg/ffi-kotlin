@@ -138,15 +138,59 @@ public class ForeignCGenerator(
         }
     }
 
+    public fun generateKotlinNative(actual: Boolean): List<FileStub> = buildList {
+        library.packages.forEach { pkg ->
+            val path = pkg.name.replace(".", "/")
+            if (pkg.functions.isNotEmpty()) add(
+                kotlinFile(
+                    path = "$path/functions.native.kt",
+                    kotlinPackage = pkg.name,
+                    imports = KotlinImports.Default
+                ) {
+                    pkg.functions.joinTo(
+                        this,
+                        separator = "\n\n",
+                        postfix = "\n"
+                    ) { declaration ->
+                        val function = library.index.function(declaration.id)
+                        function.toKotlinNativeDeclaration(library.index, library.name, actual, declaration.visibility)
+                    }
+                }
+            )
+        }
+    }
+
+    public fun generateCNative(): List<FileStub> = buildList {
+        //TODO?
+        val includes = library.index.headers.map { it.name.value }
+        library.packages.forEach { pkg ->
+            val path = pkg.name.replace(".", "/")
+            if (pkg.functions.isNotEmpty()) add(
+                cFile(
+                    path = "$path/functions.native.c",
+                    includes = includes
+                ) {
+                    pkg.functions.joinTo(
+                        this,
+                        separator = "\n\n",
+                        postfix = "\n"
+                    ) { declaration ->
+                        val function = library.index.function(declaration.id)
+                        function.toCNativeDeclaration(library.index)
+                    }
+                }
+            )
+        }
+    }
+
     //TODO:
-    //generateCNative
-    //generateKotlinNative
-    //generateKotlinEmscripten
     //generateKotlinFFM
 
-    //generate Wasm Library
     //generate JVM Library + JVM resources
     //generate Android.mk file
-    //etc
-    //etc
+
+    //TODO: add WASM/JS later
+    //generateKotlinEmscripten
+
+    //generate Wasm Library
 }
