@@ -37,8 +37,8 @@ include("foreign-cx-index")
 include("foreign-cx-index:foreign-cx-index-cli")
 project(":foreign-cx-index:foreign-cx-index-cli").projectDir = file("foreign-cx-index/cli")
 
-//include("foreign-runtime:foreign-runtime-core")
-//include("foreign-runtime:foreign-runtime-c") // all new API
+include("foreign-runtime:foreign-runtime-core")
+include("foreign-runtime:foreign-runtime-c") // whole new API
 //include("foreign-runtime:foreign-runtime-kotlinx-cinterop") // API based on kotlinx.cinterop
 
 //TODO: better name?
@@ -57,4 +57,4 @@ fun includeLibrary(name: String) {
     }
 }
 
-//includeLibrary("libcrypto3")
+includeLibrary("libcrypto3")

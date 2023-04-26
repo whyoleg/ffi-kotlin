@@ -123,7 +123,7 @@ private fun CxType.convertToKotlinFfmReturnType(index: CxIndex): String = when (
     CxType.Void               -> ""
 
     is CxType.Typedef         -> index.typedef(id).aliased.type.convertToKotlinFfmReturnType(index)
-    is CxType.Record          -> ".also { address -> CGrouped(${index.record(id).name!!.value}, address) }"
+    is CxType.Record          -> ".also { address -> CRecord(${index.record(id).name!!.value}, address) }"
     is CxType.Enum            -> ".also(::${index.enum(id).name!!}.Value)"
     //TODO: Array types?
     is CxType.ConstArray      -> ".also { address -> CPointer(${elementType.toKotlinType(index)}, address) }"

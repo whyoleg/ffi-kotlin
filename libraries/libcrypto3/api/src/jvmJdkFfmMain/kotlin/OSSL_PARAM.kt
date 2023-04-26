@@ -36,7 +36,7 @@ actual fun OSSL_PARAM_construct_utf8_string(
         buf.address,
         bsize.toLong()
     ) as MemorySegment
-    CGrouped(OSSL_PARAM, address)
+    CRecord(OSSL_PARAM, address)
 }
 
 private val OSSL_PARAM_construct_end_MH: MethodHandle = FFI.methodHandle(
@@ -48,5 +48,5 @@ actual fun OSSL_PARAM_construct_end(
     scope: ForeignCScope
 ): OSSL_PARAM = scope.unsafe {
     val address = OSSL_PARAM_construct_end_MH.invokeExact(arena.allocator) as MemorySegment
-    CGrouped(OSSL_PARAM, address)
+    CRecord(OSSL_PARAM, address)
 }

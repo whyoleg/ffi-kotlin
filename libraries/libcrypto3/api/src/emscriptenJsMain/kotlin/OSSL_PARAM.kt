@@ -13,7 +13,7 @@ actual fun OSSL_PARAM_construct_utf8_string(
     bsize: PlatformUInt,
     scope: ForeignCScope
 ): OSSL_PARAM = scope.unsafe {
-    CGrouped(OSSL_PARAM) { address ->
+    CRecord(OSSL_PARAM) { address ->
         osslparam.OSSL_PARAM_construct_utf8_string(key.address, buf.address, bsize.toInt(), address)
     }
 }
@@ -21,7 +21,7 @@ actual fun OSSL_PARAM_construct_utf8_string(
 actual fun OSSL_PARAM_construct_end(
     scope: ForeignCScope
 ): OSSL_PARAM = scope.unsafe {
-    CGrouped(OSSL_PARAM) { address ->
+    CRecord(OSSL_PARAM) { address ->
         osslparam.OSSL_PARAM_construct_end(address)
     }
 }
