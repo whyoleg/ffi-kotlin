@@ -10,7 +10,7 @@ public class CArray<KT : Any>
 internal constructor(
     public val size: Int,
     accessor: MemoryAccessor<KT>,
-    segment: MemorySegment,
+    segment: MemoryBlock,
 ) : CArrayPointer<KT>(accessor, segment)
 
 @OptIn(ForeignMemoryApi::class)
@@ -21,12 +21,12 @@ public operator fun <KT : Any> CArray<KT>.get(index: Int): CPointer<KT> {
     //TODO: check index ON access?
     return CPointer(
         accessor.at(accessor.offset + accessor.layout.size * index),
-        segmentInternal2
+        blockInternalC
     )
 }
 
 @OptIn(ForeignMemoryApi::class)
-public fun CArray<Byte>.ofUByte(): CArray<UByte> = CArray(size, MemoryAccessor.UByte.at(accessor.offset), segmentInternal2)
+public fun CArray<Byte>.ofUByte(): CArray<UByte> = CArray(size, MemoryAccessor.UByte.at(accessor.offset), blockInternalC)
 
 // factory functions
 
@@ -59,7 +59,7 @@ public inline fun ForeignCScope.cArrayOf(vararg elements: Byte): CArray<Byte> = 
 @OptIn(ForeignMemoryApi::class)
 public inline fun ForeignCScope.cArrayCopy(array: ByteArray): CArray<Byte> {
     return cArray(CType.Byte, array.size).apply {
-        segmentInternal2.storeByteArray(memoryAddressSizeZero(), array)
+        blockInternalC.storeByteArray(memoryAddressSizeZero(), array)
     }
 }
 
@@ -75,7 +75,7 @@ public fun CArray<Byte>.copyInto(
     startIndex: Int = 0,
     endIndex: Int = destination.size
 ): ByteArray {
-    segmentInternal2.loadByteArray(memoryAddressSize(startIndex), destination, destinationOffset, endIndex)
+    blockInternalC.loadByteArray(memoryAddressSize(startIndex), destination, destinationOffset, endIndex)
     return destination
 }
 

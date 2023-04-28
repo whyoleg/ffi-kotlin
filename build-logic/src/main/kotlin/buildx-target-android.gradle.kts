@@ -27,7 +27,7 @@ android {
 }
 
 kotlin {
-    android("jvmAndroidJni") {
+    android("jvmAndroid") {
         compilations.all {
             compilerOptions.configure {
                 jvmTarget.set(JvmTarget.JVM_1_8)
@@ -36,7 +36,7 @@ kotlin {
     }
     afterEvaluate {
         this@kotlin.sourceSets {
-            val jvmAndroidJniInstrumentedTest by getting {
+            val jvmAndroidInstrumentedTest by getting {
                 dependsOn(commonTest.get())
                 dependencies {
                     implementation("androidx.test:runner:1.5.2")

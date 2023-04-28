@@ -11,8 +11,8 @@ import kotlin.reflect.*
 @get:JvmName("getByteValue")
 @set:JvmName("setByteValue")
 public inline var CPointer<Byte>.pointed: Byte
-    get() = accessor.getRaw(segmentInternal2)
-    set(value) = accessor.setRaw(segmentInternal2, value)
+    get() = accessor.getRaw(blockInternalC)
+    set(value) = accessor.setRaw(blockInternalC, value)
 
 @JvmName("getByteValue")
 public inline operator fun CPointer<Byte>.getValue(thisRef: Any?, property: KProperty<*>): Byte = pointed
@@ -34,14 +34,14 @@ public inline fun ForeignCScope.cPointerOf(value: CPointer<Byte>?): CPointer<CPo
 
 // returned pointer has the same scope as an original pointer
 @OptIn(ForeignMemoryApi::class)
-public fun CPointer<Byte>.ofUByte(): CPointer<UByte> = CPointer(MemoryAccessor.UByte.at(accessor.offset), segmentInternal2)
+public fun CPointer<Byte>.ofUByte(): CPointer<UByte> = CPointer(MemoryAccessor.UByte.at(accessor.offset), blockInternalC)
 
 @OptIn(ForeignMemoryApi::class)
 @get:JvmName("getIntValue")
 @set:JvmName("setIntValue")
 public inline var CPointer<Int>.pointed: Int
-    get() = accessor.getRaw(segmentInternal2)
-    set(value) = accessor.setRaw(segmentInternal2, value)
+    get() = accessor.getRaw(blockInternalC)
+    set(value) = accessor.setRaw(blockInternalC, value)
 
 @JvmName("getIntValue")
 public inline operator fun CPointer<Int>.getValue(thisRef: Any?, property: KProperty<*>): Int = pointed
@@ -65,8 +65,8 @@ public inline fun ForeignCScope.cPointerOf(value: CPointer<Int>?): CPointer<CPoi
 @get:JvmName("getUIntValue")
 @set:JvmName("setUIntValue")
 public inline var CPointer<UInt>.pointed: UInt
-    get() = accessor.getRaw(segmentInternal2)
-    set(value) = accessor.setRaw(segmentInternal2, value)
+    get() = accessor.getRaw(blockInternalC)
+    set(value) = accessor.setRaw(blockInternalC, value)
 
 @JvmName("getUIntValue")
 public inline operator fun CPointer<UInt>.getValue(thisRef: Any?, property: KProperty<*>): UInt = pointed
@@ -90,8 +90,8 @@ public inline fun ForeignCScope.cPointerOf(value: CPointer<UInt>?): CPointer<CPo
 @get:JvmName("getPlatformUIntValue")
 @set:JvmName("setPlatformUIntValue")
 public inline var CPointer<out PlatformUInt>.pointed: PlatformUInt
-    get() = accessor.getRaw(segmentInternal2)
-    set(value) = accessor.setRaw(segmentInternal2, value)
+    get() = accessor.getRaw(blockInternalC)
+    set(value) = accessor.setRaw(blockInternalC, value)
 
 @JvmName("getPlatformUIntValue")
 public inline operator fun CPointer<out PlatformUInt>.getValue(thisRef: Any?, property: KProperty<*>): PlatformUInt = pointed

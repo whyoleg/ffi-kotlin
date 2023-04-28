@@ -12,5 +12,5 @@ public abstract class COpaque @ForeignMemoryApi constructor() : EmptyMemoryValue
 @get:JvmName("getOpaqueValue")
 @set:JvmName("setOpaqueValue")
 public inline var <KT : COpaque> CPointer<KT>.pointed: KT
-    get() = accessor.getRaw(segmentInternal2)
-    set(value) = accessor.setRaw(segmentInternal2, value)
+    get() = accessor.getRaw(blockInternalC)
+    set(value) = accessor.setRaw(blockInternalC, value)

@@ -10,7 +10,7 @@ public open class CPointer<KT : Any>
 internal constructor(
     @PublishedApi
     internal val accessor: MemoryAccessor<KT>,
-    segment: MemorySegment,
+    segment: MemoryBlock,
 ) : MemoryReference(segment) {
     init {
         //TODO!!!
@@ -21,10 +21,10 @@ internal constructor(
 
     @PublishedApi
     @ForeignMemoryApi
-    internal val segmentInternal2: MemorySegment get() = segment
+    internal val blockInternalC: MemoryBlock get() = block
 
     override fun toString(): String {
-        return "MS[layout=${accessor.layout.size}, offset=${accessor.offset}, segment=${segment.size}]"
+        return "MS[layout=${accessor.layout.size}, offset=${accessor.offset}, segment=${block.size}]"
     }
 }
 
@@ -33,8 +33,8 @@ internal constructor(
 @get:JvmName("getAnyValue")
 @set:JvmName("setAnyValue")
 public inline var <KT : Any> CPointer<KT>.pointed: KT?
-    get() = accessor.get(segmentInternal2)
-    set(value) = accessor.set(segmentInternal2, value)
+    get() = accessor.get(blockInternalC)
+    set(value) = accessor.set(blockInternalC, value)
 
 @JvmName("getAnyValue")
 public inline operator fun <KT : Any> CPointer<KT>.getValue(thisRef: Any?, property: KProperty<*>): KT? = pointed
@@ -48,5 +48,5 @@ public inline operator fun <KT : Any> CPointer<KT>.setValue(thisRef: Any?, prope
 
 @OptIn(ForeignMemoryApi::class)
 public fun <KT : Any> ForeignCScope.cPointerOf(type: CType<KT>): CPointer<KT> = unsafe {
-    CPointer(type, arena.allocate(type.layout))
+    cPointer(type, arena.allocate(type.layout))
 }

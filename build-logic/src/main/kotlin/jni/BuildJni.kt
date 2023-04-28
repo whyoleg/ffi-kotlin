@@ -41,7 +41,7 @@ open class DefaultBuildJni @Inject constructor(
     override val linkLibraries: ListProperty<String> = objectFactory.listProperty()
     override val includeDirs: ListProperty<String> = objectFactory.listProperty()
     override val inputFiles: ListProperty<RegularFile> = objectFactory.listProperty<RegularFile>().convention(
-        listOf(project.layout.projectDirectory.file("src/jvmJniMain/c/jni.c"))
+        listOf(project.layout.projectDirectory.file("src/jvmCommonMain/c/jni.c"))
     )
     override val outputFilePath: Property<String> = objectFactory.property()
     override val outputDirectory: DirectoryProperty = objectFactory.directoryProperty().convention(

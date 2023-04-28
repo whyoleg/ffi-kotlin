@@ -1,9 +1,12 @@
 package dev.whyoleg.foreign.memory
 
 @ForeignMemoryApi
+public fun MemoryAccess.Companion.of(memory: WasmMemory): MemoryAccess = WasmMemoryAccess(memory)
+
+@ForeignMemoryApi
 public abstract class WasmMemory {
-    public abstract fun malloc(size: MemoryAddressSize): MemoryAddress
-    public abstract fun free(address: MemoryAddress)
+    public abstract fun malloc(size: MemoryAddressSize): MemoryAddressSize
+    public abstract fun free(address: MemoryAddressSize)
 
     public abstract fun loadByte(address: MemoryAddressSize): Byte
     public abstract fun storeByte(address: MemoryAddressSize, value: Byte)
@@ -11,8 +14,8 @@ public abstract class WasmMemory {
     public abstract fun storeInt(address: MemoryAddressSize, value: Int)
 
     internal object Empty : WasmMemory() {
-        override fun malloc(size: MemoryAddressSize): MemoryAddress = TODO("should not be called")
-        override fun free(address: MemoryAddress): Unit = TODO("should not be called")
+        override fun malloc(size: MemoryAddressSize): MemoryAddressSize = TODO("should not be called")
+        override fun free(address: MemoryAddressSize): Unit = TODO("should not be called")
         override fun loadByte(address: MemoryAddressSize): Byte = TODO("should not be called")
         override fun storeByte(address: MemoryAddressSize, value: Byte) = TODO("should not be called")
         override fun loadInt(address: MemoryAddressSize): Int = TODO("should not be called")

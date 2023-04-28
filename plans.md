@@ -3,7 +3,7 @@
 ## 0.1.0
 
 - finish writing codegen for declarations for all targets
-- start writing gradle plugin
+- start writing gradle plugin (jvm + native support only, JS/WASM is still super experimental)
     - design and create gradle plugin to build/link/load/distribute FFI
     - design minimal dependency provider API:
         - direct paths (for prebuilt)
@@ -11,7 +11,14 @@
         - conan packages (? useful for samples ?)
 - improve codegen for other things
 - provide 2 runtimes: whole-new and kx.cinterop-like
-- decide on how to distribute JNI vs FFM APIs
+- ??? setup multi-release JAR for FFM ???
+    - it's needed for generated declarations. 3 modes should be available:
+        - JNI - will use JNI calls
+        - FFM - will use Panama FFM calls
+        - BOTH - depending on java runtime will use or FFM (JDK 20) or JNI
+    - is it needed for runtime artifacts?
+- Add support for UNSAFE for jvm
+- Add support for cleaner for android
 - create several samples (not all of them could be created):
     - openssl (both libcrypto and libssl)
     - git - https://libgit2.org
