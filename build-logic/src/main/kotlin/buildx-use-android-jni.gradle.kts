@@ -12,7 +12,7 @@ android {
     }
     externalNativeBuild {
         ndkBuild {
-            path("src/jvmAndroidJniMain/jni/Android.mk")
+            path("src/jvmAndroidMain/jni/Android.mk")
         }
     }
 }

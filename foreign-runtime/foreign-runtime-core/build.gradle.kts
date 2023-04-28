@@ -4,12 +4,19 @@ plugins {
     id("buildx-target-android")
     id("buildx-target-emscripten")
     id("buildx-target-native-all")
-    id("buildx-target-jdk-all")
+    id("buildx-target-jvm")
 
     id("buildx-use-android-jni")
-    id("buildx-use-jvm-jni")
 }
 
-tasks.named<jni.BuildJni>("buildJni") {
-    outputFilePath.set("macos-arm64/libforeign-core-jni.dylib")
+val buildJni by tasks.registering(jni.DefaultBuildJni::class) {
+    outputFilePath.set("macos-arm64/libforeign-kotlin-jni.dylib")
+}
+
+kotlin {
+    sourceSets {
+        val jvmCommonMain by getting {
+            resources.srcDir(buildJni.map { it.outputDirectory })
+        }
+    }
 }

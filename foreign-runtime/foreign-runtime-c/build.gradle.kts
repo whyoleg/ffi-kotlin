@@ -4,7 +4,7 @@ plugins {
     id("buildx-target-android")
     id("buildx-target-emscripten")
     id("buildx-target-native-all")
-    id("buildx-target-jdk-all")
+    id("buildx-target-jvm")
 }
 
 kotlin {

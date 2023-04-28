@@ -12,11 +12,11 @@ import kotlin.reflect.*
 // * MemoryReference (CPointer)
 @ForeignMemoryApi
 public sealed class MemoryAccessor<KT : Any>(public val offset: MemoryAddressSize) {
-    public abstract val layout: MemoryLayout
+    public abstract val layout: MemoryBlockLayout
 
     //TODO: rename get/set and make internal
-    public abstract fun get(segment: MemorySegment): KT?
-    public abstract fun set(segment: MemorySegment, value: KT?)
+    public abstract fun get(block: MemoryBlock): KT?
+    public abstract fun set(block: MemoryBlock, value: KT?)
 
     protected abstract fun withOffset(offset: MemoryAddressSize): MemoryAccessor<KT>
 
@@ -38,8 +38,8 @@ public sealed class MemoryAccessor<KT : Any>(public val offset: MemoryAddressSiz
 
 @ForeignMemoryApi
 public inline operator fun <KT : Any> MemoryAccessor<KT>.getValue(thisRef: MemoryHolder, property: KProperty<*>): KT? =
-    get(thisRef.segmentInternal)
+    get(thisRef.blockInternal)
 
 @ForeignMemoryApi
 public inline operator fun <KT : Any> MemoryAccessor<KT>.setValue(thisRef: MemoryHolder, property: KProperty<*>, value: KT?): Unit =
-    set(thisRef.segmentInternal, value)
+    set(thisRef.blockInternal, value)

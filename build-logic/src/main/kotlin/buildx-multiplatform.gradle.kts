@@ -35,16 +35,9 @@ kotlin {
                 }
 
                 //shares a library loading mechanism and some of the platform specifics
-                group("jvm") {
-                    //shared JNI declarations mechanism
-                    group("jvmJni") {
-                        withAndroid()
-                        withPlatform(KotlinPlatformType.jvm) { it.name.contains("jni", ignoreCase = true) }
-                    }
-                    //shares library loading from jar or from system
-                    group("jvmJdk") {
-                        withJvm()
-                    }
+                group("jvmCommon") {
+                    withAndroid()
+                    withJvm()
                 }
             }
         }

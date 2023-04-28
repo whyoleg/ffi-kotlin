@@ -11,7 +11,7 @@ public sealed class CType<KT : Any> {
     public abstract val accessor: MemoryAccessor<KT>
 
     @ForeignMemoryApi
-    public open val layout: MemoryLayout get() = accessor.layout
+    public open val layout: MemoryBlockLayout get() = accessor.layout
 
     public val pointer: CType<CPointer<KT>> by lazy { Pointer(this) }
 
@@ -47,72 +47,18 @@ public sealed class CType<KT : Any> {
         final override val accessor: OpaqueMemoryAccessor<KT> = OpaqueMemoryAccessor(instance)
     }
 
-    public sealed class Record<KT : CRecord<KT>> : CType<KT>() {
+    public sealed class Record<KT : CRecord<KT>>(isUnion: Boolean) : CType<KT>() {
+        private val _layout = MemoryBlockLayout.Record(isUnion)
+        final override val layout: MemoryBlockLayout get() = _layout
         abstract override val accessor: ValueMemoryAccessor<KT>
-    }
-
-    public abstract class Struct<KT : CStruct<KT>> : Record<KT>() {
-        private val _layout = StructLayout()
-        final override val layout: MemoryLayout get() = _layout
 
         protected fun <KT : Any> element(type: CType<KT>): MemoryAccessor<KT> {
-            val offset = _layout.register(type.layout)
-            return type.accessor.at(offset)
-        }
-
-        private class StructLayout() : MemoryLayout {
-            private var _size: MemoryAddressSize = memoryAddressSizeZero()
-            private var _alignment: MemoryAddressSize = memoryAddressSizeZero()
-
-            override val size: MemoryAddressSize get() = _size
-            override val alignment: MemoryAddressSize get() = _alignment
-
-            //TODO: recheck
-            fun register(layout: MemoryLayout): MemoryAddressSize {
-                //TODO: recheck which SIZE_BYTES is needed here
-                val rem = _size % MemoryAddressSize.SIZE_BYTES
-                if (rem != memoryAddressSizeZero() && rem < layout.size) {
-                    _size += rem
-                }
-
-                val offset = _size
-                //TODO: alignment should affect offset?
-                _size += layout.size
-                if (_alignment < layout.alignment) {
-                    _alignment = layout.alignment
-                }
-                return offset
-            }
+            return type.accessor.at(_layout.getOffsetAndAddField(type.layout))
         }
     }
 
-    public abstract class Union<KT : CUnion<KT>> : Record<KT>() {
-        private val _layout = UnionLayout()
-        final override val layout: MemoryLayout get() = _layout
-
-        protected fun <KT : Any> element(type: CType<KT>): MemoryAccessor<KT> {
-            _layout.register(type.layout)
-            return type.accessor
-        }
-
-        private class UnionLayout() : MemoryLayout {
-            private var _size: MemoryAddressSize = memoryAddressSizeZero()
-            private var _alignment: MemoryAddressSize = memoryAddressSizeZero()
-
-            override val size: MemoryAddressSize get() = _size
-            override val alignment: MemoryAddressSize get() = _alignment
-
-            //TODO: recheck
-            fun register(layout: MemoryLayout) {
-                if (_size < layout.size) {
-                    _size = layout.size
-                }
-                if (_alignment < layout.alignment) {
-                    _alignment = layout.alignment
-                }
-            }
-        }
-    }
+    public abstract class Struct<KT : CStruct<KT>> : Record<KT>(isUnion = false)
+    public abstract class Union<KT : CUnion<KT>> : Record<KT>(isUnion = true)
 
     private class Pointer<KT : Any>(pointedType: CType<KT>) : CType<CPointer<KT>>() {
         override val accessor: MemoryAccessor<CPointer<KT>> = Accessor(pointedType.accessor)
@@ -122,7 +68,7 @@ public sealed class CType<KT : Any> {
             offset: MemoryAddressSize = memoryAddressSizeZero(),
         ) : ReferenceMemoryAccessor<CPointer<KT>, KT>(offset) {
             override fun withOffset(offset: MemoryAddressSize): MemoryAccessor<CPointer<KT>> = Accessor(pointedAccessor, offset)
-            override fun wrapPointed(pointedSegment: MemorySegment): CPointer<KT> = CPointer(pointedAccessor, pointedSegment)
+            override fun wrapPointed(pointedSegment: MemoryBlock): CPointer<KT> = CPointer(pointedAccessor, pointedSegment)
         }
     }
 }

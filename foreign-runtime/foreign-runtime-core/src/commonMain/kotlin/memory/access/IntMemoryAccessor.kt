@@ -5,22 +5,22 @@ import kotlin.reflect.*
 
 @ForeignMemoryApi
 internal class IntMemoryAccessor(offset: MemoryAddressSize) : MemoryAccessor<Int>(offset) {
-    override val layout: MemoryLayout get() = MemoryLayout.Int
-    override fun get(segment: MemorySegment): Int = getRaw(segment)
-    override fun set(segment: MemorySegment, value: Int?): Unit = setRaw(segment, value ?: 0)
+    override val layout: MemoryBlockLayout get() = MemoryBlockLayout.Int
+    override fun get(block: MemoryBlock): Int = getRaw(block)
+    override fun set(block: MemoryBlock, value: Int?): Unit = setRaw(block, value ?: 0)
     override fun withOffset(offset: MemoryAddressSize): MemoryAccessor<Int> = IntMemoryAccessor(offset)
 }
 
 @ForeignMemoryApi
-public inline fun MemoryAccessor<Int>.getRaw(segment: MemorySegment): Int = segment.loadInt(offset)
+public inline fun MemoryAccessor<Int>.getRaw(block: MemoryBlock): Int = block.loadInt(offset)
 
 @ForeignMemoryApi
-public inline fun MemoryAccessor<Int>.setRaw(segment: MemorySegment, value: Int): Unit = segment.storeInt(offset, value)
+public inline fun MemoryAccessor<Int>.setRaw(block: MemoryBlock, value: Int): Unit = block.storeInt(offset, value)
 
 @ForeignMemoryApi
 public inline operator fun MemoryAccessor<Int>.getValue(thisRef: MemoryHolder, property: KProperty<*>): Int =
-    getRaw(thisRef.segmentInternal)
+    getRaw(thisRef.blockInternal)
 
 @ForeignMemoryApi
 public inline operator fun MemoryAccessor<Int>.setValue(thisRef: MemoryHolder, property: KProperty<*>, value: Int): Unit =
-    setRaw(thisRef.segmentInternal, value)
+    setRaw(thisRef.blockInternal, value)

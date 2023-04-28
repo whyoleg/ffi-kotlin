@@ -1,25 +1,18 @@
 package dev.whyoleg.foreign.memory
 
-//@Suppress("NO_ACTUAL_FOR_EXPECT")
 @ForeignMemoryApi
-public expect class MemoryAllocator
+public abstract class MemoryArena internal constructor() : AutoCloseable {
+    public abstract fun allocate(size: MemoryAddressSize, alignment: MemoryAddressSize): MemoryBlock
 
-//TODO: make it abstract class
-@ForeignMemoryApi
-public interface MemoryArena : AutoCloseable {
-    public val allocator: MemoryAllocator
-
-    public fun allocate(size: MemoryAddressSize, alignment: MemoryAddressSize): MemorySegment
-
-    public fun allocate(layout: MemoryLayout): MemorySegment {
+    public open fun allocate(layout: MemoryBlockLayout): MemoryBlock {
         return allocate(layout.size, layout.alignment)
     }
 
-    public fun allocateArray(elementLayout: MemoryLayout, elementsCount: Int): MemorySegment {
+    public open fun allocateArray(elementLayout: MemoryBlockLayout, elementsCount: Int): MemoryBlock {
         return allocate(elementLayout.size * elementsCount, elementLayout.alignment)
     }
 
-    public fun allocateString(value: String): MemorySegment {
+    public open fun allocateString(value: String): MemoryBlock {
         val bytes = value.encodeToByteArray()
         return allocate(memoryAddressSize(bytes.size + 1), memoryAddressSize(1)).also {
             it.storeByteArray(memoryAddressSizeZero(), bytes)
@@ -27,8 +20,8 @@ public interface MemoryArena : AutoCloseable {
         }
     }
 
-    public fun wrap(address: MemoryAddress, layout: MemoryLayout): MemorySegment?
+    public abstract fun wrap(address: MemoryAddressSize, layout: MemoryBlockLayout): MemoryBlock?
 
     //TODO: name, contract?
-    public fun invokeOnClose(block: () -> Unit)
+    public abstract fun invokeOnClose(block: () -> Unit)
 }
