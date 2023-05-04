@@ -32,3 +32,10 @@
     - zeromq - https://zeromq.org
 - setup publication:
     - how to embed cx-index-cli K/N binaries?
+
+## TODO
+
+* binding generation should support commonization (similar how cinterop does)
+    * expect/actual per platform
+    * additional optional expectation annotation for JVM declarations which available only on single OS:
+      macos, linux, windows (f.e. for some posix function)

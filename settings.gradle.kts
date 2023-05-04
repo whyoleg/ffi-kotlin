@@ -14,7 +14,7 @@ pluginManagement {
 plugins {
     id("kotlin-version-catalog")
     id("com.gradle.enterprise") version "3.12.2"
-    id("org.gradle.toolchains.foojay-resolver-convention") version ("0.4.0")
+    id("org.gradle.toolchains.foojay-resolver-convention") version ("0.5.0")
 }
 
 dependencyResolutionManagement {
@@ -31,7 +31,7 @@ gradleEnterprise {
     }
 }
 
-rootProject.name = "ffi-kotlin"
+rootProject.name = "foreign-kotlin"
 
 include("foreign-cx-index")
 include("foreign-cx-index:foreign-cx-index-cli")
@@ -44,11 +44,6 @@ include("foreign-runtime:foreign-runtime-c") // whole new API
 //TODO: better name?
 include("foreign-schema:foreign-schema-c")
 include("foreign-generator:foreign-generator-c")
-
-//include("foreign-gradle:foreign-gradle-jni") //both jvm and android
-//include("foreign-gradle:foreign-gradle-emscripten") //both js and wasm
-//include("foreign-gradle:foreign-gradle-kn-bitcode") //K/N only
-//include("foreign-gradle:foreign-gradle-plugin")
 
 fun includeLibrary(name: String) {
     listOf("api", "shared", "prebuilt", "test").forEach { submodule ->
