@@ -19,6 +19,9 @@ kotlin {
             group("native") {
                 withNative()
             }
+            group("nonNative") {
+                withCompilations { it.target.platformType != KotlinPlatformType.native }
+            }
             group("platformInt") {
                 //shares common wasm api
                 group("emscripten") {

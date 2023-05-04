@@ -35,7 +35,6 @@ rootProject.name = "foreign-kotlin"
 
 include("foreign-runtime:foreign-runtime-core")
 include("foreign-runtime:foreign-runtime-c") // whole new API
-//include("foreign-runtime:foreign-runtime-kotlinx.cinterop") // kotlinx.cinterop compatible API
 
 //TODO: move to composite build, or it will be not possible to test it normally
 //includeBuild("foreign-tools")
