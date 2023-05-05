@@ -16,7 +16,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.foreignTools.indexes.foreignIndexCx)
+                api(projects.indexes.foreignIndexCx)
             }
         }
     }
