@@ -20,7 +20,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(projects.foreignTools.indexes.foreignIndexCx)
+                implementation(projects.indexes.foreignIndexCx)
                 implementation("com.github.ajalt.clikt:clikt:3.5.2")
             }
         }

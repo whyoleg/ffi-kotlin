@@ -10,7 +10,7 @@
         - brew packages (for clang f.e.)
         - conan packages (? useful for samples ?)
 - improve codegen for other things
-- provide 2 runtimes: whole-new and kx.cinterop-like
+- decide on 'kotlinx.cinterop like runtime' - may be it's not needed? :)
 - ??? setup multi-release JAR for FFM ???
     - it's needed for generated declarations. 3 modes should be available:
         - JNI - will use JNI calls
