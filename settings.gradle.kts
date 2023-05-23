@@ -40,6 +40,8 @@ include("foreign-runtime:foreign-runtime-c") // whole new API
 
 //test libraries
 
+include("playground")
+
 fun includeLibrary(name: String) {
     listOf("api", "shared", "prebuilt", "test").forEach { submodule ->
         include("libraries:$name:$name-$submodule")
@@ -48,3 +50,15 @@ fun includeLibrary(name: String) {
 }
 
 //includeLibrary("libcrypto3")
+
+includeBuild("foreign-compiler-plugin") {
+    dependencySubstitution {
+        substitute(module("dev.whyoleg.foreign:foreign-compiler-plugin:0.1.0")).using(project(":"))
+    }
+}
+
+includeBuild("foreign-gradle-plugin") {
+    dependencySubstitution {
+        substitute(module("dev.whyoleg.foreign:foreign-gradle-plugin:0.1.0")).using(project(":"))
+    }
+}

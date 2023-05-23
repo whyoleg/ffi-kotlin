@@ -2,7 +2,7 @@ plugins {
     id("build-parameters")
 }
 
-val kotlinVersion = "1.8.20"
+val kotlinVersion = "1.9.0-Beta"
 val kotlinVersionOverride = the<buildparameters.BuildParametersExtension>().kotlin.override.version.orNull
 
 if (kotlinVersionOverride != null) logger.lifecycle("Kotlin version override: $kotlinVersionOverride")
@@ -21,11 +21,15 @@ dependencyResolutionManagement {
         create("kotlinLibs") {
             val kotlin = version("kotlin", kotlinVersionOverride ?: kotlinVersion)
 
-            library("gradle-plugin", "org.jetbrains.kotlin", "kotlin-gradle-plugin").versionRef(kotlin)
-
             plugin("multiplatform", "org.jetbrains.kotlin.multiplatform").versionRef(kotlin)
             plugin("jvm", "org.jetbrains.kotlin.jvm").versionRef(kotlin)
             plugin("plugin.serialization", "org.jetbrains.kotlin.plugin.serialization").versionRef(kotlin)
+
+            fun lib(name: String, artifact: String) = library(name, "org.jetbrains.kotlin", artifact).versionRef(kotlin)
+
+            lib("gradle-plugin", "kotlin-gradle-plugin")
+            lib("compiler", "kotlin-compiler")
+            lib("compiler-test-framework", "kotlin-compiler-internal-test-framework")
         }
     }
 }

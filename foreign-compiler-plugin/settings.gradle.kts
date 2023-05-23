@@ -30,10 +30,4 @@ gradleEnterprise {
     }
 }
 
-rootProject.name = "foreign-gradle-plugin"
-
-includeBuild("../foreign-tools") {
-    dependencySubstitution {
-        substitute(module("dev.whyoleg.foreign:foreign-generator-cx")).using(project(":generators:foreign-generator-cx"))
-    }
-}
+rootProject.name = "foreign-compiler-plugin"
