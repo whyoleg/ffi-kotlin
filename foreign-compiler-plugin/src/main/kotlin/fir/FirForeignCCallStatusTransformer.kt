@@ -9,6 +9,13 @@ import org.jetbrains.kotlin.fir.plugin.*
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.name.*
 
+/*
+  Questions
+  - how to know which session is platform specific?
+    - it's needed to understand, we need to generate expect/actual or just add body
+  - adding empty body isn't supported yet.
+ */
+
 class FirForeignCCallStatusTransformer(session: FirSession) : FirStatusTransformerExtension(session) {
     override fun needTransformStatus(declaration: FirDeclaration): Boolean {
         return session.foreignPredicateMatcher.isForeignCCall(declaration)

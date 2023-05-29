@@ -46,13 +46,21 @@ private constructor(private val arena: MemoryArena) : AutoCloseable {
 //for compiler plugin
 
 @Target(AnnotationTarget.CLASS)
-public annotation class ForeignCStruct
+public annotation class ForeignCStruct(val name: String = "") {
+    @Target(AnnotationTarget.PROPERTY)
+    public annotation class FieldName(val name: String)
+}
 
-@Target(AnnotationTarget.CLASS)
-public annotation class ForeignCOpaque
+@Target(AnnotationTarget.PROPERTY)
+public annotation class ForeignCStructFieldName(val name: String)
 
 @Target(AnnotationTarget.FUNCTION)
-public annotation class ForeignCCall
+public annotation class ForeignCFunction(val name: String = "")
+
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS, AnnotationTarget.FILE)
+public annotation class ForeignCIncludes(
+    vararg val includes: String
+)
 
 @Target(AnnotationTarget.FUNCTION)
 public annotation class ForeignCConst

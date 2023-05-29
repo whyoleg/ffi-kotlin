@@ -39,3 +39,10 @@
     * expect/actual per platform
     * additional optional expectation annotation for JVM declarations which available only on single OS:
       macos, linux, windows (f.e. for some posix function)
+
+## Notes
+
+* compiler plugin will generate only code needed to work with foreign functions
+* gradle plugin will provide configuration for includes, linking arguments and will link code with native library
+* additional tool inside gradle plugin will allow to generate bindings for provided headers.
+  those bindings will be included as kotlin generated source files and processed by compiler plugin
