@@ -6,9 +6,8 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
-    includeBuild("../build-logic")
-    includeBuild("../build-parameters")
-    includeBuild("../build-kotlin")
+    includeBuild("../gradle/settings")
+    includeBuild("../gradle/plugins")
 }
 
 plugins {
