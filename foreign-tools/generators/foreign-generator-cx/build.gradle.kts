@@ -1,17 +1,9 @@
 plugins {
-    id("buildx-multiplatform-base")
+    id("foreignbuild.conventions.multiplatform.library")
+    id("foreignbuild.conventions.multiplatform.targets.all-no-wasm")
 }
 
 kotlin {
-    explicitApi()
-
-    jvm()
-    js {
-        nodejs() //just to have all platforms here
-    }
-    macosArm64()
-    macosX64()
-
     sourceSets {
         commonMain {
             dependencies {
