@@ -1,5 +1,7 @@
+package foreignbuild.conventions.multiplatform.targets
+
 plugins {
-    id("buildx-multiplatform")
+    kotlin("multiplatform")
 }
 
 kotlin {

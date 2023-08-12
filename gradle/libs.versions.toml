@@ -1,5 +1,7 @@
 [versions]
 
+java-ffm = "20"
+
 # build
 kotlin-dokka = "1.8.20"
 kotlinx-bcv = "0.13.2"
