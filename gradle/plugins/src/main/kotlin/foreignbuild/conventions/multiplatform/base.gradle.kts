@@ -5,6 +5,8 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain(8)
+
     targets.configureEach {
         compilations.configureEach {
             compilerOptions.configure {
