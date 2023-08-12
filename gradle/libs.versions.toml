@@ -1,0 +1,44 @@
+[versions]
+
+# build
+kotlin-dokka = "1.8.20"
+kotlinx-bcv = "0.13.2"
+kotlinx-kover = "0.7.2"
+
+gradle-download = "5.4.0"
+
+android = "7.3.0" #"8.0.2"
+
+foojay = "0.6.0"
+build-parameters = "1.4.2"
+
+# tools
+okio = "3.3.0"
+kotlinx-serialization = "1.5.0"
+clikt = "3.5.2"
+
+# test
+androidx-test = "1.5.2"
+
+[libraries]
+
+build-kotlin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "kotlin-dokka" }
+build-kotlinx-bcv = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "kotlinx-bcv" }
+build-kotlinx-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kotlinx-kover" }
+
+build-gradle-download = { module = "de.undercouch:gradle-download-task", version.ref = "gradle-download" }
+build-android = { module = "com.android.tools.build:gradle", version.ref = "android" }
+
+build-foojay = { module = "org.gradle.toolchains:foojay-resolver", version.ref = "foojay" }
+
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
+clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
+
+androidx-test = { module = "androidx.test:runner", version.ref = "androidx-test" }
+
+[plugins]
+#kotlin-dokka = { id = "org.jetbrains.dokka", version.ref = "kotlin-dokka" }
+android-library = { id = "com.android.library", version.ref = "android" }
+build-parameters = { id = "org.gradlex.build-parameters", version.ref = "build-parameters" }

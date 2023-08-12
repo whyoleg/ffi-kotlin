@@ -21,7 +21,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(projects.indexes.foreignIndexCx)
-                implementation("com.github.ajalt.clikt:clikt:3.5.2")
+                implementation(libs.clikt)
             }
         }
     }
