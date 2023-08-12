@@ -13,4 +13,12 @@ kotlin {
             }
         }
     }
+
+    sourceSets.configureEach {
+        languageSettings {
+            // optIn in compilations are not propagated to IDE
+            optIn("kotlin.ExperimentalStdlibApi")
+            optIn("kotlinx.cinterop.ExperimentalForeignApi")
+        }
+    }
 }
