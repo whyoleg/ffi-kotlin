@@ -12,10 +12,10 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "build-kotlin"
+rootProject.name = "build-settings"
 
-includeBuild("../build-parameters") {
+includeBuild("../parameters") {
     dependencySubstitution {
-        substitute(module("build:build-parameters")).using(project(":"))
+        substitute(module("build:parameters")).using(project(":"))
     }
 }

@@ -2,12 +2,6 @@ plugins {
     id("org.gradlex.build-parameters") version "1.4.2"
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    }
-}
-
 buildParameters {
     bool("ci") {
         fromEnvironment()

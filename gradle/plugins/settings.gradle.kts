@@ -4,7 +4,7 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
-    includeBuild("../build-kotlin")
+    includeBuild("../settings")
 }
 
 dependencyResolutionManagement {
@@ -19,4 +19,4 @@ plugins {
     id("kotlin-version-catalog")
 }
 
-rootProject.name = "build-logic"
+rootProject.name = "build-plugins"
