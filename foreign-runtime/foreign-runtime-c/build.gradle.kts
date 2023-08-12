@@ -1,10 +1,7 @@
 plugins {
-    id("buildx-multiplatform-library")
-
-    id("buildx-target-android")
-    id("buildx-target-emscripten")
-    id("buildx-target-native-all")
-    id("buildx-target-jvm")
+    id("foreignbuild.conventions.multiplatform.library")
+    id("foreignbuild.conventions.multiplatform.targets.all")
+    id("foreignbuild.conventions.multiplatform.targets.android")
 }
 
 kotlin {

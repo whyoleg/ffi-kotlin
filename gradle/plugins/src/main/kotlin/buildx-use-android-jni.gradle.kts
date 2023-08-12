@@ -1,5 +1,5 @@
 plugins {
-    id("buildx-target-android")
+    id("com.android.library")
 }
 
 android {

@@ -1,5 +1,5 @@
 plugins {
-    id("buildx-target-jvm")
+    kotlin("multiplatform")
 }
 
 val buildJni by tasks.registering(jni.DefaultBuildJni::class)
