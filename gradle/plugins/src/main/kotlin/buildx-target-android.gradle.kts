@@ -26,8 +26,10 @@ android {
     }
 }
 
+val versionCatalog: VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
+
 kotlin {
-    android("jvmAndroid") {
+    androidTarget("jvmAndroid") {
         compilations.all {
             compilerOptions.configure {
                 jvmTarget.set(JvmTarget.JVM_1_8)
@@ -39,7 +41,7 @@ kotlin {
             val jvmAndroidInstrumentedTest by getting {
                 dependsOn(commonTest.get())
                 dependencies {
-                    implementation("androidx.test:runner:1.5.2")
+                    implementation(versionCatalog.findLibrary("androidx-test").get())
                 }
             }
         }

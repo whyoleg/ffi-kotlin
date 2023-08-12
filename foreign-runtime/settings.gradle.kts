@@ -7,6 +7,14 @@ plugins {
     id("default-settings")
 }
 
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs") {
+            from(files("../gradle/libs.versions.toml"))
+        }
+    }
+}
+
 rootProject.name = "foreign-runtime"
 
 include("foreign-runtime-core")

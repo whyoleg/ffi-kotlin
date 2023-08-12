@@ -9,7 +9,7 @@ kotlin {
 
 dependencies {
     compileOnly(kotlinLibs.gradle.plugin)
-    compileOnly("com.android.tools.build:gradle:7.3.0")
+    compileOnly(libs.build.android)
 
     implementation("dev.whyoleg.foreign:foreign-generator-cx")
 }

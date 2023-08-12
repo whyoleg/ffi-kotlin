@@ -39,7 +39,7 @@ kotlin {
 
                 //shares a library loading mechanism and some of the platform specifics
                 group("jvmCommon") {
-                    withAndroid()
+                    withAndroidTarget()
                     withJvm()
                 }
             }

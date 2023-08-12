@@ -1,5 +1,5 @@
 plugins {
-    id("org.gradlex.build-parameters") version "1.4.2"
+    alias(libs.plugins.build.parameters)
 }
 
 buildParameters {

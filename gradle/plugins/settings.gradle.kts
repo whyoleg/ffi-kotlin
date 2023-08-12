@@ -1,22 +1,17 @@
 pluginManagement {
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
     includeBuild("../settings")
 }
 
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
+plugins {
+    id("default-settings")
 }
 
-plugins {
-    id("kotlin-version-catalog")
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs") {
+            from(files("../libs.versions.toml"))
+        }
+    }
 }
 
 rootProject.name = "build-plugins"
