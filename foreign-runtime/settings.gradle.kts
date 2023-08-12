@@ -6,11 +6,8 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
-    includeBuild("gradle/settings")
-    includeBuild("gradle/plugins")
-    includeBuild("gradle/parameters")
-
-    includeBuild("foreign-gradle-plugin")
+    includeBuild("../gradle/settings")
+    includeBuild("../gradle/plugins")
 }
 
 plugins {
@@ -23,6 +20,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        gradlePluginPortal()
     }
 }
 
@@ -33,17 +31,7 @@ gradleEnterprise {
     }
 }
 
-rootProject.name = "foreign-kotlin"
+rootProject.name = "foreign-runtime"
 
-includeBuild("foreign-runtime")
-
-//test libraries
-
-fun includeLibrary(name: String) {
-    listOf("api", "shared", "prebuilt", "test").forEach { submodule ->
-        include("libraries:$name:$name-$submodule")
-        project(":libraries:$name:$name-$submodule").projectDir = file("libraries/$name/$submodule")
-    }
-}
-
-//includeLibrary("libcrypto3")
+include("foreign-runtime-core")
+include("foreign-runtime-c") // whole new API

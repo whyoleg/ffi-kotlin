@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.targets.js.yarn.*
 
 plugins {
     id("build-parameters")
-
     alias(kotlinLibs.plugins.multiplatform) apply false
     id("com.android.library") version "7.3.0" apply false //TODO move to version catalog
 }
