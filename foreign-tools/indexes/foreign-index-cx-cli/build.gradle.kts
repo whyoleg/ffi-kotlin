@@ -1,13 +1,14 @@
 plugins {
-    id("buildx-multiplatform-base")
+    id("foreignbuild.conventions.multiplatform.base")
+    //TODO: enable other native targets
+    //id("foreignbuild.conventions.multiplatform.targets.native.desktop")
     alias(kotlinLibs.plugins.multiplatform)
 }
 
 kotlin {
-    //TODO: add other native targets
     macosArm64 {
-        val main by compilations.getting {
-            val declarations by cinterops.creating {
+        compilations.named("main") {
+            cinterops.create("declarations") {
                 defFile("src/commonMain/interop/clang.def")
             }
         }
