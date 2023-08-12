@@ -1,29 +1,5 @@
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
-pluginManagement {
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-    includeBuild("gradle/settings")
-    includeBuild("gradle/plugins")
-    includeBuild("gradle/parameters")
-
-    includeBuild("foreign-gradle-plugin")
-}
-
 plugins {
-    id("kotlin-version-catalog")
     id("com.gradle.enterprise") version "3.12.2"
-    id("org.gradle.toolchains.foojay-resolver-convention") version ("0.5.0")
-}
-
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-    }
 }
 
 gradleEnterprise {
@@ -36,6 +12,7 @@ gradleEnterprise {
 rootProject.name = "foreign-kotlin"
 
 includeBuild("foreign-runtime")
+includeBuild("foreign-gradle-plugin")
 
 //test libraries
 
