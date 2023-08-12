@@ -12,7 +12,7 @@ gradleEnterprise {
 rootProject.name = "foreign-kotlin"
 
 includeBuild("foreign-runtime")
-includeBuild("foreign-gradle-plugin")
+includeBuild("foreign-gradle")
 
 //test libraries
 

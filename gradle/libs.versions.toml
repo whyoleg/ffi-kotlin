@@ -10,12 +10,12 @@ gradle-download = "5.4.0"
 android = "7.3.0" #"8.0.2"
 
 foojay = "0.6.0"
-build-parameters = "1.4.2"
+build-parameters = "1.4.3"
 
 # tools
-okio = "3.3.0"
+okio = "3.5.0"
 kotlinx-serialization = "1.5.0"
-clikt = "3.5.2"
+clikt = "4.2.0"
 
 # test
 androidx-test = "1.5.2"
