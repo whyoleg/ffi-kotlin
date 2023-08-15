@@ -112,11 +112,13 @@ tasks.withType<CInteropProcess>().configureEach {
     dependsOn(unzipClangCHeaders)
 }
 
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
+    targetHierarchy.default()
     targets.withType(KotlinNativeTargetWithHostTests::class).configureEach {
         compilations.named("main") {
             cinterops.create("declarations") {
-                defFile("src/commonMain/interop/clang.def")
+                defFile("src/nativeMain/interop/clang.def")
                 includeDirs(unzipClangCHeaders.map { it.destinationDir })
             }
         }
@@ -140,7 +142,10 @@ kotlin {
     }
 
     sourceSets {
-        commonMain {
+        named("jvmMain") {
+            resources.srcDir(prepareJvmResources.map { it.destinationDir })
+        }
+        named("nativeMain") {
             dependencies {
                 implementation(projects.indexes.foreignIndexCx)
                 implementation(libs.clikt)
