@@ -6,6 +6,7 @@ import org.tukaani.xz.*
 
 plugins {
     id("foreignbuild.conventions.multiplatform.base")
+    id("foreignbuild.conventions.multiplatform.targets.native.desktop")
     alias(kotlinLibs.plugins.multiplatform)
     alias(libs.plugins.undercouch.download)
 }
@@ -112,11 +113,6 @@ tasks.withType<CInteropProcess>().configureEach {
 }
 
 kotlin {
-    // mingwX64 is not supported yet - needs clang built for mingw
-    macosArm64()
-    macosX64()
-    linuxX64()
-
     targets.withType(KotlinNativeTargetWithHostTests::class).configureEach {
         compilations.named("main") {
             cinterops.create("declarations") {

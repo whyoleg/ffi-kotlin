@@ -88,9 +88,9 @@ public open class DefaultBuildJvmJniLibrary @Inject constructor(
             null -> {
                 val konanTargetName = when (platform) {
                     Platform.Linux.X64   -> "linux_x64"
-                    Platform.Windows.X64 -> "mingw_x64" //TODO mingw vs windows?
                     Platform.MacOS.ARM64 -> "macos_arm64"
                     Platform.MacOS.X64   -> "macos_x64"
+                    Platform.Windows.X64 -> TODO("windows is not supported")
                 }
                 nativeCompilerDownloader.downloadIfNeeded()
                 executable(nativeCompilerDownloader.compilerDirectory.resolve("bin/run_konan").absolutePath)
