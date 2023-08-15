@@ -22,11 +22,11 @@ buildscript {
 // download and extract clang headers
 val downloadClangSources by tasks.registering(Download::class) {
     src("https://github.com/llvm/llvm-project/releases/download/llvmorg-11.1.0/clang-11.1.0.src.tar.xz")
-    dest(layout.buildDirectory.file("clang/sources.tar.xz"))
+    dest(layout.buildDirectory.file("clang/downloads/clang-sources.tar.xz"))
     overwrite(false)
 }
 
-val uncompressedFile = layout.buildDirectory.file("clang/sources.tar")
+val uncompressedFile = layout.buildDirectory.file("clang/downloads/clang-sources.tar")
 val uncompressClangSources by tasks.registering {
     inputs.file(downloadClangSources.map { it.dest })
     outputs.file(uncompressedFile)
@@ -56,7 +56,7 @@ val unzipClangCHeaders by tasks.registering(Sync::class) {
 
 val downloadMacosArm64LLVM by tasks.registering(Download::class) {
     src("https://download.jetbrains.com/kotlin/native/apple-llvm-20200714-macos-aarch64-essentials.tar.gz")
-    dest(layout.buildDirectory.file("llvm/macos-arm64.tar.gz"))
+    dest(layout.buildDirectory.file("clang/downloads/llvm-macos-arm64.tar.gz"))
     overwrite(false)
 }
 
@@ -69,12 +69,12 @@ val unzipMacosArm64LLVM by tasks.registering(Sync::class) {
         }
         includeEmptyDirs = false
     }
-    into(layout.buildDirectory.dir("llvm/lib/macos-arm64"))
+    into(layout.buildDirectory.dir("clang/lib/macos-arm64"))
 }
 
 val downloadMacosX64LLVM by tasks.registering(Download::class) {
     src("https://download.jetbrains.com/kotlin/native/apple-llvm-20200714-macos-x64-essentials.tar.gz")
-    dest(layout.buildDirectory.file("llvm/macos-x64.tar.gz"))
+    dest(layout.buildDirectory.file("clang/downloads/llvm-macos-x64.tar.gz"))
     overwrite(false)
 }
 
@@ -87,12 +87,12 @@ val unzipMacosX64LLVM by tasks.registering(Sync::class) {
         }
         includeEmptyDirs = false
     }
-    into(layout.buildDirectory.dir("llvm/lib/macos-x64"))
+    into(layout.buildDirectory.dir("clang/lib/macos-x64"))
 }
 
 val downloadLinuxX64LLVM by tasks.registering(Download::class) {
     src("https://download.jetbrains.com/kotlin/native/llvm-11.1.0-linux-x64-essentials.tar.gz")
-    dest(layout.buildDirectory.file("llvm/linux-x64.tar.gz"))
+    dest(layout.buildDirectory.file("clang/downloads/llvm-linux-x64.tar.gz"))
     overwrite(false)
 }
 
@@ -105,7 +105,7 @@ val unzipLinuxX64LLVM by tasks.registering(Sync::class) {
         }
         includeEmptyDirs = false
     }
-    into(layout.buildDirectory.dir("llvm/lib/linux-x64"))
+    into(layout.buildDirectory.dir("clang/lib/linux-x64"))
 }
 
 tasks.withType<CInteropProcess>().configureEach {
