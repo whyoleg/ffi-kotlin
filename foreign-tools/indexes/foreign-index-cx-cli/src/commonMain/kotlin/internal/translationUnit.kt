@@ -17,7 +17,7 @@ inline fun <R> useTranslationUnit(
             command_line_args = allocArray(compilerArgs.size) { value = compilerArgs[it].cstr.ptr },
             num_command_line_args = compilerArgs.size,
             unsaved_files = null,
-            num_unsaved_files = 0,
+            num_unsaved_files = 0u,
             options = CXTranslationUnit_SkipFunctionBodies or CXTranslationUnit_DetailedPreprocessingRecord,
             out_TU = resultVar.ptr
         )

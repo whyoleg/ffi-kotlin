@@ -41,7 +41,7 @@ class CxIndexRunner(
     private fun indexDeclaration(declarationInfo: CXIdxDeclInfo) {
         val entityInfo = declarationInfo.entityInfo!!.pointed
         val cursor = declarationInfo.cursor.readValue()
-        when (entityInfo.kind) {
+        when (val kind = entityInfo.kind) {
             CXIdxEntityKind.CXIdxEntity_Function     -> builder.function(cursor)
             CXIdxEntityKind.CXIdxEntity_Struct,
             CXIdxEntityKind.CXIdxEntity_Union        -> builder.record(cursor)
@@ -70,8 +70,8 @@ class CxIndexRunner(
             CXIdxEntityKind.CXIdxEntity_CXXDestructor,
             CXIdxEntityKind.CXIdxEntity_CXXConversionFunction,
             CXIdxEntityKind.CXIdxEntity_CXXTypeAlias,
-            CXIdxEntityKind.CXIdxEntity_CXXInterface,
-            CXIdxEntityKind.CXIdxEntity_CXXConcept   -> println("SKIP C++ DECLARATION")
+            CXIdxEntityKind.CXIdxEntity_CXXInterface -> println("SKIP C++ DECLARATION")
+            else                                     -> TODO("NOT SUPPORTED: $kind")
         }
     }
 
@@ -115,7 +115,7 @@ class CxIndexRunner(
                         runnerRef.asCPointer(),
                         indexerCallbacks.ptr,
                         sizeOf<IndexerCallbacks>().convert(),
-                        0,
+                        0u,
                         translationUnit
                     )
                     if (result != 0) error("clang_indexTranslationUnit returned $result")
