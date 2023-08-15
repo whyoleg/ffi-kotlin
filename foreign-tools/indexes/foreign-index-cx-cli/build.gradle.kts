@@ -1,4 +1,5 @@
 import de.undercouch.gradle.tasks.download.*
+import org.jetbrains.kotlin.gradle.*
 import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import org.jetbrains.kotlin.gradle.tasks.*
 import org.jetbrains.kotlin.konan.target.*
@@ -6,6 +7,7 @@ import org.tukaani.xz.*
 
 plugins {
     id("foreignbuild.conventions.multiplatform.base")
+    id("foreignbuild.conventions.multiplatform.targets.jvm")
     id("foreignbuild.conventions.multiplatform.targets.native.desktop")
     alias(kotlinLibs.plugins.multiplatform)
     alias(libs.plugins.undercouch.download)
@@ -27,6 +29,7 @@ val downloadClangSources by tasks.registering(Download::class) {
 }
 
 val uncompressedFile = layout.buildDirectory.file("clang/downloads/clang-sources.tar")
+// TODO: custom task for better gradle support
 val uncompressClangSources by tasks.registering {
     inputs.file(downloadClangSources.map { it.dest })
     outputs.file(uncompressedFile)
@@ -60,6 +63,7 @@ val downloadMacosArm64LLVM by tasks.registering(Download::class) {
     overwrite(false)
 }
 
+// TODO: inputs/outputs for better gradle cache support
 val unzipMacosArm64LLVM by tasks.registering(Sync::class) {
     dependsOn(downloadMacosArm64LLVM)
     from(tarTree(resources.gzip(downloadMacosArm64LLVM.map { it.dest }))) {
@@ -112,6 +116,23 @@ tasks.withType<CInteropProcess>().configureEach {
     dependsOn(unzipClangCHeaders)
 }
 
+val prepareJvmResources by tasks.registering(Sync::class) {
+    // TODO: add other OSs here
+    from(unzipMacosArm64LLVM.map { it.destinationDir }) {
+        into("cli/macos-arm64/lib")
+    }
+    from(kotlin.targets.withType(KotlinNativeTarget::class).matching {
+        it.konanTarget == KonanTarget.MACOS_ARM64
+    }.map {
+        it.binaries.getExecutable(NativeBuildType.RELEASE).linkTaskProvider.map { it.outputFile }
+    }) {
+        into("cli/macos-arm64/bin")
+    }
+
+    into(layout.buildDirectory.dir("jvmResources"))
+}
+
+
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
     targetHierarchy.default()
@@ -138,6 +159,12 @@ kotlin {
 
         binaries.executable {
             entryPoint = "dev.whyoleg.foreign.index.cx.cli.main"
+        }
+    }
+
+    jvm {
+        mainRun {
+            mainClass.set("dev.whyoleg.foreign.index.cx.cli.MainKt")
         }
     }
 
