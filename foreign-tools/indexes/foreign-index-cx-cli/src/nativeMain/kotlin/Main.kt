@@ -8,19 +8,6 @@ import okio.*
 import okio.ByteString.Companion.encodeUtf8
 import okio.Path.Companion.toPath
 
-private val testArgs = listOf(
-    "--verbose",
-    "--header", "openssl/evp.h",
-    "--header", "openssl/err.h",
-    "--header", "openssl/encoder.h",
-    "--header", "openssl/decoder.h",
-    "--header", "openssl/ec.h",
-
-    "--include", "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/build/openssl/prebuilt/macos-arm64/include",
-    "--include", "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Kernel.framework/Headers/",
-    "--output", "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-generator/foreign-generator-c/build/foreign/libcrypto3.json",
-)
-
 fun main(args: Array<String>): Unit = Main().main(args)
 
 class Main : CliktCommand() {
