@@ -11,6 +11,4 @@ strictEnums = CXErrorCode \
               CXSymbolRole \
               CXDiagnosticSeverity
 
-# TODO: replace with K/N llvm
 linkerOpts = -lclang
-linkerOpts.osx = -L/opt/homebrew/opt/llvm/lib
