@@ -30,7 +30,6 @@ private fun KonanTarget.opensslTarget(): String = when (this) {
     KonanTarget.LINUX_X64           -> "linux-x64"
     KonanTarget.MACOS_ARM64         -> "macos-arm64"
     KonanTarget.MACOS_X64           -> "macos-x64"
-    KonanTarget.MINGW_X64           -> "mingw-x64"
     else                            -> TODO("NOT SUPPORTED")
 }
 
