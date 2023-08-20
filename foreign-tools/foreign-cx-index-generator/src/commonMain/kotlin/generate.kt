@@ -1,6 +1,6 @@
-package dev.whyoleg.foreign.index.cx.generator
+package dev.whyoleg.foreign.cx.index.generator
 
-import dev.whyoleg.foreign.index.cx.*
+import dev.whyoleg.foreign.cx.index.*
 
 public expect fun CxIndex.Companion.generate(
     headers: Set<String>,

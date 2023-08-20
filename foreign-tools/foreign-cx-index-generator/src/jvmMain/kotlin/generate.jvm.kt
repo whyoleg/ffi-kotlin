@@ -1,6 +1,6 @@
-package dev.whyoleg.foreign.index.cx.generator
+package dev.whyoleg.foreign.cx.index.generator
 
-import dev.whyoleg.foreign.index.cx.*
+import dev.whyoleg.foreign.cx.index.*
 import kotlinx.serialization.json.*
 import java.nio.file.*
 import kotlin.io.path.*

@@ -1,7 +1,7 @@
-package dev.whyoleg.foreign.generator.cx
+package dev.whyoleg.foreign.cx.bindings.generator
 
-import dev.whyoleg.foreign.generator.cx.declarations.*
-import dev.whyoleg.foreign.schema.cx.*
+import dev.whyoleg.foreign.cx.bindings.generator.declarations.*
+import dev.whyoleg.foreign.cx.metadata.*
 
 public class ForeignCGenerator(
     private val library: ForeignCLibrary

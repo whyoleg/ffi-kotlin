@@ -1,6 +1,6 @@
-package dev.whyoleg.foreign.generator.cx.declarations
+package dev.whyoleg.foreign.cx.bindings.generator.declarations
 
-import dev.whyoleg.foreign.index.cx.*
+import dev.whyoleg.foreign.cx.index.*
 
 private val CxDeclarationInfo.interopName get() = "interop_$prefixedName"
 

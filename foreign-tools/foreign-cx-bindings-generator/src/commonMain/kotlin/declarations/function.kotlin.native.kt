@@ -1,7 +1,7 @@
-package dev.whyoleg.foreign.generator.cx.declarations
+package dev.whyoleg.foreign.cx.bindings.generator.declarations
 
-import dev.whyoleg.foreign.index.cx.*
-import dev.whyoleg.foreign.schema.cx.*
+import dev.whyoleg.foreign.cx.index.*
+import dev.whyoleg.foreign.cx.metadata.*
 
 internal fun CxFunctionInfo.toKotlinNativeDeclaration(
     index: CxIndex,
