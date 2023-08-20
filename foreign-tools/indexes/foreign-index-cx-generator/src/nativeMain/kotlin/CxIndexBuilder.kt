@@ -1,12 +1,12 @@
-package dev.whyoleg.foreign.index.cx.cli
+package dev.whyoleg.foreign.index.cx.generator
 
 import dev.whyoleg.foreign.index.cx.*
 import dev.whyoleg.foreign.index.cx.clang.*
-import dev.whyoleg.foreign.index.cx.cli.info.*
-import dev.whyoleg.foreign.index.cx.cli.internal.*
+import dev.whyoleg.foreign.index.cx.generator.info.*
+import dev.whyoleg.foreign.index.cx.generator.internal.*
 import kotlinx.cinterop.*
 
-class CxIndexBuilder {
+internal class CxIndexBuilder {
     private class DeclarationRegistry(val name: CxHeaderName) {
         val functions = mutableMapOf<CxDeclarationId, CxFunctionInfo>()
         val typedefs = mutableMapOf<CxDeclarationId, CxTypedefInfo>()

@@ -1,10 +1,10 @@
-package dev.whyoleg.foreign.index.cx.cli
+package dev.whyoleg.foreign.index.cx.generator
 
 import dev.whyoleg.foreign.index.cx.clang.*
-import dev.whyoleg.foreign.index.cx.cli.internal.*
+import dev.whyoleg.foreign.index.cx.generator.internal.*
 import kotlinx.cinterop.*
 
-class CxIndexRunner(
+internal class CxIndexRunner(
     private val builder: CxIndexBuilder
 ) {
     private val reportedErrors = ArrayDeque<Throwable>()
@@ -16,7 +16,7 @@ class CxIndexRunner(
                 val severity = clang_getDiagnosticSeverity(diagnostic)
                 val format = clang_formatDiagnostic(diagnostic, clang_defaultDiagnosticDisplayOptions()).useString()
 //                    val location = clang_getDiagnosticLocation(diagnostic)
-                println("D: $severity | $format")
+                //println("D: $severity | $format")
             } finally {
                 clang_disposeDiagnostic(diagnostic)
             }

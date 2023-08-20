@@ -1,12 +1,12 @@
-package dev.whyoleg.foreign.index.cx.cli.info
+package dev.whyoleg.foreign.index.cx.generator.info
 
 import dev.whyoleg.foreign.index.cx.*
 import dev.whyoleg.foreign.index.cx.clang.*
-import dev.whyoleg.foreign.index.cx.cli.*
-import dev.whyoleg.foreign.index.cx.cli.internal.*
+import dev.whyoleg.foreign.index.cx.generator.*
+import dev.whyoleg.foreign.index.cx.generator.internal.*
 import kotlinx.cinterop.*
 
-fun CxIndexBuilder.buildEnumInfo(
+internal fun CxIndexBuilder.buildEnumInfo(
     id: CxDeclarationId,
     name: CxDeclarationName?,
     cursor: CValue<CXCursor>,

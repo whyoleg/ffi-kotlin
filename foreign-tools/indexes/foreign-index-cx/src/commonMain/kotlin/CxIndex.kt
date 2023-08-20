@@ -340,4 +340,6 @@ public data class CxIndex(
         val enums: Map<CxDeclarationId, Pair<CxHeaderInfo, CxEnumInfo>>,
         val functions: Map<CxDeclarationId, Pair<CxHeaderInfo, CxFunctionInfo>>,
     )
+
+    public companion object
 }
