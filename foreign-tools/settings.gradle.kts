@@ -9,7 +9,11 @@ plugins {
 
 rootProject.name = "foreign-tools"
 
-include("indexes:foreign-index-cx")
-include("indexes:foreign-index-cx-generator")
-include("schemas:foreign-schema-cx")
-include("generators:foreign-generator-cx")
+// index of C (or C++ in future) declarations parsed from headers
+include("foreign-cx-index")
+// uses libclang to generate index - works for both JVM and K/N
+include("foreign-cx-index-generator")
+// metadata of declarations which will be stored in jar/klib (or separate artifact) to allow cross-references
+include("foreign-cx-metadata")
+// generates source code from index
+include("foreign-cx-bindings-generator")

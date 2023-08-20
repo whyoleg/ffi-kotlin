@@ -22,7 +22,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.indexes.foreignIndexCx)
+                api(projects.foreignCxIndex)
             }
         }
         commonTest {
