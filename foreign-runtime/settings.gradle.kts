@@ -11,3 +11,4 @@ rootProject.name = "foreign-runtime"
 
 include("foreign-runtime-core")
 include("foreign-runtime-c") // whole new API
+//include("foreign-runtime-kotlinx.cinterop")
