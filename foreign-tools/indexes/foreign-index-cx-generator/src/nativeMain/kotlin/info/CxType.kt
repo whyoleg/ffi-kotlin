@@ -1,13 +1,13 @@
-package dev.whyoleg.foreign.index.cx.cli.info
+package dev.whyoleg.foreign.index.cx.generator.info
 
 import dev.whyoleg.foreign.index.cx.*
 import dev.whyoleg.foreign.index.cx.clang.*
 import dev.whyoleg.foreign.index.cx.clang.CXTypeKind.*
-import dev.whyoleg.foreign.index.cx.cli.*
-import dev.whyoleg.foreign.index.cx.cli.internal.*
+import dev.whyoleg.foreign.index.cx.generator.*
+import dev.whyoleg.foreign.index.cx.generator.internal.*
 import kotlinx.cinterop.*
 
-fun CxIndexBuilder.buildTypeInfo(
+internal fun CxIndexBuilder.buildTypeInfo(
     type: CValue<CXType>,
 ): CxTypeInfo = CxTypeInfo(
     name = when (clang_Cursor_isAnonymous(clang_getTypeDeclaration(type))) {

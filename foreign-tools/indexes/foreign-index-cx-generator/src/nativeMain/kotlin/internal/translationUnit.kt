@@ -1,9 +1,9 @@
-package dev.whyoleg.foreign.index.cx.cli.internal
+package dev.whyoleg.foreign.index.cx.generator.internal
 
 import dev.whyoleg.foreign.index.cx.clang.*
 import kotlinx.cinterop.*
 
-inline fun <R> useTranslationUnit(
+internal inline fun <R> useTranslationUnit(
     index: CXIndex,
     file: String,
     compilerArgs: List<String>,
