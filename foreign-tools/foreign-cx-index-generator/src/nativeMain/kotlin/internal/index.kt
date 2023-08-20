@@ -1,6 +1,6 @@
-package dev.whyoleg.foreign.index.cx.generator.internal
+package dev.whyoleg.foreign.cx.index.generator.internal
 
-import dev.whyoleg.foreign.index.cx.clang.*
+import dev.whyoleg.foreign.cx.index.clang.*
 
 internal inline fun <R> useIndex(
     excludeDeclarationsFromPCH: Boolean = false, // disables visitChildren to visit declarations from imported translation units

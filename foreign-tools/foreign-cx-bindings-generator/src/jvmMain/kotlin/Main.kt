@@ -1,7 +1,7 @@
-package dev.whyoleg.foreign.generator.cx
+package dev.whyoleg.foreign.cx.bindings.generator
 
-import dev.whyoleg.foreign.index.cx.*
-import dev.whyoleg.foreign.schema.cx.*
+import dev.whyoleg.foreign.cx.index.*
+import dev.whyoleg.foreign.cx.metadata.*
 import okio.*
 import okio.Path.Companion.toPath
 

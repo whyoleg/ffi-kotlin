@@ -1,6 +1,6 @@
-package dev.whyoleg.foreign.generator.cx.declarations
+package dev.whyoleg.foreign.cx.bindings.generator.declarations
 
-import dev.whyoleg.foreign.index.cx.*
+import dev.whyoleg.foreign.cx.index.*
 
 internal fun CxType.toKotlinType(index: CxIndex): String {
     return checkNotNull(toKotlinTypeOrNull(index)) { "type can not be null here: $this" }

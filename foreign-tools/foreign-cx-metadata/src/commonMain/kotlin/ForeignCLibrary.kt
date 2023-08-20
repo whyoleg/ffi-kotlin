@@ -1,6 +1,6 @@
-package dev.whyoleg.foreign.schema.cx
+package dev.whyoleg.foreign.cx.metadata
 
-import dev.whyoleg.foreign.index.cx.*
+import dev.whyoleg.foreign.cx.index.*
 import kotlinx.serialization.*
 
 public fun ForeignCLibrary(

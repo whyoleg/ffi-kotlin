@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.generator.cx
+package dev.whyoleg.foreign.cx.bindings.generator
 
 import okio.*
 

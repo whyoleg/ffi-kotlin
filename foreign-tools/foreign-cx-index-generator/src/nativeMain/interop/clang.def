@@ -1,4 +1,4 @@
-package = dev.whyoleg.foreign.index.cx.clang
+package = dev.whyoleg.foreign.cx.index.clang
 headerFilter = clang-c/**
 headers = clang-c/Index.h
 

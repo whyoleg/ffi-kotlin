@@ -1,6 +1,6 @@
-package dev.whyoleg.foreign.index.cx.generator.internal
+package dev.whyoleg.foreign.cx.index.generator.internal
 
-import dev.whyoleg.foreign.index.cx.clang.*
+import dev.whyoleg.foreign.cx.index.clang.*
 import kotlinx.cinterop.*
 
 internal val CValue<CXCursor>.spelling: String get() = clang_getCursorSpelling(this).useString()!!
