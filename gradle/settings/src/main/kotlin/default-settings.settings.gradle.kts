@@ -47,20 +47,6 @@ dependencyResolutionManagement {
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-gradle.root().rootProject { configure(rootDir) }
-
-fun Gradle.root(): Gradle = parent?.root() ?: this
-
-fun configure(rootDir: File) {
-    dependencyResolutionManagement {
-        versionCatalogs {
-            create("libs") {
-                from(files(rootDir.resolve("gradle/libs.versions.toml")))
-            }
-        }
-    }
-}
-
 fun RepositoryHandler.remoteDistribution(
     name: String,
     url: String,
