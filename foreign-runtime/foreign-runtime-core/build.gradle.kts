@@ -9,9 +9,9 @@ plugins {
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-    jvmToolchain {
-        languageVersion.set(libs.versions.java.ffm.map(JavaLanguageVersion::of))
-    }
+    // FFM support for JDK 20 only
+    // while we have JDK 20 toolchain, we still need to use jvmTarget 8 and test with Java 8
+    jvmToolchain(20)
     jvm {
         compilations.configureEach {
             compilerOptions.configure {
