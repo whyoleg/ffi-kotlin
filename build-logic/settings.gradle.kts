@@ -1,7 +1,5 @@
 pluginManagement {
     includeBuild("../build-settings")
-
-    includeBuild("../build-logic")
 }
 
 plugins {
@@ -15,8 +13,9 @@ dependencyResolutionManagement {
         }
     }
 }
-rootProject.name = "foreign-runtime"
 
-include("foreign-runtime-core")
-include("foreign-runtime-c") // whole new API
-//include("foreign-runtime-kotlinx.cinterop")
+rootProject.name = "build-logic"
+
+include("android")
+include("external")
+include("kotlin")

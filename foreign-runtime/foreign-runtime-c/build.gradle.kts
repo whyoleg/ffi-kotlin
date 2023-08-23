@@ -1,6 +1,6 @@
 plugins {
-    id("foreignbuild.conventions.multiplatform.library")
-    id("foreignbuild.conventions.multiplatform.targets.runtime.all")
+    id("foreignbuild.multiplatform-library")
+    id("foreignbuild.multiplatform-all-targets")
 }
 
 kotlin {

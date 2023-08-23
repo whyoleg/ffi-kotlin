@@ -2,24 +2,10 @@ import org.jetbrains.kotlin.gradle.*
 import org.jetbrains.kotlin.gradle.dsl.*
 
 plugins {
-    id("foreignbuild.conventions.multiplatform.library")
-    id("foreignbuild.conventions.multiplatform.targets.runtime.all")
-    id("foreignbuild.conventions.multiplatform.targets.runtime.android")
-
-//    id("buildx-use-android-jni")
+    id("foreignbuild.multiplatform-library")
+    id("foreignbuild.multiplatform-all-targets")
+    id("foreignbuild.multiplatform-android")
 }
-
-//val buildJni by tasks.registering(jni.DefaultBuildJni::class) {
-//    outputFilePath.set("macos-arm64/libforeign-kotlin-jni.dylib")
-//}
-//
-//kotlin {
-//    sourceSets {
-//        val jvmCommonMain by getting {
-//            resources.srcDir(buildJni.map { it.outputDirectory })
-//        }
-//    }
-//}
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
