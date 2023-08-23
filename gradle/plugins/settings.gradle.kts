@@ -1,5 +1,5 @@
 pluginManagement {
-    includeBuild("../settings")
+    includeBuild("../../build-settings")
 }
 
 plugins {

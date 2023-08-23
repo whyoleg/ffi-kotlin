@@ -9,9 +9,6 @@ kotlinx-kover = "0.7.2"
 
 tukaani-xz = "1.9"
 android = "7.3.0" #"8.0.2"
-foojay = "0.6.0"
-
-build-parameters = "1.4.3"
 
 # tools
 okio = "3.5.0"
@@ -29,7 +26,6 @@ build-kotlinx-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", ve
 
 build-tukaani-xz = { module = "org.tukaani:xz", version.ref = "tukaani-xz" }
 build-android = { module = "com.android.tools.build:gradle", version.ref = "android" }
-build-foojay = { module = "org.gradle.toolchains:foojay-resolver", version.ref = "foojay" }
 
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
@@ -41,4 +37,3 @@ androidx-test = { module = "androidx.test:runner", version.ref = "androidx-test"
 [plugins]
 #kotlin-dokka = { id = "org.jetbrains.dokka", version.ref = "kotlin-dokka" }
 android-library = { id = "com.android.library", version.ref = "android" }
-build-parameters = { id = "org.gradlex.build-parameters", version.ref = "build-parameters" }
