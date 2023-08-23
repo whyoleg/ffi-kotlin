@@ -15,3 +15,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "build-plugins"
+
+includeBuild("../../build-parameters")

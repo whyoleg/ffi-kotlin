@@ -1,9 +1,5 @@
-plugins {
-    id("build-parameters")
-}
-
 val kotlinVersion = "1.9.0"
-val kotlinVersionOverride = the<buildparameters.BuildParametersExtension>().kotlin.override.version.orNull
+val kotlinVersionOverride = providers.gradleProperty("kotlin.override.version").orNull
 
 if (kotlinVersionOverride != null) logger.lifecycle("Kotlin version override: $kotlinVersionOverride")
 
