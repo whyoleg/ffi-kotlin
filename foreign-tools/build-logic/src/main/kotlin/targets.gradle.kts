@@ -1,4 +1,4 @@
-package foreignbuild.conventions.multiplatform.targets
+package foreignbuild.tools
 
 import org.jetbrains.kotlin.gradle.*
 
