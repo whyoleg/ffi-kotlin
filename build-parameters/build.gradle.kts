@@ -1,6 +1,8 @@
 plugins {
-    alias(libs.plugins.build.parameters)
+    id("org.gradlex.build-parameters") version "1.4.3"
 }
+
+group = "foreignbuild"
 
 buildParameters {
     bool("ci") {
