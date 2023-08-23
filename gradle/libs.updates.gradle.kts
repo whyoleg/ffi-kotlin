@@ -1,6 +1,6 @@
 /**
  * run to check for dependencies:
- *  ./gradlew :dependencyUpdates --init-script gradle/libs.updates.gradle.kts --no-configure-on-demand
+ *  ./gradlew dependencyUpdates --init-script gradle/libs.updates.gradle.kts
  */
 
 initscript {
@@ -12,11 +12,10 @@ initscript {
     }
 }
 
-allprojects {
-    println("Project: ${rootProject.name} / $name")
+rootProject {
+    println("Project: $name")
     apply<com.github.benmanes.gradle.versions.VersionsPlugin>()
 
-    // for root project add dependency on included builds
     tasks.named("dependencyUpdates") {
         gradle.includedBuilds.forEach {
             dependsOn(it.task(":dependencyUpdates"))
