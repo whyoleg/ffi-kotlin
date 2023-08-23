@@ -7,16 +7,17 @@ plugins {
     id("build-parameters")
 }
 
-plugins.withType<YarnPlugin> {
+plugins.withType<YarnPlugin>().configureEach {
     the<YarnRootExtension>().apply {
         yarnLockMismatchReport = YarnLockMismatchReport.NONE
         yarnLockAutoReplace = true
+        lockFileDirectory = project.layout.buildDirectory.dir("kotlin-js-store").get().asFile
     }
 }
 
-plugins.withType<NodeJsRootPlugin> {
+plugins.withType<NodeJsRootPlugin>().configureEach {
     the<NodeJsRootExtension>().apply {
-        nodeVersion = "20.0.0"
+        nodeVersion = "20.5.1"
     }
 }
 

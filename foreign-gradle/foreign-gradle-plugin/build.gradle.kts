@@ -10,6 +10,7 @@ kotlin {
     explicitApi()
     compilerOptions {
         apiVersion.set(KotlinVersion.KOTLIN_1_8)
+        languageVersion.set(KotlinVersion.KOTLIN_1_8)
     }
 }
 

@@ -3,7 +3,8 @@ import org.jetbrains.kotlin.gradle.dsl.*
 
 plugins {
     id("foreignbuild.conventions.multiplatform.library")
-    id("foreignbuild.conventions.multiplatform.targets.all-with-android")
+    id("foreignbuild.conventions.multiplatform.targets.runtime.all")
+    id("foreignbuild.conventions.multiplatform.targets.runtime.android")
 
 //    id("buildx-use-android-jni")
 }

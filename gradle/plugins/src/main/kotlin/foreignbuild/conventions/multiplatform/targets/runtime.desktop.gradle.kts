@@ -5,5 +5,11 @@ plugins {
 }
 
 kotlin {
-    jvm()
+    jvm {
+
+    }
+    // native desktop
+    macosArm64()
+    macosX64()
+    linuxX64()
 }
