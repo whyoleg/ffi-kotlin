@@ -1,4 +1,4 @@
-import foreignbuild.compilations.tasks.*
+import foreignbuild.external.*
 import org.jetbrains.kotlin.gradle.*
 import org.jetbrains.kotlin.gradle.plugin.*
 import org.jetbrains.kotlin.gradle.plugin.mpp.*
@@ -7,10 +7,10 @@ import org.jetbrains.kotlin.gradle.tasks.*
 import org.jetbrains.kotlin.konan.target.*
 
 plugins {
-    id("foreignbuild.conventions.multiplatform.library")
-    id("foreignbuild.tools.targets")
-    id("foreignbuild.dependencies.libclang")
-    id("foreignbuild.dependencies.jdk")
+    id("foreignbuild.multiplatform-library")
+    id("foreignbuild.desktop-tool")
+    id("foreignbuild.setup-libclang")
+    id("foreignbuild.setup-jdk")
     alias(kotlinLibs.plugins.plugin.serialization)
 }
 
