@@ -8,8 +8,7 @@ import org.jetbrains.kotlin.konan.target.*
 
 plugins {
     id("foreignbuild.conventions.multiplatform.library")
-    id("foreignbuild.conventions.multiplatform.targets.jvm")
-    id("foreignbuild.conventions.multiplatform.targets.native.desktop")
+    id("foreignbuild.conventions.multiplatform.targets.tools")
     id("foreignbuild.dependencies.libclang")
     id("foreignbuild.dependencies.jdk")
     alias(kotlinLibs.plugins.plugin.serialization)
