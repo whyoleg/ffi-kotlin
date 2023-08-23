@@ -5,16 +5,11 @@ plugins {
 group = "foreignbuild"
 
 buildParameters {
+    enableValidation.set(false)
+
     bool("ci") {
         fromEnvironment()
         defaultValue.set(false)
-    }
-    group("kotlin") {
-        group("override") {
-            string("version") {
-                description.set("Override Kotlin version")
-            }
-        }
     }
     group("skip") {
         bool("test") {
