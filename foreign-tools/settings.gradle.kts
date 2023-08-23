@@ -1,6 +1,8 @@
 pluginManagement {
     includeBuild("../gradle/settings")
     includeBuild("../gradle/plugins")
+
+    includeBuild("build-logic")
 }
 
 plugins {

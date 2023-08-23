@@ -1,6 +1,6 @@
 plugins {
     id("foreignbuild.conventions.multiplatform.library")
-    id("foreignbuild.conventions.multiplatform.targets.tools")
+    id("foreignbuild.tools.targets")
     alias(kotlinLibs.plugins.plugin.serialization)
 }
 

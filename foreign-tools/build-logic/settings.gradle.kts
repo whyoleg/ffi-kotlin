@@ -1,0 +1,17 @@
+pluginManagement {
+    includeBuild("../../gradle/settings")
+}
+
+plugins {
+    id("default-settings")
+}
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs") {
+            from(files("../../gradle/libs.versions.toml"))
+        }
+    }
+}
+
+rootProject.name = "build-logic-tools"
