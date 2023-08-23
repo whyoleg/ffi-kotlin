@@ -4,6 +4,7 @@ plugins {
 }
 
 kotlin {
+    jvmToolchain(8)
     sourceSets {
         commonMain {
             dependencies {
