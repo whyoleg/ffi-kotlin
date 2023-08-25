@@ -18,10 +18,10 @@ kotlin {
         compilations.configureEach {
             compilerOptions.configure {
                 // for gradle 8+ support, we need to enforce kotlin 1.8
-                apiVersion.set(KotlinVersion.KOTLIN_1_8)
-                apiVersion.finalizeValue()
-                languageVersion.set(KotlinVersion.KOTLIN_1_8)
-                languageVersion.finalizeValue()
+//                apiVersion.set(KotlinVersion.KOTLIN_1_8)
+//                apiVersion.finalizeValue()
+//                languageVersion.set(KotlinVersion.KOTLIN_1_8)
+//                languageVersion.finalizeValue()
             }
         }
     }
