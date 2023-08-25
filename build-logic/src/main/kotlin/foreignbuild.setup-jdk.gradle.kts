@@ -1,4 +1,4 @@
-import foreignbuild.external.*
+import foreignbuild.dependencies.*
 
 val zuluJdkMajorVersion = "zulu-8"
 val zuluJdkVersion = "zulu8.72.0.17-ca-jdk8.0.382"

@@ -1,4 +1,4 @@
-package foreignbuild.external
+package foreignbuild.dependencies
 
 import org.gradle.api.file.*
 import org.gradle.api.tasks.*
@@ -20,4 +20,3 @@ abstract class SetupTarGzDependency @Inject constructor(
         configuration.dependencies.add(project.dependencies.create(value))
     }
 }
-

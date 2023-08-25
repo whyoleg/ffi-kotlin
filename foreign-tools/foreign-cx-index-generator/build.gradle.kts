@@ -1,4 +1,4 @@
-import foreignbuild.external.*
+import foreignbuild.jni.*
 import org.jetbrains.kotlin.gradle.*
 import org.jetbrains.kotlin.gradle.plugin.*
 import org.jetbrains.kotlin.gradle.plugin.mpp.*
