@@ -30,7 +30,10 @@ fun Project.registerTarXzDependencySetupTask(
     name: String,
     dependency: String,
     action: Action<Sync>
-): TaskProvider<Sync> = registerArchiveDependencySetupTask(name, dependency, action) {
+): TaskProvider<Sync> = registerArchiveDependencySetupTask(name, dependency, {
+    action.execute(this)
+    notCompatibleWithConfigurationCache("something with XZ ???")
+}) {
     tarTree(XzArchiver(it))
 }
 
@@ -45,6 +48,8 @@ private fun Project.registerArchiveDependencySetupTask(
     val archiveOperations = objects.newInstance<Injected>().archiveOperations
     return tasks.register<Sync>(name) {
         from(provider { archiveOperations.provide(configuration.singleFile) })
+        into(temporaryDir)
+        includeEmptyDirs = false
         action.execute(this)
     }
 }

@@ -8,8 +8,6 @@ registerTarGzDependencySetupTask(
     eachFile {
         relativePath = RelativePath(true, "libclang.so")
     }
-    includeEmptyDirs = false
-    into(temporaryDir)
 }
 
 registerTarGzDependencySetupTask(
@@ -20,8 +18,6 @@ registerTarGzDependencySetupTask(
     eachFile {
         relativePath = RelativePath(true, "libclang.dylib")
     }
-    includeEmptyDirs = false
-    into(temporaryDir)
 }
 
 registerTarGzDependencySetupTask(
@@ -32,8 +28,6 @@ registerTarGzDependencySetupTask(
     eachFile {
         relativePath = RelativePath(true, "libclang.dylib")
     }
-    includeEmptyDirs = false
-    into(temporaryDir)
 }
 
 registerTarXzDependencySetupTask(
@@ -44,6 +38,4 @@ registerTarXzDependencySetupTask(
     eachFile {
         relativePath = RelativePath(true, "clang-c", name)
     }
-    includeEmptyDirs = false
-    into(temporaryDir)
 }

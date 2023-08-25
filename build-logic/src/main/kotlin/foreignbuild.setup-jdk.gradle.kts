@@ -33,6 +33,4 @@ fun registerSetupJdkHeadersTask(
     eachFile {
         relativePath = RelativePath.parse(true, relativePath.pathString.substringAfter("include/"))
     }
-    includeEmptyDirs = false
-    into(temporaryDir)
 }
