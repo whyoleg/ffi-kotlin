@@ -17,7 +17,7 @@ class TestIndexGeneration {
                     "openssl/ec.h",
                 ),
                 includePaths = setOf(
-                    "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/build/openssl/prebuilt/macos-arm64/include",
+                    "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/test-projects/libcrypto/api/build/tmp/setupOpenssl3/macos-arm64/include",
                     "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Kernel.framework/Headers/",
                     "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include",
                 )
