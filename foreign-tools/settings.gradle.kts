@@ -1,7 +1,6 @@
 pluginManagement {
     includeBuild("../build-settings")
 
-    includeBuild("build-logic")
     includeBuild("../build-logic")
 }
 
