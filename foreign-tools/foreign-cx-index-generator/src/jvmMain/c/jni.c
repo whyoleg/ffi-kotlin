@@ -1,7 +1,7 @@
 #include <jni.h>
 #include <libCxIndexGenerator_api.h>
 
-JNIEXPORT void JNICALL Java_dev_whyoleg_foreign_index_cx_generator_CxIndexGenerator_generate (JNIEnv* env, jclass jclss,
+JNIEXPORT void JNICALL Java_dev_whyoleg_foreign_cx_index_generator_CxIndexGenerator_generate (JNIEnv* env, jclass jclss,
   jstring argumentsString,
   jstring resultPathString
 ) {
