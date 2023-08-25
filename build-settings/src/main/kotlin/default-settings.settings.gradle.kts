@@ -3,6 +3,8 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention")
 }
 
+//TODO: drop google and remote distributions
+
 pluginManagement {
     repositories {
         google()
@@ -32,6 +34,15 @@ dependencyResolutionManagement {
             url = "https://github.com/llvm/llvm-project/releases/download",
             group = "foreignbuild.llvm",
             artifact = "llvmorg-[revision]/[artifact]-[revision].[ext]",
+        )
+
+        // https://github.com/whyoleg/openssl-builds/releases/download/3.0.8-build-2/openssl3-all.zip
+        // foreignbuild.openssl:openssl3-all:3.0.8-build-2@zip
+        remoteDistribution(
+            name = "Prebuilt OpenSSL",
+            url = "https://github.com/whyoleg/openssl-builds/releases/download",
+            group = "foreignbuild.openssl",
+            artifact = "[revision]/[artifact].[ext]",
         )
 
         // https://download.jetbrains.com/kotlin/native/llvm-11.1.0-linux-x64-essentials.tar.gz
