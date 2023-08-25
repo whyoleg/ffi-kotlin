@@ -1,4 +1,4 @@
-package foreignbuild.external
+package foreignbuild.jni
 
 import org.gradle.api.file.*
 import org.gradle.api.provider.*

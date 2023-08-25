@@ -1,4 +1,4 @@
-import foreignbuild.external.*
+import foreignbuild.dependencies.*
 
 val setupClangLibsLinuxX64 by tasks.registering(SetupTarGzDependency::class) {
     dependency("foreignbuild.kotlin-native:llvm-11.1.0-linux-x64-essentials@tar.gz")
