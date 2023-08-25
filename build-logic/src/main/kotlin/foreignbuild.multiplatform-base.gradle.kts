@@ -8,7 +8,7 @@ kotlin {
     targets.configureEach {
         compilations.configureEach {
             compilerOptions.configure {
-                progressiveMode.set(true)
+                //progressiveMode.set(true)
                 freeCompilerArgs.add("-Xrender-internal-diagnostic-names")
                 if (platformType == KotlinPlatformType.jvm) {
                     freeCompilerArgs.add("-Xjvm-default=all")
