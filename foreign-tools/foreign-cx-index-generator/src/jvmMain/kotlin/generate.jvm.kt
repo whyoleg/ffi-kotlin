@@ -12,29 +12,28 @@ internal actual fun generateCxIndex(
     headerFilePath: String,
     compilerArgs: List<String>
 ): CxIndex {
-    val arguments = GenerateCxIndexArguments(headerFilePath, compilerArgs)
-    val argumentsString = Json.encodeToString(GenerateCxIndexArguments.serializer(), arguments)
-    val resultPath = Files.createTempFile("CxIndexGenerator-result-", ".json")
-    CxIndexGenerator.generate(
-        argumentsString,
-        resultPath.absolutePathString()
+    val argumentsString = Json.encodeToString(
+        GenerateCxIndexArguments.serializer(),
+        GenerateCxIndexArguments(headerFilePath, compilerArgs)
     )
-    val result = if (resultPath.exists()) {
-        Json.decodeFromString(GenerateCxIndexResult.serializer(), resultPath.readText())
-    } else null
-    result?.index?.let {
-        resultPath.deleteIfExists()
-        return it
+    val resultString = CxIndexGenerator.generate(
+        argumentsString.encodeToByteArray()
+    )?.decodeToString()
+
+    val result = Json.decodeFromString(
+        GenerateCxIndexResult.serializer(),
+        resultString ?: error("Native execution failure: NULL")
+    )
+
+    when (result) {
+        is GenerateCxIndexResult.Success -> return result.index
+        is GenerateCxIndexResult.Failure -> error("Native execution failure: ${result.message ?: "No cause"}")
     }
-    error("Native execution failure: ${result?.error ?: ""}")
 }
 
 internal object CxIndexGenerator {
     @JvmStatic
-    external fun generate(
-        argumentsString: String,
-        resultPathString: String
-    )
+    external fun generate(argumentsBytes: ByteArray): ByteArray?
 
     init {
         currentHost().run {
