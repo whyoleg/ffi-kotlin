@@ -15,11 +15,14 @@ internal data class GenerateCxIndexArguments(
     val compilerArgs: List<String>
 )
 
-@Serializable // TODO: decide on what should be here
-internal data class GenerateCxIndexResult(
-    val index: CxIndex?,
-    val error: String?
-)
+@Serializable
+internal sealed class GenerateCxIndexResult {
+    @Serializable
+    data class Success(val index: CxIndex) : GenerateCxIndexResult()
+
+    @Serializable
+    data class Failure(val message: String?, val stackTrace: String) : GenerateCxIndexResult()
+}
 
 // TODO: drop okio dependency, or move it to test
 internal expect val SystemFileSystem: FileSystem
