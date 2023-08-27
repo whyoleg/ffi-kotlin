@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <libCxIndexGenerator_api.h>
 
-JNIEXPORT jbyteArray JNICALL Java_dev_whyoleg_foreign_cx_index_generator_CxIndexGenerator_generate (JNIEnv* env, jclass jclss,
+JNIEXPORT jbyteArray JNICALL Java_dev_whyoleg_foreign_cx_index_generator_CxIndexGeneratorJni_generateCxIndexBridge (JNIEnv* env, jclass jclss,
   jbyteArray argumentsBytes
 ) {
     // get ByteArray raw data
@@ -11,7 +11,7 @@ JNIEXPORT jbyteArray JNICALL Java_dev_whyoleg_foreign_cx_index_generator_CxIndex
 
     // call K/N exported function
     jsize resultBytesSize;
-    jbyte* resultBytesElements = generateCxIndex(argumentsBytesElements, argumentsBytesSize, &resultBytesSize);
+    jbyte* resultBytesElements = generateCxIndexBridge(argumentsBytesElements, argumentsBytesSize, &resultBytesSize);
 
     // release arguments
     (*env)->ReleaseByteArrayElements(env, argumentsBytes, argumentsBytesElements, 0);

@@ -1,6 +1,5 @@
 package dev.whyoleg.foreign.cx.index.generator
 
-import dev.whyoleg.foreign.cx.index.*
 import okio.*
 import okio.ByteString.Companion.encodeUtf8
 import kotlin.test.*
@@ -11,7 +10,7 @@ class TestIndexGeneration {
     @Test
     fun test() {
         repeat(100) {
-            val index = generate(
+            val result = generate(
                 headers = setOf(
                     "openssl/evp.h",
                     "openssl/err.h",
@@ -26,7 +25,9 @@ class TestIndexGeneration {
                 )
             )
 
-            assertTrue(index.headers.isNotEmpty())
+            assertIs<CxIndexGenerator.Result.Success>(result)
+
+            assertTrue(result.index.headers.isNotEmpty())
         }
 
 //        val output = "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/build/foreign/libcrypto3.json"
@@ -36,29 +37,32 @@ class TestIndexGeneration {
 
     @Test
     fun testError() {
-        assertFailsWith<IllegalStateException> {
-            generate(
-                headers = setOf(
-                    "openssl/evp.h",
-                    "openssl/err.h",
-                    "openssl/encoder.h",
-                    "openssl/decoder.h",
-                    "openssl/ec.h",
-                ),
-                includePaths = setOf(
-                    "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/build/openssl/prebuilt/macos-arm64/include"
-                )
+        val result = generate(
+            headers = setOf(
+                "openssl/evp.h",
+                "openssl/err.h",
+                "openssl/encoder.h",
+                "openssl/decoder.h",
+                "openssl/ec.h",
+            ),
+            includePaths = setOf(
+                "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/build/openssl/prebuilt/macos-arm64/include"
             )
-        }
+        )
+        assertIs<CxIndexGenerator.Result.Failure>(result)
+        assertNotNull(result.message)
+        assertTrue(result.message.startsWith("Indexing failed"), result.message)
     }
 }
 
 private fun generate(
     headers: Set<String>,
     includePaths: Set<String>
-): CxIndex = generateCxIndex(
-    headerFilePath = createTemporaryHeadersFile(headers = headers),
-    compilerArgs = includePaths.map { "-I$it" }
+): CxIndexGenerator.Result = CxIndexGenerator.generate(
+    CxIndexGenerator.Arguments(
+        headerFilePath = createTemporaryHeadersFile(headers = headers),
+        compilerArgs = includePaths.map { "-I$it" }
+    )
 )
 
 internal fun createTemporaryHeadersFile(headers: Set<String>): String {

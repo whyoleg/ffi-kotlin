@@ -4,25 +4,25 @@ import dev.whyoleg.foreign.cx.index.*
 import kotlinx.serialization.*
 import okio.*
 
-internal expect fun generateCxIndex(
-    headerFilePath: String,
-    compilerArgs: List<String>
-): CxIndex
-
-@Serializable
-internal data class GenerateCxIndexArguments(
-    val headerFilePath: String,
-    val compilerArgs: List<String>
-)
-
-@Serializable
-internal sealed class GenerateCxIndexResult {
+internal object CxIndexGenerator {
     @Serializable
-    data class Success(val index: CxIndex) : GenerateCxIndexResult()
+    internal data class Arguments(
+        val headerFilePath: String,
+        val compilerArgs: List<String>
+    )
 
     @Serializable
-    data class Failure(val message: String?, val stackTrace: String) : GenerateCxIndexResult()
+    internal sealed class Result {
+        @Serializable
+        data class Success(val index: CxIndex) : Result()
+
+        @Serializable
+        data class Failure(val message: String?, val stackTrace: String) : Result()
+    }
 }
+
+// entry point
+internal expect fun CxIndexGenerator.generate(arguments: CxIndexGenerator.Arguments): CxIndexGenerator.Result
 
 // TODO: drop okio dependency, or move it to test
 internal expect val SystemFileSystem: FileSystem

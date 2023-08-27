@@ -1,6 +1,6 @@
 package dev.whyoleg.foreign.cx.index.generator
 
-import dev.whyoleg.foreign.cx.index.*
+import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import okio.FileSystem
 import java.nio.file.*
@@ -8,32 +8,15 @@ import kotlin.io.path.*
 
 internal actual val SystemFileSystem: FileSystem get() = FileSystem.SYSTEM
 
-internal actual fun generateCxIndex(
-    headerFilePath: String,
-    compilerArgs: List<String>
-): CxIndex {
-    val argumentsString = Json.encodeToString(
-        GenerateCxIndexArguments.serializer(),
-        GenerateCxIndexArguments(headerFilePath, compilerArgs)
-    )
-    val resultString = CxIndexGenerator.generate(
-        argumentsString.encodeToByteArray()
-    )?.decodeToString()
-
-    val result = Json.decodeFromString(
-        GenerateCxIndexResult.serializer(),
-        resultString ?: error("Native execution failure: NULL")
-    )
-
-    when (result) {
-        is GenerateCxIndexResult.Success -> return result.index
-        is GenerateCxIndexResult.Failure -> error("Native execution failure: ${result.message ?: "No cause"}")
-    }
+internal actual fun CxIndexGenerator.generate(arguments: CxIndexGenerator.Arguments): CxIndexGenerator.Result {
+    val argumentsString = Json.encodeToString<CxIndexGenerator.Arguments>(arguments)
+    val resultString = CxIndexGeneratorJni.generateCxIndexBridge(argumentsString.encodeToByteArray())?.decodeToString()
+    return Json.decodeFromString<CxIndexGenerator.Result>(resultString ?: error("Native execution failure: NULL"))
 }
 
-internal object CxIndexGenerator {
+internal object CxIndexGeneratorJni {
     @JvmStatic
-    external fun generate(argumentsBytes: ByteArray): ByteArray?
+    external fun generateCxIndexBridge(argumentsBytes: ByteArray): ByteArray?
 
     init {
         currentHost().run {
@@ -70,6 +53,7 @@ private enum class Host(
     MacOsX64("macos-x64", "dylib"),
     LinuxX64("linux-x64", "so");
 
+    // TODO: somehow cache and not extract every time
     @Suppress("UnsafeDynamicallyLoadedCode")
     fun loadLibraryFromResources(libraryName: String) {
         val resourcePath = "/libs/$folder/lib$libraryName.$extension"
