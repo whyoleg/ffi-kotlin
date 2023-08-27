@@ -1,13 +1,77 @@
 package dev.whyoleg.foreign.cx.index.generator
 
+import dev.whyoleg.foreign.cx.index.*
 import okio.*
 import okio.ByteString.Companion.encodeUtf8
+import okio.Path.Companion.toPath
 import kotlin.test.*
 
 class TestIndexGeneration {
 
-    // just tests for stability
     @Test
+    fun hm() {
+        val headerFilePath = createTemporaryHeadersFile(
+            setOf(
+                "openssl/evp.h"
+            )
+        )
+
+        mapOf(
+            "mingw-x64" to listOf(
+                "-B/Users/whyoleg/.konan/dependencies/apple-llvm-20200714-macos-aarch64-essentials/usr/bin",
+                "-target",
+                "x86_64-pc-windows-gnu",
+                "--sysroot=/Users/whyoleg/.konan/dependencies/msys2-mingw-w64-x86_64-2"
+            ),
+            "linux-x64" to listOf(
+                "-B/Users/whyoleg/.konan/dependencies/apple-llvm-20200714-macos-aarch64-essentials/usr/bin",
+                "--gcc-toolchain=/Users/whyoleg/.konan/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2",
+                "-target",
+                "x86_64-unknown-linux-gnu",
+                "--sysroot=/Users/whyoleg/.konan/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/x86_64-unknown-linux-gnu/sysroot",
+                // additional headers
+                "-I/Users/whyoleg/.konan/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/lib/gcc/x86_64-unknown-linux-gnu/8.3.0/include",
+                "-I/Users/whyoleg/.konan/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2/lib/gcc/x86_64-unknown-linux-gnu/8.3.0/include-fixed"
+            ),
+            "macos-arm64" to listOf(
+                "-B/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+                "-target",
+                "arm64-apple-macos10.16",
+                "-isysroot",
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk",
+                // additional headers
+                "-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk/System/Library/Frameworks/Kernel.framework/Headers",
+            ),
+            "ios-device-arm64" to listOf(
+                "-B/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+                "-target",
+                "arm64-apple-ios9.0",
+                "-isysroot",
+                "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS16.4.sdk",
+                // additional headers
+                "-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk/System/Library/Frameworks/Kernel.framework/Headers",
+            )
+        ).forEach { (target, compilerArgs) ->
+            println("RUN: $target")
+            val result = CxIndexGenerator.generate(
+                CxIndexGenerator.Arguments(
+                    headerFilePath,
+                    compilerArgs + listOf(
+                        "-fno-stack-protector",
+                        "-I/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/test-projects/libcrypto/api/build/tmp/setupOpenssl3/${target}/include",
+                    )
+                )
+            )
+            assertIs<CxIndexGenerator.Result.Success>(result, (result as? CxIndexGenerator.Result.Failure)?.message)
+            val index = result.index
+            val output = "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/build/foreign/libcrypto3-$target.json"
+            SystemFileSystem.writeCxIndex(output.toPath(), index)
+            SystemFileSystem.writeCxIndexVerbose("$output-verbose".toPath(), index)
+        }
+    }
+
+    // just tests for stability
+    //@Test
     fun test() {
         repeat(100) {
             val result = generate(
@@ -35,7 +99,7 @@ class TestIndexGeneration {
 //        SystemFileSystem.writeCxIndexVerbose("$output-verbose".toPath(), index)
     }
 
-    @Test
+    //@Test
     fun testError() {
         val result = generate(
             headers = setOf(
