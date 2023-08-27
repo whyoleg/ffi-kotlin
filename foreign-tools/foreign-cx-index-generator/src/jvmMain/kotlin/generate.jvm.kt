@@ -2,25 +2,25 @@ package dev.whyoleg.foreign.cx.index.generator
 
 import dev.whyoleg.foreign.cx.index.*
 import kotlinx.serialization.json.*
+import okio.FileSystem
 import java.nio.file.*
 import kotlin.io.path.*
 
-public actual fun CxIndex.Companion.generate(
-    headers: Set<String>,
-    includePaths: Set<String>
+internal actual val SystemFileSystem: FileSystem get() = FileSystem.SYSTEM
+
+internal actual fun generateCxIndex(
+    headerFilePath: String,
+    compilerArgs: List<String>
 ): CxIndex {
-    val arguments = CxIndexArguments(
-        headers = headers,
-        includePaths = includePaths
-    )
-    val argumentsString = Json.encodeToString(CxIndexArguments.serializer(), arguments)
+    val arguments = GenerateCxIndexArguments(headerFilePath, compilerArgs)
+    val argumentsString = Json.encodeToString(GenerateCxIndexArguments.serializer(), arguments)
     val resultPath = Files.createTempFile("CxIndexGenerator-result-", ".json")
     CxIndexGenerator.generate(
         argumentsString,
         resultPath.absolutePathString()
     )
     val result = if (resultPath.exists()) {
-        Json.decodeFromString(CxIndexResult.serializer(), resultPath.readText())
+        Json.decodeFromString(GenerateCxIndexResult.serializer(), resultPath.readText())
     } else null
     result?.index?.let {
         resultPath.deleteIfExists()

@@ -1,6 +1,5 @@
 package dev.whyoleg.foreign.cx.index.generator
 
-import dev.whyoleg.foreign.cx.index.*
 import kotlinx.serialization.json.*
 import okio.*
 import okio.Path.Companion.toPath
@@ -18,18 +17,18 @@ public fun generateCxIndex(
     resultPathString: String
 ) {
     try {
-        val arguments = Json.decodeFromString(CxIndexArguments.serializer(), argumentsString)
-        val index = CxIndex.generate(
-            headers = arguments.headers,
-            includePaths = arguments.includePaths
+        val arguments = Json.decodeFromString(GenerateCxIndexArguments.serializer(), argumentsString)
+        val index = generateCxIndex(
+            headerFilePath = arguments.headerFilePath,
+            compilerArgs = arguments.compilerArgs
         )
         FileSystem.SYSTEM.write(resultPathString.toPath()) {
-            writeUtf8(Json.encodeToString(CxIndexResult.serializer(), CxIndexResult(index, null)))
+            writeUtf8(Json.encodeToString(GenerateCxIndexResult.serializer(), GenerateCxIndexResult(index, null)))
         }
     } catch (cause: Throwable) {
         try {
             FileSystem.SYSTEM.write(resultPathString.toPath()) {
-                writeUtf8(Json.encodeToString(CxIndexResult.serializer(), CxIndexResult(null, cause.stackTraceToString())))
+                writeUtf8(Json.encodeToString(GenerateCxIndexResult.serializer(), GenerateCxIndexResult(null, cause.stackTraceToString())))
             }
         } catch (otherCause: Throwable) {
             try {
