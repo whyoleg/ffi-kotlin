@@ -1,5 +1,6 @@
-package dev.whyoleg.foreign.cx.index
+package dev.whyoleg.foreign.cx.storage
 
+import dev.whyoleg.foreign.cx.index.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import kotlinx.serialization.json.okio.*

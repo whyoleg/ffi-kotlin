@@ -2,11 +2,8 @@ package dev.whyoleg.foreign.cx.index.generator
 
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
-import okio.FileSystem
 import java.nio.file.*
 import kotlin.io.path.*
-
-internal actual val SystemFileSystem: FileSystem get() = FileSystem.SYSTEM
 
 internal actual fun CxIndexGenerator.generate(arguments: CxIndexGenerator.Arguments): CxIndexGenerator.Result {
     val argumentsString = Json.encodeToString<CxIndexGenerator.Arguments>(arguments)

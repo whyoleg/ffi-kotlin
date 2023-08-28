@@ -22,11 +22,15 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.foreignCxIndex)
+                // for bridge
+                implementation(libs.kotlinx.serialization.json)
             }
         }
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
+                // for temp FS support
+                implementation(projects.foreignCxStorage)
             }
         }
     }
