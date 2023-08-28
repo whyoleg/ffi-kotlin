@@ -4,10 +4,7 @@ import dev.whyoleg.foreign.cx.index.generator.internal.*
 import kotlinx.cinterop.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
-import okio.*
 import platform.posix.*
-
-internal actual val SystemFileSystem: FileSystem get() = FileSystem.SYSTEM
 
 internal actual fun CxIndexGenerator.generate(arguments: CxIndexGenerator.Arguments): CxIndexGenerator.Result = try {
     val builder = CxIndexBuilder()

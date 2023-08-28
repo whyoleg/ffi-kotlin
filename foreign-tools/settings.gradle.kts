@@ -22,7 +22,15 @@ rootProject.name = "foreign-tools"
 include("foreign-cx-index")
 // uses libclang to generate index - works for both JVM and K/N
 include("foreign-cx-index-generator")
-// metadata of declarations which will be stored in jar/klib (or separate artifact) to allow cross-references
-include("foreign-cx-metadata")
-// generates source code from index
+// information about declarations + commonization logic
+include("foreign-cx-bindings")
+// generates source code from bindings
 include("foreign-cx-bindings-generator")
+// file system support - internal module for now
+include("foreign-cx-storage")
+
+// TODO: decide on what should be stored there
+// metadata of declarations which will be stored in jar/klib (or separate artifact) to allow cross-references
+//include("foreign-cx-metadata")
+
+// TODO: change packages to foreign.tools.*

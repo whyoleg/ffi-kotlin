@@ -2,7 +2,6 @@ package dev.whyoleg.foreign.cx.index.generator
 
 import dev.whyoleg.foreign.cx.index.*
 import kotlinx.serialization.*
-import okio.*
 
 internal object CxIndexGenerator {
     @Serializable
@@ -23,6 +22,3 @@ internal object CxIndexGenerator {
 
 // entry point
 internal expect fun CxIndexGenerator.generate(arguments: CxIndexGenerator.Arguments): CxIndexGenerator.Result
-
-// TODO: drop okio dependency, or move it to test
-internal expect val SystemFileSystem: FileSystem
