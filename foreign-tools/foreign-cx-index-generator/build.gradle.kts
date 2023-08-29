@@ -47,6 +47,7 @@ kotlin {
             KonanTarget.MACOS_ARM64 -> tasks.setupClangLibsMacosArm64
             KonanTarget.MACOS_X64   -> tasks.setupClangLibsMacosX64
             KonanTarget.LINUX_X64   -> tasks.setupClangLibsLinuxX64
+            KonanTarget.MINGW_X64   -> tasks.setupClangLibsMingwX64
             else                    -> TODO("Not supported: $konanTarget")
         }
         binaries {
@@ -73,6 +74,7 @@ kotlin {
                 val envName = when (konanTarget.family) {
                     Family.OSX   -> "DYLD_LIBRARY_PATH"
                     Family.LINUX -> "LD_LIBRARY_PATH"
+                    Family.MINGW -> "PATH"
                     else         -> TODO("Not supported: $konanTarget")
                 }
                 environment(envName, setupClangLibsTask.get().destinationDir)
