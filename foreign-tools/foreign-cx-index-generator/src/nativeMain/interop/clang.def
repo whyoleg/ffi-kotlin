@@ -11,4 +11,6 @@ strictEnums = CXErrorCode \
               CXSymbolRole \
               CXDiagnosticSeverity
 
-linkerOpts = -lclang
+linkerOpts.osx = -lclang
+linkerOpts.linux = -lclang
+linkerOpts.mingw = -llibclang
