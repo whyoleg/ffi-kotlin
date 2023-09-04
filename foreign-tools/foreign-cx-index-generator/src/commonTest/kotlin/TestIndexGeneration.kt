@@ -6,9 +6,6 @@ import okio.ByteString.Companion.encodeUtf8
 import okio.Path.Companion.toPath
 import kotlin.test.*
 
-// TODO: drop okio dependency, or move it to test
-internal expect val SystemFileSystem: FileSystem
-
 class TestIndexGeneration {
 
     @Test
