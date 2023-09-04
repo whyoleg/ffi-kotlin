@@ -231,7 +231,7 @@ public data class CxIndex(
 
                 recursiveIds += id
 
-                record.fields.forEach { field ->
+                record.members?.fields?.forEach { field ->
                     addTypeRecursive(field.type.type)
                 }
             }
@@ -290,9 +290,9 @@ public data class CxIndex(
                 typedef.copy(aliased = typedef.aliased.inlineTypedefs())
             },
             records = records.map { record ->
-                record.copy(fields = record.fields.map { field ->
+                record.copy(members = record.members?.copy(fields = record.members.fields.map { field ->
                     field.copy(type = field.type.inlineTypedefs())
-                })
+                }))
             },
             enums = enums,
             functions = functions.map { function ->
@@ -314,7 +314,7 @@ public data class CxIndex(
             is CxType.Function -> true
             is CxType.Array    -> elementType.hasFunctionArgument()
             is CxType.Pointer  -> pointed.hasFunctionArgument()
-            is CxType.Record   -> record(id).fields.any { it.type.type.hasFunctionArgument() }
+            is CxType.Record   -> record(id).members?.fields?.any { it.type.type.hasFunctionArgument() } ?: false
             is CxType.Typedef  -> typedef(id).aliased.type.hasFunctionArgument()
             else               -> false
         }
@@ -322,7 +322,7 @@ public data class CxIndex(
         fun CxHeaderInfo.excludeFunctionArguments(): CxHeaderInfo = CxHeaderInfo(
             name = name,
             typedefs = typedefs.filterNot { it.aliased.type.hasFunctionArgument() },
-            records = records.filterNot { it.fields.any { it.type.type.hasFunctionArgument() } },
+            records = records.filterNot { it.members?.fields?.any { it.type.type.hasFunctionArgument() } ?: false },
             enums = enums,
             functions = functions.filterNot { function ->
                 function.returnType.type.hasFunctionArgument() || function.parameters.any { it.type.type.hasFunctionArgument() }

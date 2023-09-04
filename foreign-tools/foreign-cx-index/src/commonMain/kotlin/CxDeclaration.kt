@@ -37,16 +37,22 @@ public data class CxTypedefInfo(
 @Serializable
 public data class CxRecordInfo(
     override val id: CxDeclarationId,
-    override val name: CxDeclarationName?,
-    val size: Long, //TODO: what is -2?
-    val align: Long,
+    override val name: CxDeclarationName?, // if null - anonymous
     val isUnion: Boolean,
-    val fields: List<Field>,
+    val members: Members? // if null - opaque
 ) : CxDeclarationInfo() {
     @Serializable
     public data class Field(
         val name: String,
         val type: CxTypeInfo,
+    )
+
+    // TODO: better name?
+    @Serializable
+    public data class Members(
+        val size: Long,
+        val align: Long,
+        val fields: List<Field>,
     )
 }
 
