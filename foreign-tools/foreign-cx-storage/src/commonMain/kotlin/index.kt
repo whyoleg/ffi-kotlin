@@ -6,6 +6,8 @@ import kotlinx.serialization.json.*
 import kotlinx.serialization.json.okio.*
 import okio.*
 
+public expect val SystemFileSystem: FileSystem
+
 private val json = Json {
     useAlternativeNames = false
 }
@@ -23,6 +25,18 @@ public inline fun <reified T> T.toPrettyString(): String = toPrettyString(serial
 @OptIn(ExperimentalSerializationApi::class)
 public fun FileSystem.readCxIndex(path: Path): CxIndex = read(path) {
     json.decodeFromBufferedSource(CxIndex.serializer(), this)
+}
+
+public inline fun <reified T> FileSystem.writePretty(path: Path, value: T) {
+    writePretty(path, serializer(), value)
+}
+
+@OptIn(ExperimentalSerializationApi::class)
+public fun <T> FileSystem.writePretty(path: Path, serializer: KSerializer<T>, value: T) {
+    createDirectories(path.parent!!)
+    write(path) {
+        prettyJson.encodeToBufferedSink(serializer, value, this)
+    }
 }
 
 @OptIn(ExperimentalSerializationApi::class)
