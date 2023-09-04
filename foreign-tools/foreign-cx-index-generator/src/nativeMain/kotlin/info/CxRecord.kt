@@ -11,28 +11,42 @@ internal fun CxIndexBuilder.buildRecordInfo(
     id: CxDeclarationId,
     name: CxDeclarationName?,
     cursor: CValue<CXCursor>,
-): CxRecordInfo = CxRecordInfo(
-    id = id,
-    name = name,
-    size = clang_Type_getSizeOf(cursor.type),
-    align = clang_Type_getAlignOf(cursor.type),
-    isUnion = when (val kind = clang_getCursorKind(cursor)) {
-        CXCursor_StructDecl -> false
-        CXCursor_UnionDecl  -> true
-        else                -> error("Wrong kind for record: $kind")
-    },
-    fields = buildList {
-        visitFields(cursor.type) { fieldCursor ->
-            add(
-                CxRecordInfo.Field(
-                    name = fieldCursor.spelling,
-                    type = buildTypeInfo(fieldCursor.type)
+): CxRecordInfo {
+    //more info on size values https://clang.llvm.org/doxygen/group__CINDEX__TYPES.html#gaaf1b95e9e7e792a08654563fef7502c1
+    val size = clang_Type_getSizeOf(cursor.type)
+    return CxRecordInfo(
+        id = id,
+        name = name,
+        members = when {
+            size > 0 -> {
+                val align = clang_Type_getAlignOf(cursor.type)
+                check(align > 0) { "wrong alignOf result: $align" }
+                CxRecordInfo.Members(
+                    size = size,
+                    align = align,
+                    fields = buildList {
+                        visitFields(cursor.type) { fieldCursor ->
+                            add(
+                                CxRecordInfo.Field(
+                                    name = fieldCursor.spelling,
+                                    type = buildTypeInfo(fieldCursor.type)
+                                )
+                            )
+                            CXVisitorResult.CXVisit_Continue
+                        }
+                    }
                 )
-            )
-            CXVisitorResult.CXVisit_Continue
-        }
-    }
-)
+            }
+            size == CXTypeLayoutError_Incomplete.toLong() -> null // opaque
+            else -> error("wrong sizeOf result: $size")
+        },
+        isUnion = when (val kind = clang_getCursorKind(cursor)) {
+            CXCursor_StructDecl -> false
+            CXCursor_UnionDecl  -> true
+            else                -> error("Wrong kind for record: $kind")
+        },
+    )
+}
 
 private typealias CursorFieldVisitor = (fieldCursor: CValue<CXCursor>) -> CXVisitorResult
 

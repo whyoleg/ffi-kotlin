@@ -22,10 +22,8 @@ internal class CxIndexBuilder {
     private val dummyRecord = CxRecordInfo(
         id = CxDeclarationId(""),
         name = null,
-        size = Long.MIN_VALUE,
-        align = Long.MIN_VALUE,
         isUnion = false,
-        fields = emptyList()
+        members = null
     )
 
     fun function(cursor: CValue<CXCursor>): CxDeclarationId = save(DeclarationRegistry::functions, cursor, null, ::buildFunctionInfo)
@@ -86,17 +84,6 @@ internal class CxIndexBuilder {
             functions = functions.values.toList()
         )
 
-        return CxIndex(headers = headerByPath.map { it.value.cx() }).fix()
-    }
-
-    // fixes something, that doesn't handled by clang
-    private fun CxIndex.fix(): CxIndex {
-        fun CxTypedefInfo.canBeSkipped(): Boolean = when (val type = aliased.type) {
-            is CxType.Record -> name.value == record(type.id).name?.value
-            is CxType.Enum   -> name.value == enum(type.id).name?.value
-            else             -> false
-        }
-
-        return inlineTypedefs { _, typedef -> typedef.canBeSkipped() }
+        return CxIndex(headers = headerByPath.map { it.value.cx() })
     }
 }
