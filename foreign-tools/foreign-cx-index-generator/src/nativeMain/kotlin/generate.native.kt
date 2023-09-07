@@ -54,10 +54,10 @@ public fun generateCxIndexBridge(
 // should not throw!
 private fun returnByteArray(result: ByteArray?, resultBytesSize: CPointer<IntVar>?): CPointer<ByteVar>? {
     if (result == null || result.isEmpty()) return null
-    val destination = malloc(result.size.convert()) ?: return null
+    val destination = malloc(result.size.convert())?.reinterpret<ByteVar>() ?: return null
 
     result.usePinned { memcpy(destination, it.addressOf(0), result.size.convert()) }
     resultBytesSize?.pointed?.value = result.size
 
-    return destination.reinterpret<ByteVar>()
+    return destination
 }
