@@ -14,59 +14,59 @@ public data class CxTypeInfo(
 @Serializable
 public sealed class CxType {
     @Serializable
-    public object Void : CxType()
+    public data object Void : CxType()
 
     @Serializable
-    public object Boolean : CxType()
+    public data object Boolean : CxType()
 
     @Serializable
-    public object Char : CxType()
+    public data object Char : CxType()
 
     @Serializable
-    public object Byte : CxType()
+    public data object Byte : CxType()
 
     @Serializable
-    public object UByte : CxType()
+    public data object UByte : CxType()
 
     @Serializable
-    public object Short : CxType()
+    public data object Short : CxType()
 
     @Serializable
-    public object UShort : CxType()
+    public data object UShort : CxType()
 
     @Serializable
-    public object Int : CxType()
+    public data object Int : CxType()
 
     @Serializable
-    public object UInt : CxType()
+    public data object UInt : CxType()
 
     @Serializable
-    public object Long : CxType()
+    public data object Long : CxType()
 
     @Serializable
-    public object ULong : CxType()
+    public data object ULong : CxType()
 
     @Serializable
-    public object LongLong : CxType()
+    public data object LongLong : CxType()
 
     @Serializable
-    public object ULongLong : CxType()
+    public data object ULongLong : CxType()
 
     @Serializable
-    public object Float : CxType()
+    public data object Float : CxType()
 
     @Serializable
-    public object Double : CxType()
+    public data object Double : CxType()
 
     //TODO: how to handle them???
     @Serializable
-    public object LongDouble : CxType()
+    public data object LongDouble : CxType()
 
     @Serializable
-    public object Int128 : CxType()
+    public data object Int128 : CxType()
 
     @Serializable
-    public object UInt128 : CxType()
+    public data object UInt128 : CxType()
 
     @Serializable
     public data class Pointer(val pointed: CxType) : CxType()
