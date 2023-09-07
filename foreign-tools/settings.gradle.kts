@@ -26,8 +26,10 @@ include("foreign-cx-index-generator")
 include("foreign-cx-bindings")
 // generates source code from bindings
 include("foreign-cx-bindings-generator")
-// file system support - internal module for now
-include("foreign-cx-storage")
+
+
+
+include("foreign-cx-playground")
 
 // TODO: decide on what should be stored there
 // metadata of declarations which will be stored in jar/klib (or separate artifact) to allow cross-references
