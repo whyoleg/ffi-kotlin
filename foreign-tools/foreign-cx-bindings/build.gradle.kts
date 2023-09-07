@@ -9,6 +9,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.foreignCxIndex)
+                implementation(libs.kotlinx.serialization.core)
             }
         }
     }

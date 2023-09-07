@@ -10,12 +10,5 @@ kotlin {
                 api(projects.foreignCxBindings)
             }
         }
-        commonTest {
-            dependencies {
-                implementation(kotlin("test"))
-                // for temp FS support
-                implementation(projects.foreignCxStorage)
-            }
-        }
     }
 }
