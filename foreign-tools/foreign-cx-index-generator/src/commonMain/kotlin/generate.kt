@@ -22,3 +22,11 @@ internal object CxIndexGenerator {
 
 // entry point
 internal expect fun CxIndexGenerator.generate(arguments: CxIndexGenerator.Arguments): CxIndexGenerator.Result
+
+public fun generateCxIndex(
+    headerFilePath: String,
+    compilerArgs: List<String>
+): CxIndex = when (val result = CxIndexGenerator.generate(CxIndexGenerator.Arguments(headerFilePath, compilerArgs))) {
+    is CxIndexGenerator.Result.Success -> result.index
+    is CxIndexGenerator.Result.Failure -> error("CxIndex generation failure: ${result.message}\n${result.stackTrace}")
+}
