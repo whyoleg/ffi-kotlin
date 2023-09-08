@@ -2,7 +2,13 @@ package dev.whyoleg.foreign.cx.index
 
 import kotlinx.serialization.*
 
-//TODO: add parameters with which index was generated?
+// TODO: add parameters with which index was generated? at least target may be? TBD if it's needed
+// TODO: extract/separate filters somewhere
+// TODO: implement filter for unused declarations?
+//       similar to cinterop - f.e.
+//       - filtering for header `evp.h`
+//       - should only contain declarations which are used in `evp.h`
+//       - should not contain declarations which are just included, but not used
 @Serializable
 public data class CxIndex(
     val headers: List<CxHeaderInfo> = emptyList()

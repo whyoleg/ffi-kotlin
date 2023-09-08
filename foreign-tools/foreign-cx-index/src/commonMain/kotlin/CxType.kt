@@ -9,8 +9,9 @@ public data class CxTypeInfo(
     val type: CxType,
 )
 
-//TODO: custom serializer?
-//TODO: use c names for types, dont mix with kotlin
+// TODO: custom serializer?
+// TODO: use c names for types, dont mix with kotlin
+// TODO: add a little hierarchy (like primitives, arrays, etc)?
 @Serializable
 public sealed class CxType {
     @Serializable

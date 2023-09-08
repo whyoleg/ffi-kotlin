@@ -7,6 +7,7 @@ import dev.whyoleg.foreign.cx.index.generator.*
 import dev.whyoleg.foreign.cx.index.generator.internal.*
 import kotlinx.cinterop.*
 
+// TODO: calculate type sizes via clang_Type_getSizeOf
 internal fun CxIndexBuilder.buildTypeInfo(
     type: CValue<CXType>,
 ): CxTypeInfo = CxTypeInfo(
@@ -65,6 +66,3 @@ private fun CxIndexBuilder.buildType(type: CValue<CXType>): CxType = when (val k
     }
     else                         -> TODO("NOT SUPPORTED: $kind | ${type.spelling}")
 }
-
-private val CValue<CXType>.spelling: String get() = clang_getTypeSpelling(this).useString()!!
-private val CValue<CXType>.kind: CXTypeKind get() = useContents { kind }

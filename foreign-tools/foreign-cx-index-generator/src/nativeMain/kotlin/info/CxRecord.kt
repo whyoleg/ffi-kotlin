@@ -47,16 +47,3 @@ internal fun CxIndexBuilder.buildRecordInfo(
         },
     )
 }
-
-private typealias CursorFieldVisitor = (fieldCursor: CValue<CXCursor>) -> CXVisitorResult
-
-private fun visitFields(type: CValue<CXType>, visitor: CursorFieldVisitor) {
-    val visitorRef = StableRef.create(visitor)
-    try {
-        clang_Type_visitFields(type, staticCFunction { cursor, clientData ->
-            clientData!!.asStableRef<CursorFieldVisitor>().get().invoke(cursor)
-        }, visitorRef.asCPointer())
-    } finally {
-        visitorRef.dispose()
-    }
-}
