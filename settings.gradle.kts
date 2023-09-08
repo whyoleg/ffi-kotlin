@@ -12,6 +12,6 @@ gradleEnterprise {
 rootProject.name = "ffi-kotlin"
 
 includeBuild("foreign-runtime")
-includeBuild("foreign-tools")
+includeBuild("foreign-tooling")
 includeBuild("foreign-gradle-plugin")
 

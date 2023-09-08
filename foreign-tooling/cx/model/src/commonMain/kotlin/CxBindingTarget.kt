@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.cx.bindings
+package dev.whyoleg.foreign.cx.index
 
 import kotlinx.serialization.*
 import kotlin.jvm.*

@@ -21,8 +21,8 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.foreignCxIndex)
-                // for bridge
+                api(projects.cx.foreignToolingCxModel)
+                // for K/JVM->K/N bridge via JNI
                 implementation(libs.kotlinx.serialization.json)
             }
         }
@@ -45,7 +45,7 @@ kotlin {
         }
         binaries {
             sharedLib {
-                baseName = "CxIndexGenerator"
+                baseName = "CxCompiler"
             }
         }
         compilations.named("main") {
@@ -78,7 +78,7 @@ kotlin {
 
 // K/JVM configuration
 
-val linkCxIndexGeneratorLibMacosArm64 =
+val linkCxCompilerLibMacosArm64 =
     kotlin.targets.withType(KotlinNativeTarget::class)
         .single { it.konanTarget == KonanTarget.MACOS_ARM64 }
         .binaries
@@ -90,16 +90,16 @@ val compileJvmJniMacosArm64 by tasks.registering(CompileJvmJni::class) {
     konanTargetName.set(KonanTarget.MACOS_ARM64.name)
     jdkHeadersDirectory.set(layout.dir(tasks.setupJdkHeadersMacosArm64.map { it.destinationDir }))
 
-    linkLibraries.addAll("CxIndexGenerator")
+    linkLibraries.addAll("CxCompiler")
 
-    // CxIndexGenerator configuration
-    dependsOn(linkCxIndexGeneratorLibMacosArm64)
-    linkPaths.add(linkCxIndexGeneratorLibMacosArm64.flatMap { it.destinationDirectory })
-    includePaths.add(linkCxIndexGeneratorLibMacosArm64.flatMap { it.destinationDirectory })
+    // CxCompiler configuration
+    dependsOn(linkCxCompilerLibMacosArm64)
+    linkPaths.add(linkCxCompilerLibMacosArm64.flatMap { it.destinationDirectory })
+    includePaths.add(linkCxCompilerLibMacosArm64.flatMap { it.destinationDirectory })
 
     // input C files and output library
     inputFiles.from(layout.projectDirectory.dir("src/jvmMain/c").asFileTree)
-    outputFile.set(temporaryDir.resolve("libCxIndexGeneratorJni.dylib"))
+    outputFile.set(temporaryDir.resolve("libCxCompilerJni.dylib"))
 }
 
 val setupJvmResources by tasks.registering(Sync::class) {
@@ -110,7 +110,7 @@ val setupJvmResources by tasks.registering(Sync::class) {
     from(compileJvmJniMacosArm64) {
         into("libs/macos-arm64")
     }
-    from(linkCxIndexGeneratorLibMacosArm64.map { it.outputFile }) {
+    from(linkCxCompilerLibMacosArm64.map { it.outputFile }) {
         into("libs/macos-arm64")
     }
 

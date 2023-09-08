@@ -1,13 +1,14 @@
 plugins {
     id("foreignbuild.multiplatform-library")
     id("foreignbuild.desktop-tool")
+    alias(kotlinLibs.plugins.plugin.serialization)
 }
 
 kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.foreignCxBindings)
+                api(projects.cx.foreignToolingCxModel)
             }
         }
     }
