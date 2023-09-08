@@ -24,7 +24,9 @@ internal class CxIndexRunner(
     }
 
     override fun enteredMainFile(mainFile: CXFile) {
-        //println("Header: ${clang_getFileName(mainFile).useString()}")
+        val fileName = clang_getFileName(mainFile).useString()!!
+        // TODO header name?
+        builder.include("_/main.h", fileName)
     }
 
     override fun ppIncludedFile(fileInfo: CXIdxIncludedFileInfo) {
