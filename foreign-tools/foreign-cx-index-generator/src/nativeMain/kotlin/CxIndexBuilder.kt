@@ -76,14 +76,14 @@ internal class CxIndexBuilder {
     }
 
     fun build(): CxIndex {
-        fun DeclarationRegistry.cx(): CxHeaderInfo = CxHeaderInfo(
+        fun DeclarationRegistry.cx(): CxHeaderInfo? = CxHeaderInfo(
             name = name,
             typedefs = typedefs.values.toList(),
             records = records.values.toList(),
             enums = enums.values.toList(),
             functions = functions.values.toList()
-        )
+        ).takeIf(CxHeaderInfo::isNotEmpty)
 
-        return CxIndex(headers = headerByPath.map { it.value.cx() })
+        return CxIndex(headers = headerByPath.mapNotNull { it.value.cx() })
     }
 }

@@ -6,10 +6,10 @@ import kotlinx.cinterop.*
 
 internal class CxIndexRunner(
     private val builder: CxIndexBuilder
-) {
+) : CxIndexHandler() {
     private val reportedErrors = ArrayDeque<Throwable>()
 
-    private fun diagnostic(diagnosticSet: CXDiagnosticSet) {
+    override fun diagnostic(diagnosticSet: CXDiagnosticSet) {
         repeat(clang_getNumDiagnosticsInSet(diagnosticSet).toInt()) { i ->
             val diagnostic = clang_getDiagnosticInSet(diagnosticSet, i.toUInt()) ?: return@repeat
             try {
@@ -23,22 +23,22 @@ internal class CxIndexRunner(
         }
     }
 
-    private fun enteredMainFile(mainFile: CXFile) {
-        println("Header: ${clang_getFileName(mainFile).useString()}")
+    override fun enteredMainFile(mainFile: CXFile) {
+        //println("Header: ${clang_getFileName(mainFile).useString()}")
     }
 
-    private fun ppIncludedFile(fileInfo: CXIdxIncludedFileInfo) {
+    override fun ppIncludedFile(fileInfo: CXIdxIncludedFileInfo) {
         val includeName = fileInfo.filename?.toKString()
         val fileName = clang_getFileName(fileInfo.file).useString()
 
         if (includeName != null && fileName != null) {
             builder.include(includeName, fileName)
         } else {
-            reportError(IllegalStateException("ppIncludedFile | $includeName | $fileName"))
+            unhandledError(IllegalStateException("ppIncludedFile | $includeName | $fileName"))
         }
     }
 
-    private fun indexDeclaration(declarationInfo: CXIdxDeclInfo) {
+    override fun indexDeclaration(declarationInfo: CXIdxDeclInfo) {
         val entityInfo = declarationInfo.entityInfo!!.pointed
         val cursor = declarationInfo.cursor.readValue()
         when (val kind = entityInfo.kind) {
@@ -75,7 +75,7 @@ internal class CxIndexRunner(
         }
     }
 
-    private fun reportError(cause: Throwable) {
+    override fun unhandledError(cause: Throwable) {
         reportedErrors.addLast(cause)
     }
 
@@ -89,68 +89,21 @@ internal class CxIndexRunner(
         error(message)
     }
 
+    //TODO: extract
     fun run(index: CXIndex, translationUnit: CXTranslationUnit) {
-        memScoped {
-            useStableRef(this@CxIndexRunner) { runnerRef ->
-                val indexerCallbacks = alloc<IndexerCallbacks> {
-                    diagnostic = staticCFunction { clientData, diagnosticSet, _ ->
-                        unwrapRunnerRef(clientData) { it.diagnostic(diagnosticSet!!) }
-                    }
-                    enteredMainFile = staticCFunction { clientData, mainFile, _ ->
-                        unwrapRunnerRef(clientData) { it.enteredMainFile(mainFile!!) }
-                        null
-                    }
-                    ppIncludedFile = staticCFunction { clientData, file ->
-                        unwrapRunnerRef(clientData) { it.ppIncludedFile(file!!.pointed) }
-                        null
-                    }
-                    indexDeclaration = staticCFunction { clientData, info ->
-                        unwrapRunnerRef(clientData) { it.indexDeclaration(info!!.pointed) }
-                    }
-                }
-
-                useIndexAction(index) { action ->
-                    val result = clang_indexTranslationUnit(
-                        action,
-                        runnerRef.asCPointer(),
-                        indexerCallbacks.ptr,
-                        sizeOf<IndexerCallbacks>().convert(),
-                        0u,
-                        translationUnit
-                    )
-                    if (result != 0) error("clang_indexTranslationUnit returned $result")
-                }
+        useIndexHandler(this) { handlerPointer, callbacksPointer ->
+            useIndexAction(index) { action ->
+                val result = clang_indexTranslationUnit(
+                    action,
+                    handlerPointer,
+                    callbacksPointer,
+                    sizeOf<IndexerCallbacks>().convert(),
+                    0u,
+                    translationUnit
+                )
+                if (result != 0) error("clang_indexTranslationUnit returned $result")
             }
         }
         ensureNoErrors()
-    }
-
-    private companion object {
-        private inline fun unwrapRunnerRef(clientData: CXClientData?, block: (runner: CxIndexRunner) -> Unit) {
-            val runner = clientData!!.asStableRef<CxIndexRunner>().get()
-            try {
-                block(runner)
-            } catch (cause: Throwable) {
-                runner.reportError(cause)
-            }
-        }
-    }
-}
-
-private inline fun <T> useIndexAction(index: CXIndex, block: (action: CXIndexAction) -> T): T {
-    val action = checkNotNull(clang_IndexAction_create(index)) { "IndexAction is null" }
-    try {
-        return block(action)
-    } finally {
-        clang_IndexAction_dispose(action)
-    }
-}
-
-private fun <T : Any, R> useStableRef(value: T, block: (ref: StableRef<T>) -> R): R {
-    val ref = StableRef.create(value)
-    try {
-        return block(ref)
-    } finally {
-        ref.dispose()
     }
 }

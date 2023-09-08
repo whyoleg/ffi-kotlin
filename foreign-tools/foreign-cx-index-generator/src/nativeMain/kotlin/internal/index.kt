@@ -18,3 +18,12 @@ internal inline fun <R> useIndex(
         clang_disposeIndex(index)
     }
 }
+
+internal inline fun <T> useIndexAction(index: CXIndex, block: (action: CXIndexAction) -> T): T {
+    val action = checkNotNull(clang_IndexAction_create(index)) { "IndexAction is null" }
+    try {
+        return block(action)
+    } finally {
+        clang_IndexAction_dispose(action)
+    }
+}
