@@ -1,6 +1,6 @@
-package dev.whyoleg.foreign.cx.index.generator.internal
+package dev.whyoleg.foreign.tooling.cx.compiler.internal
 
-import dev.whyoleg.foreign.cx.index.clang.*
+import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
 import kotlinx.cinterop.*
 
 internal val CValue<CXType>.spelling: String get() = clang_getTypeSpelling(this).useString()!!

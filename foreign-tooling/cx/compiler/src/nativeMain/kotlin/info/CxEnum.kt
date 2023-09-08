@@ -1,9 +1,9 @@
-package dev.whyoleg.foreign.cx.index.generator.info
+package dev.whyoleg.foreign.tooling.cx.compiler.info
 
-import dev.whyoleg.foreign.cx.index.*
-import dev.whyoleg.foreign.cx.index.clang.*
-import dev.whyoleg.foreign.cx.index.generator.*
-import dev.whyoleg.foreign.cx.index.generator.internal.*
+import dev.whyoleg.foreign.tooling.cx.compiler.*
+import dev.whyoleg.foreign.tooling.cx.compiler.internal.*
+import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
+import dev.whyoleg.foreign.tooling.cx.model.*
 import kotlinx.cinterop.*
 
 internal fun CxIndexBuilder.buildEnumInfo(

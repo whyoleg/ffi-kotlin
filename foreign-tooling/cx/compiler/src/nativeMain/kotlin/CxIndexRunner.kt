@@ -1,7 +1,7 @@
-package dev.whyoleg.foreign.cx.index.generator
+package dev.whyoleg.foreign.tooling.cx.compiler
 
-import dev.whyoleg.foreign.cx.index.clang.*
-import dev.whyoleg.foreign.cx.index.generator.internal.*
+import dev.whyoleg.foreign.tooling.cx.compiler.internal.*
+import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
 import kotlinx.cinterop.*
 
 internal class CxIndexRunner(
