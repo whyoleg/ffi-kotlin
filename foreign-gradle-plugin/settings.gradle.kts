@@ -16,4 +16,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "foreign-gradle-plugin"
 
-includeBuild("../foreign-tools")
+includeBuild("../foreign-tooling")
+

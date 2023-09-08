@@ -8,8 +8,11 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.foreignCxIndex)
-                implementation(libs.kotlinx.serialization.core)
+                implementation(projects.cx.foreignToolingCxCompiler)
+
+                implementation(libs.okio)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.serialization.json.okio)
             }
         }
     }
