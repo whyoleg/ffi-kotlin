@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.cx.index.generator
+package dev.whyoleg.foreign.tooling.cx.compiler
 
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*

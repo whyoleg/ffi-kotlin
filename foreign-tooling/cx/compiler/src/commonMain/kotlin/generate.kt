@@ -1,6 +1,6 @@
-package dev.whyoleg.foreign.cx.index.generator
+package dev.whyoleg.foreign.tooling.cx.compiler
 
-import dev.whyoleg.foreign.cx.index.*
+import dev.whyoleg.foreign.tooling.cx.model.*
 import kotlinx.serialization.*
 
 internal object CxIndexGenerator {
