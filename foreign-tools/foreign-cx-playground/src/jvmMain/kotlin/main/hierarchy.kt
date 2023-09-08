@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.cx.playground
+package dev.whyoleg.foreign.cx.playground.main
 
 import dev.whyoleg.foreign.cx.bindings.*
 import dev.whyoleg.foreign.cx.index.*

@@ -1,8 +1,91 @@
-package dev.whyoleg.foreign.cx.playground
+package dev.whyoleg.foreign.cx.playground.main
 
 import dev.whyoleg.foreign.cx.bindings.*
 import dev.whyoleg.foreign.cx.index.*
+import dev.whyoleg.foreign.cx.playground.*
 import okio.Path.Companion.toPath
+
+public fun main() {
+    val outputDir = "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-tools/foreign-cx-playground/build/foreign/typedefs/"
+
+    fun readIndex(target: String): CxIndex = SystemFileSystem.readCxIndex(
+        "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/foreign-tools/foreign-cx-playground/build/foreign/time/$target.json".toPath()
+    )
+
+    fun pkg(headerName: String): String {
+        return "dev"
+
+        return if (headerName.startsWith("openssl/")) {
+            "dev.whyoleg.foreign.bindings.openssl"
+        } else {
+            "dev.whyoleg.foreign.bindings.openssl.internal"//.${it.substringBefore(".h").replace("/", ".")}"
+        }
+    }
+
+    fun CxIndex.bPackage(target: String): Map<CxBindingPackageName, CxBPackage> = headers.groupBy {
+        CxBindingPackageName(pkg(it.name.value))
+    }.mapValues { (name, headers) ->
+        CxBPackage(
+            name = name,
+            typedefs = headers
+                .flatMap { it.typedefs }
+                .groupBy { it.name }
+                .mapValues { mapOf(target to it.value.single()) },
+            records = headers
+                .flatMap { it.records }
+                .filter { it.name != null } //TODO when it could happen? only anonymous?
+                .groupBy { it.name!! }
+                .mapValues { mapOf(target to it.value.single()) },
+            enums = headers
+                .flatMap { it.enums }
+                .filter { it.name != null } //TODO?
+                .groupBy { it.name!! }
+                .mapValues { mapOf(target to it.value.single()) },
+            functions = headers
+                .flatMap { it.functions }
+                .groupBy { it.name }
+                .mapValues { mapOf(target to it.value.single()) },
+        )
+    }
+
+
+    val pkgs = listOf(
+        "mingw-x64",
+        "linux-x64",
+        "macos-x64",
+        "macos-arm64",
+        "ios-device-arm64",
+        "ios-simulator-arm64",
+        "ios-simulator-x64",
+    ).map { targetName ->
+        println("READ: $targetName")
+        readIndex(targetName).bPackage(targetName)
+    }
+
+    val result = pkgs.flatMap { it.keys }.distinct().map { pkgName ->
+        val values = pkgs.mapNotNull { it[pkgName] }
+        CxBPackage(
+            pkgName,
+            typedefs = values.flatMap { it.typedefs.keys }.distinct().associateWith { declarationName ->
+                values.mapNotNull { it.typedefs[declarationName] }.reduce(Map<String, CxTypedefInfo>::plus)
+            },
+            records = values.flatMap { it.records.keys }.distinct().associateWith { declarationName ->
+                values.mapNotNull { it.records[declarationName] }.reduce(Map<String, CxRecordInfo>::plus)
+            },
+            enums = values.flatMap { it.enums.keys }.distinct().associateWith { declarationName ->
+                values.mapNotNull { it.enums[declarationName] }.reduce(Map<String, CxEnumInfo>::plus)
+            },
+            functions = values.flatMap { it.functions.keys }.distinct().associateWith { declarationName ->
+                values.mapNotNull { it.functions[declarationName] }.reduce(Map<String, CxFunctionInfo>::plus)
+            },
+        )
+    }
+
+    SystemFileSystem.writePretty(
+        "$outputDir/grouped.json".toPath(),
+        result
+    )
+}
 
 
 internal class TempTest {
@@ -114,7 +197,7 @@ internal class TempTest {
                             .flatMap { it.typedefs }
                             .groupBy { it.name }
                             .mapValues {
-                                if(it.value.size > 1) {
+                                if (it.value.size > 1) {
                                     it.value.forEach {
                                         resolveTypedefChain("", it)
                                     }

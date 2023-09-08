@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.cx.playground
+package dev.whyoleg.foreign.cx.playground.main
 
 public fun main() {
     listOf(
