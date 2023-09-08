@@ -26,3 +26,12 @@ public data class CxBindingPackageInfo(
 //                          const unsigned char *buf, size_t buflen,
 //                          const char sep);
 //char *OPENSSL_buf2hexstr(const unsigned char *buf, long buflen);
+
+@Serializable
+public data class CxBPackage(
+    val name: CxBindingPackageName,
+    val typedefs: Map<CxDeclarationName, Map<String, CxTypedefInfo>>,
+    val records: Map<CxDeclarationName, Map<String, CxRecordInfo>>,
+    val enums: Map<CxDeclarationName, Map<String, CxEnumInfo>>,
+    val functions: Map<CxDeclarationName, Map<String, CxFunctionInfo>>,
+)
