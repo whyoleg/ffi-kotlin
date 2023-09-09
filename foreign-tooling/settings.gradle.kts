@@ -19,10 +19,12 @@ dependencyResolutionManagement {
 rootProject.name = "foreign-tooling"
 
 listOf(
-    "model",
-    "indexer",
     "compiler",
-    "bridge-generator",
+    "compiler-model",
+    "compiler-runner",
+    "bridge-model",
+    "bridge-aggregator",
+    "bridge-code-generator",
     "playground" // TODO: drop it, and somehow write tests
 ).forEach {
     include("cx:$it")

@@ -8,7 +8,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.cx.foreignToolingCxModel)
+                api(projects.cx.foreignToolingCxBridgeModel)
             }
         }
     }

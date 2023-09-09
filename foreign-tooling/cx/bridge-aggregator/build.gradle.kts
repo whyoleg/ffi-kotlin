@@ -8,10 +8,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.cx.foreignToolingCxModel)
-                implementation(projects.cx.foreignToolingCxCompiler)
-
-                implementation(libs.okio)
+                api(projects.cx.foreignToolingCxBridgeModel)
             }
         }
     }

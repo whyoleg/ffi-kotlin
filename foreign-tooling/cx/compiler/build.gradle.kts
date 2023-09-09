@@ -21,7 +21,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                api(projects.cx.foreignToolingCxModel)
+                api(projects.cx.foreignToolingCxCompilerModel)
                 // for K/JVM->K/N bridge via JNI
                 implementation(libs.kotlinx.serialization.json)
             }
