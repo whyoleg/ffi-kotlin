@@ -1,7 +1,5 @@
 package dev.whyoleg.foreign.tooling.cx.model
 
-import kotlinx.serialization.*
-
 @Serializable
 public data class CxBindingHierarchy(
     val modules: Map<String, CxBindingModule>,
