@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.tooling.cx.model
+package dev.whyoleg.foreign.tooling.cx.compiler.model
 
 import kotlinx.serialization.*
 import kotlin.jvm.*
