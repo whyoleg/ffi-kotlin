@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.tooling.cx.model
+package dev.whyoleg.foreign.tooling.cx.bridge.model
 
 // for now: visibility or optIn could be set ONLY for all declarations in an interface
 

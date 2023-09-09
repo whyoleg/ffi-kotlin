@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.tooling.cx.model
+package dev.whyoleg.foreign.tooling.cx.bridge.model
 
 @Serializable
 public data class CxBindingSharedModule(
