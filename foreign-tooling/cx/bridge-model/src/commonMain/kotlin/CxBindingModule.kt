@@ -1,7 +1,5 @@
 package dev.whyoleg.foreign.tooling.cx.model
 
-import kotlinx.serialization.*
-
 // for now: visibility or optIn could be set ONLY for all declarations in an interface
 
 @Serializable

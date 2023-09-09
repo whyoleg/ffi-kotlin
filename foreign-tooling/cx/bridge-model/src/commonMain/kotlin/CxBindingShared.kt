@@ -1,7 +1,5 @@
 package dev.whyoleg.foreign.tooling.cx.model
 
-import kotlinx.serialization.*
-
 @Serializable
 public data class CxBindingSharedModule(
     val packages: Map<CxBindingPackageName, CxBindingsSharedPackage>

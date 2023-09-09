@@ -1,6 +1,5 @@
 package dev.whyoleg.foreign.tooling.cx.model
 
-import kotlinx.serialization.*
 import kotlin.jvm.*
 
 @Serializable
