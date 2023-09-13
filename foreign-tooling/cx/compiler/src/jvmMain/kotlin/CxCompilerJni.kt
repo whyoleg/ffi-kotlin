@@ -1,25 +1,16 @@
 package dev.whyoleg.foreign.tooling.cx.compiler
 
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
-import java.nio.file.*
-import kotlin.io.path.*
+import java.io.*
 
-internal actual fun CxIndexGenerator.generate(arguments: CxIndexGenerator.Arguments): CxIndexGenerator.Result {
-    val argumentsString = Json.encodeToString<CxIndexGenerator.Arguments>(arguments)
-    val resultString = CxIndexGeneratorJni.generateCxIndexBridge(argumentsString.encodeToByteArray())?.decodeToString()
-    return Json.decodeFromString<CxIndexGenerator.Result>(resultString ?: error("Native execution failure: NULL"))
-}
-
-internal object CxIndexGeneratorJni {
+internal object CxCompilerJni {
     @JvmStatic
-    external fun generateCxIndexBridge(argumentsBytes: ByteArray): ByteArray?
+    external fun call(request: ByteArray): ByteArray?
 
     init {
         currentHost().run {
             loadLibraryFromResources("clang")
-            loadLibraryFromResources("CxIndexGenerator")
-            loadLibraryFromResources("CxIndexGeneratorJni")
+            loadLibraryFromResources("CxCompiler")
+            loadLibraryFromResources("CxCompilerJni")
         }
     }
 }
@@ -57,12 +48,12 @@ private enum class Host(
         val libraryStream = checkNotNull(
             Host::class.java.getResourceAsStream(resourcePath)
         ) { "'$resourcePath' not found in resources" }
-        val tempPath = Files.createTempFile("lib$libraryName-", ".$extension")
+        val tempPath = File.createTempFile("lib$libraryName-", ".$extension")
         tempPath.outputStream().use { output ->
             libraryStream.use { input ->
                 input.copyTo(output)
             }
         }
-        System.load(tempPath.absolutePathString())
+        System.load(tempPath.absolutePath)
     }
 }

@@ -1,29 +1,30 @@
 #include <jni.h>
 #include <stdlib.h>
-#include <libCxIndexGenerator_api.h>
+#include <libCxCompiler_api.h>
 
-JNIEXPORT jbyteArray JNICALL Java_dev_whyoleg_foreign_cx_index_generator_CxIndexGeneratorJni_generateCxIndexBridge (JNIEnv* env, jclass jclss,
-  jbyteArray argumentsBytes
+JNIEXPORT jbyteArray JNICALL Java_dev_whyoleg_foreign_tooling_cx_compiler_CxCompilerJni_call (JNIEnv* env, jclass jclss,
+  jbyteArray requestBytes
 ) {
     // get ByteArray raw data
-    jsize argumentsBytesSize = (*env)->GetArrayLength(env, argumentsBytes);
-    jbyte* argumentsBytesElements = (*env)->GetByteArrayElements(env, argumentsBytes, NULL);
+    jsize requestBytesSize = (*env)->GetArrayLength(env, requestBytes);
+    jbyte* requestBytesElements = (*env)->GetByteArrayElements(env, requestBytes, NULL);
 
     // call K/N exported function
-    jsize resultBytesSize;
-    jbyte* resultBytesElements = generateCxIndexBridge(argumentsBytesElements, argumentsBytesSize, &resultBytesSize);
+    jbyte* responseBytesElements;
+    jsize responseBytesSize = callCxCompiler(requestBytesElements, requestBytesSize, &responseBytesElements);
 
-    // release arguments
-    (*env)->ReleaseByteArrayElements(env, argumentsBytes, argumentsBytesElements, 0);
+    // release request
+    (*env)->ReleaseByteArrayElements(env, requestBytes, requestBytesElements, 0);
 
-    if (resultBytesElements == NULL) return NULL;
+    if (responseBytesElements == NULL) return NULL;
+    if (responseBytesSize <= 0) return NULL;
 
     // create ByteArray from raw data
-    jbyteArray resultBytes = (*env)->NewByteArray(env, resultBytesSize);
-    (*env)->SetByteArrayRegion(env, resultBytes, 0, resultBytesSize, resultBytesElements);
+    jbyteArray responseBytes = (*env)->NewByteArray(env, responseBytesSize);
+    (*env)->SetByteArrayRegion(env, responseBytes, 0, responseBytesSize, responseBytesElements);
 
-    // release result bytes allocated via malloc
-    free(resultBytesElements);
+    // release response bytes allocated via malloc
+    free(responseBytesElements);
 
-    return resultBytes;
+    return responseBytes;
 }

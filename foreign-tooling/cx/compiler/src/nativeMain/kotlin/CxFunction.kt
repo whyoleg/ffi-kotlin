@@ -1,26 +1,27 @@
-package dev.whyoleg.foreign.tooling.cx.compiler.info
+package dev.whyoleg.foreign.tooling.cx.compiler
 
-import dev.whyoleg.foreign.tooling.cx.compiler.*
 import dev.whyoleg.foreign.tooling.cx.compiler.internal.*
 import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
 import dev.whyoleg.foreign.tooling.cx.compiler.model.*
 import kotlinx.cinterop.*
 
-internal fun CxIndexBuilder.buildFunctionInfo(
+internal fun CxIndexBuilder.buildFunction(
     id: CxDeclarationId,
     name: CxDeclarationName?,
+    headerName: CxHeaderName?,
     cursor: CValue<CXCursor>,
-): CxFunctionInfo = CxFunctionInfo(
+): CxFunction = CxFunction(
     id = id,
     name = checkNotNull(name) { "function can not be unnamed" },
-    returnType = buildTypeInfo(clang_getCursorResultType(cursor)),
+    headerName = headerName,
+    returnType = buildType(clang_getCursorResultType(cursor)),
     parameters = buildList {
         repeat(clang_Cursor_getNumArguments(cursor)) { i ->
             val argCursor = clang_Cursor_getArgument(cursor, i.convert())
             add(
-                CxFunctionInfo.Parameter(
+                CxFunction.Parameter(
                     name = argCursor.spelling.takeIf(String::isNotBlank) ?: "p$i",
-                    type = buildTypeInfo(argCursor.type)
+                    type = buildType(argCursor.type)
                 )
             )
         }

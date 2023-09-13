@@ -19,10 +19,6 @@ struct primitives {
   double _double;
   long double _double_long;
 
-  void* _pointer;
-
-//  bool _bool;
-
   __int128 _int128;
   unsigned __int128 _u_int128;
 };

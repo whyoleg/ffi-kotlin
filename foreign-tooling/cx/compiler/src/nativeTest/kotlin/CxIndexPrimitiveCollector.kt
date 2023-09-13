@@ -5,38 +5,12 @@ import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
 import dev.whyoleg.foreign.tooling.cx.compiler.model.*
 import kotlinx.cinterop.*
 
-internal class CxIndexPrimitiveCollector : CxIndexHandler() {
-    private val types = mutableMapOf<CxBuiltinType, Long>()
+internal class CxIndexPrimitiveCollector : CxIndexer<Map<CxBuiltinType, Int>> {
+    private val reportedErrors = ArrayDeque<Throwable>()
+    private val types = mutableMapOf<CxBuiltinType, Int>()
 
-    fun types(): Map<CxBuiltinType, Long> {
-        check(types.keys == CxBuiltinType.entries.toSet()) {
-            "${types.keys} != ${CxBuiltinType.entries.toSet()}"
-        }
-        return types
-    }
-
-    override fun diagnostic(diagnosticSet: CXDiagnosticSet) {
-        repeat(clang_getNumDiagnosticsInSet(diagnosticSet).toInt()) { i ->
-            val diagnostic = clang_getDiagnosticInSet(diagnosticSet, i.toUInt()) ?: return@repeat
-            try {
-                val severity = clang_getDiagnosticSeverity(diagnostic)
-                val format = clang_formatDiagnostic(diagnostic, clang_defaultDiagnosticDisplayOptions()).useString()
-                println("D: $severity | $format")
-            } finally {
-                clang_disposeDiagnostic(diagnostic)
-            }
-        }
-    }
-
-    override fun enteredMainFile(mainFile: CXFile) {
-        println("Header: ${clang_getFileName(mainFile).useString()}")
-    }
-
-    override fun ppIncludedFile(fileInfo: CXIdxIncludedFileInfo) {
-        val includeName = fileInfo.filename?.toKString()
-        val fileName = clang_getFileName(fileInfo.file).useString()
-        println("Include: $includeName / $fileName")
-    }
+    override fun enteredMainFile(mainFile: CXFile) {}
+    override fun ppIncludedFile(fileInfo: CXIdxIncludedFileInfo) {}
 
     override fun indexDeclaration(declarationInfo: CXIdxDeclInfo) {
         val entityInfo = declarationInfo.entityInfo!!.pointed
@@ -45,7 +19,7 @@ internal class CxIndexPrimitiveCollector : CxIndexHandler() {
         val cursor = declarationInfo.cursor.readValue()
         visitFields(cursor.type) { fieldCursor ->
             val typeKind = fieldCursor.type.kind
-            val typeSize = clang_Type_getSizeOf(fieldCursor.type)
+            val typeSize = clang_Type_getSizeOf(fieldCursor.type).toInt()
             val type = when (typeKind) {
                 CXTypeKind.CXType_Char_U,
                 CXTypeKind.CXType_Char_S     -> CxBuiltinType.Char
@@ -64,7 +38,6 @@ internal class CxIndexPrimitiveCollector : CxIndexHandler() {
                 CXTypeKind.CXType_Float      -> CxBuiltinType.Float
                 CXTypeKind.CXType_Double     -> CxBuiltinType.Double
                 CXTypeKind.CXType_LongDouble -> CxBuiltinType.LongDouble
-                CXTypeKind.CXType_Pointer    -> CxBuiltinType.Pointer
                 else                         -> error("wrong type: $typeKind")
             }
             check(types.put(type, typeSize) == null) { "$type already registered" }
@@ -72,7 +45,35 @@ internal class CxIndexPrimitiveCollector : CxIndexHandler() {
         }
     }
 
-    override fun unhandledError(cause: Throwable) {
-        println("ERROR: $cause")
+    override fun diagnostic(diagnosticSet: CXDiagnosticSet) {
+        repeat(clang_getNumDiagnosticsInSet(diagnosticSet).toInt()) { i ->
+            val diagnostic = clang_getDiagnosticInSet(diagnosticSet, i.toUInt()) ?: return@repeat
+            try {
+                val severity = clang_getDiagnosticSeverity(diagnostic)
+                val format = clang_formatDiagnostic(diagnostic, clang_defaultDiagnosticDisplayOptions()).useString()
+                reportedErrors.addLast(IllegalStateException("$severity | $format"))
+            } finally {
+                clang_disposeDiagnostic(diagnostic)
+            }
+        }
+    }
+
+    override fun reportError(cause: Throwable) {
+        reportedErrors.addLast(cause)
+    }
+
+    override fun buildResult(): Map<CxBuiltinType, Int> {
+        if (reportedErrors.isNotEmpty()) error(
+            reportedErrors.joinToString(
+                prefix = "Indexing failed:\n - ",
+                separator = "\n - ",
+                transform = Throwable::toString
+            )
+        )
+
+        check(types.keys == CxBuiltinType.entries.toSet()) {
+            "${types.keys} != ${CxBuiltinType.entries.toSet()}"
+        }
+        return types
     }
 }

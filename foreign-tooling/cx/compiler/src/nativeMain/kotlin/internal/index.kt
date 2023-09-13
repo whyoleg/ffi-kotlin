@@ -19,7 +19,10 @@ internal inline fun <R> useIndex(
     }
 }
 
-internal inline fun <T> useIndexAction(index: CXIndex, block: (action: CXIndexAction) -> T): T {
+internal inline fun <T> useIndexAction(
+    index: CXIndex,
+    block: (action: CXIndexAction) -> T
+): T {
     val action = checkNotNull(clang_IndexAction_create(index)) { "IndexAction is null" }
     try {
         return block(action)
