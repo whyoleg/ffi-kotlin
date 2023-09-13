@@ -11,40 +11,37 @@ public value class CxDeclarationId(public val value: String)
 @JvmInline
 public value class CxDeclarationName(public val value: String)
 
-//TODO: may be provide just CxHeaderName?
-public fun interface DeclarationPredicate<T : CxDeclarationInfo> {
-    public fun matches(header: CxHeaderInfo, declaration: T): Boolean
-}
-
-//TODO: is it needed?
-public fun interface DeclarationSelector<T : CxDeclarationInfo, R> {
-    public fun select(header: CxHeaderInfo, declaration: T): R
-}
+@Serializable
+@JvmInline
+public value class CxHeaderName(public val value: String)
 
 @Serializable
-public sealed class CxDeclarationInfo {
+public sealed class CxDeclaration {
     public abstract val id: CxDeclarationId
     public abstract val name: CxDeclarationName?
+    public abstract val headerName: CxHeaderName?
 }
 
 @Serializable
-public data class CxTypedefInfo(
+public data class CxTypedef(
     override val id: CxDeclarationId,
     override val name: CxDeclarationName,
-    val aliased: CxTypeInfo,
-) : CxDeclarationInfo()
+    override val headerName: CxHeaderName?,
+    val aliased: CxType,
+) : CxDeclaration()
 
 @Serializable
-public data class CxRecordInfo(
+public data class CxRecord(
     override val id: CxDeclarationId,
     override val name: CxDeclarationName?, // if null - anonymous
+    override val headerName: CxHeaderName?,
     val isUnion: Boolean,
     val members: Members? // if null - opaque
-) : CxDeclarationInfo() {
+) : CxDeclaration() {
     @Serializable
     public data class Field(
         val name: String,
-        val type: CxTypeInfo,
+        val type: CxType,
     )
 
     // TODO: better name?
@@ -57,11 +54,12 @@ public data class CxRecordInfo(
 }
 
 @Serializable
-public data class CxEnumInfo(
+public data class CxEnum(
     override val id: CxDeclarationId,
-    override val name: CxDeclarationName?,
+    override val name: CxDeclarationName?, // if null - anonymous
+    override val headerName: CxHeaderName?,
     val constants: List<Constant>,
-) : CxDeclarationInfo() {
+) : CxDeclaration() {
     @Serializable
     public data class Constant(
         val name: String,
@@ -70,15 +68,18 @@ public data class CxEnumInfo(
 }
 
 @Serializable
-public data class CxFunctionInfo(
+public data class CxFunction(
     override val id: CxDeclarationId,
     override val name: CxDeclarationName,
-    val returnType: CxTypeInfo,
+    override val headerName: CxHeaderName?,
+    val returnType: CxType,
     val parameters: List<Parameter> = emptyList(),
-) : CxDeclarationInfo() {
+) : CxDeclaration() {
+
+    // TODO: add if const?
     @Serializable
     public data class Parameter(
         val name: String,
-        val type: CxTypeInfo,
+        val type: CxType,
     )
 }

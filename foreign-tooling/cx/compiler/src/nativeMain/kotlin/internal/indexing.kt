@@ -1,28 +1,17 @@
-package dev.whyoleg.foreign.tooling.cx.compiler
+package dev.whyoleg.foreign.tooling.cx.compiler.internal
 
+import dev.whyoleg.foreign.tooling.cx.compiler.*
 import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
 import kotlinx.cinterop.*
 
-internal abstract class CxIndexHandler {
-    abstract fun diagnostic(diagnosticSet: CXDiagnosticSet)
-    abstract fun enteredMainFile(mainFile: CXFile)
-    abstract fun ppIncludedFile(fileInfo: CXIdxIncludedFileInfo)
-    abstract fun indexDeclaration(declarationInfo: CXIdxDeclInfo)
-
-    abstract fun unhandledError(cause: Throwable)
-}
-
-internal inline fun <T> useIndexHandler(
-    handler: CxIndexHandler,
-    block: (
-        handlerPointer: COpaquePointer,
-        callbacksPointer: CPointer<IndexerCallbacks>
-    ) -> T
-): T = memScoped {
-    useStableRef(handler) { handlerRef ->
-        block(
-            handlerRef.asCPointer(),
-            alloc<IndexerCallbacks> {
+internal fun <T> indexTranslationUnit(
+    action: CXIndexAction,
+    translationUnit: CXTranslationUnit,
+    indexer: CxIndexer<T>
+): T {
+    memScoped {
+        useStableRef(indexer) { indexerRef ->
+            val callbacks = alloc<IndexerCallbacks> {
                 diagnostic = staticCFunction { clientData, diagnosticSet, _ ->
                     unwrapHandlerRef(clientData) { it.diagnostic(diagnosticSet!!) }
                 }
@@ -37,17 +26,27 @@ internal inline fun <T> useIndexHandler(
                 indexDeclaration = staticCFunction { clientData, info ->
                     unwrapHandlerRef(clientData) { it.indexDeclaration(info!!.pointed) }
                 }
-            }.ptr
-        )
+            }
+            val result = clang_indexTranslationUnit(
+                action,
+                indexerRef.asCPointer(),
+                callbacks.ptr,
+                sizeOf<IndexerCallbacks>().convert(),
+                0u,
+                translationUnit
+            )
+            if (result != 0) error("clang_indexTranslationUnit returned $result")
+        }
     }
+    return indexer.buildResult()
 }
 
-private inline fun unwrapHandlerRef(clientData: CXClientData?, block: (runner: CxIndexHandler) -> Unit) {
-    val handler = clientData!!.asStableRef<CxIndexHandler>().get()
+private inline fun unwrapHandlerRef(clientData: CXClientData?, block: (indexer: CxIndexer<*>) -> Unit) {
+    val indexer = clientData!!.asStableRef<CxIndexer<*>>().get()
 
-    handler
+    indexer
         .runCatching(block)
-        .recoverCatching(handler::unhandledError)
+        .recoverCatching(indexer::reportError)
         .recoverCatching(Throwable::printStackTrace)
 }
 

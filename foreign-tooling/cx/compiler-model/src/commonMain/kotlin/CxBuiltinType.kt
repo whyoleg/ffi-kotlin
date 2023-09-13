@@ -11,11 +11,6 @@ public enum class CxBuiltinType {
     Long, UnsignedLong,
     LongLong, UnsignedLongLong,
     Int128, UnsignedInt128,
-    Float, Double, LongDouble,
-    Pointer,
+    Float, Double, LongDouble
 }
 
-@Serializable
-public data class CxBuiltinTypeSizes(
-    val sizes: Map<CxBuiltinType, Long>
-)
