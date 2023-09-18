@@ -1,7 +1,18 @@
 plugins {
     `kotlin-dsl`
+    alias(libs.plugins.buildconfig)
 }
 
 dependencies {
-    implementation("org.gradle.toolchains:foojay-resolver:0.7.0")
+    implementation(libs.build.gradle.enterprise)
+    implementation(libs.build.gradle.foojay)
+}
+
+buildConfig {
+    packageName("foreignbuild.settings")
+    useKotlinOutput {
+        topLevelConstants = true
+        internalVisibility = true
+    }
+    buildConfigField("String", "kotlinVersion", libs.versions.kotlin.asProvider().map { "\"$it\"" })
 }

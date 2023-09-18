@@ -1,11 +1,17 @@
 [versions]
 
-# build
-kotlin-dokka = "1.8.20"
+kotlin = "1.9.20-Beta"
+kotlin-dokka = "1.9.0"
 kotlinx-bcv = "0.13.2"
-kotlinx-kover = "0.7.2"
+kotlinx-kover = "0.7.3"
 
-android = "7.3.0" #"8.0.2"
+android = "8.0.2"
+androidx-test = "1.5.2"
+
+gradle-enterprise = "3.15"
+gradle-foojay = "0.7.0"
+
+buildconfig = "4.1.2"
 
 # tools
 okio = "3.5.0"
@@ -19,12 +25,18 @@ build-kotlinx-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", ve
 
 build-android = { module = "com.android.tools.build:gradle", version.ref = "android" }
 
+build-gradle-enterprise = { module = "com.gradle:gradle-enterprise-gradle-plugin", version.ref = "gradle-enterprise" }
+build-gradle-foojay = { module = "org.gradle.toolchains:foojay-resolver", version.ref = "gradle-foojay" }
+
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
 
+androidx-test = { module = "androidx.test:runner", version.ref = "androidx-test" }
+
 [plugins]
-#kotlin-dokka = { id = "org.jetbrains.dokka", version.ref = "kotlin-dokka" }
+kotlin-dokka = { id = "org.jetbrains.dokka", version.ref = "kotlin-dokka" }
 android-library = { id = "com.android.library", version.ref = "android" }
+buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }

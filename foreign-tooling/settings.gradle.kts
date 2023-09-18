@@ -1,11 +1,10 @@
 pluginManagement {
     includeBuild("../build-settings")
-
     includeBuild("../build-logic")
 }
 
 plugins {
-    id("default-settings")
+    id("foreignbuild.settings.default")
 }
 
 dependencyResolutionManagement {
