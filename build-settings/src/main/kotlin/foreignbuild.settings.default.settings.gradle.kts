@@ -1,23 +1,39 @@
 plugins {
-    id("kotlin-version-catalog")
+    id("foreignbuild.settings.kotlin-version-catalog")
+    id("com.gradle.enterprise")
     id("org.gradle.toolchains.foojay-resolver-convention")
 }
 
-//TODO: drop google and remote distributions
-
 pluginManagement {
     repositories {
-        google()
         mavenCentral()
         gradlePluginPortal()
+        google()
     }
 }
 
 dependencyResolutionManagement {
     repositories {
-        google()
         mavenCentral()
+        google()
+    }
+}
 
+gradleEnterprise {
+    buildScan {
+        publishAlwaysIf(System.getenv("CI").toBoolean())
+        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+        if (System.getenv("GITHUB_REPOSITORY") == "whyoleg/ffi-kotlin") {
+            termsOfServiceAgree = "yes"
+        }
+    }
+}
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+//TODO: drop remote distributions
+dependencyResolutionManagement {
+    repositories {
         // https://cdn.azul.com/zulu/bin/zulu8.72.0.17-ca-jdk8.0.382-macosx_x64.zip
         // foreignbuild.jdk:macosx_x64:zulu8.72.0.17-ca-jdk8.0.382@zip
         remoteDistribution(
@@ -55,8 +71,6 @@ dependencyResolutionManagement {
         )
     }
 }
-
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 fun RepositoryHandler.remoteDistribution(
     name: String,

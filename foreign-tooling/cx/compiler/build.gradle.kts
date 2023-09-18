@@ -15,9 +15,7 @@ plugins {
 }
 
 // common configuration
-@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-    targetHierarchy.default()
     sourceSets {
         commonMain {
             dependencies {
