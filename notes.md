@@ -89,14 +89,3 @@ on gradle plugin:
     - native bitcode compilation
     - wasm/js - reevaluate possibilities
 
-## Bindings
-
-1. generate bindings from index
-2. diff of bindings (needed for both combining and splitting)
-3. combine N per host JVM bindings into single bindings
-    - input: N bindings per host
-    - output: single shared bindings + N host-specific bindings (combined afterward in single artifact)
-4. combine N per abi android bindings into single bindings
-5. split N bindings into: N+1 specific+shared bindings
-    - input: N bindings per 'target'
-    - output: N 'target'-specific bindings + shared bindings

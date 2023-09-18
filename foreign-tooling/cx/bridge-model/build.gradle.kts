@@ -9,6 +9,7 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.cx.foreignToolingCxCompilerModel)
+                implementation(libs.kotlinx.serialization.core)
             }
         }
     }

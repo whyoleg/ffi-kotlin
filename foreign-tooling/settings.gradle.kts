@@ -24,8 +24,7 @@ listOf(
     "compiler-runner",
     "bridge-model",
     "bridge-aggregator",
-    "bridge-code-generator",
-    "playground" // TODO: drop it, and somehow write tests
+    "bridge-code-generator"
 ).forEach {
     include("cx:$it")
     project(":cx:$it").apply {

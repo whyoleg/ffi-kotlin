@@ -1,19 +1,16 @@
 package dev.whyoleg.foreign.tooling.cx.bridge.model
 
-import kotlin.jvm.*
+import kotlinx.serialization.*
 
-@Serializable
-@JvmInline
-public value class CxBindingTargetId(public val value: String)
-
+// TODO: is it needed? - may be for metadata
 // every target represents a single final source set of generated declarations
 @Serializable
-public sealed class CxBindingTarget {
+public sealed class CxBridgeTarget {
     @Serializable
-    public sealed class Platform : CxBindingTarget()
+    public sealed class Platform : CxBridgeTarget()
 
     @Serializable
-    public data class Shared(val targets: Set<CxBindingTarget>) : CxBindingTarget()
+    public data class Shared(val targets: Set<CxBridgeTarget>) : CxBridgeTarget()
 
     @Serializable
     public data class Jvm(val hosts: Set<Host>) : Platform() {
@@ -42,33 +39,3 @@ public sealed class CxBindingTarget {
         }
     }
 }
-
-/*
-
-targets:
-  - jvm (single artifact) - jni and/or panama
-    - macos-x64
-    - macos-arm64
-    - linux-x64
-    - mingw-x64 or windows-x64 - TBD
-  - android (single artifact) - jni only
-    - arm64
-    - x64
-    - ...
-  - wasmWasi (nodejs and browser?)
-    - wasm32 or wasm64 or?
-  - wasmJs (nodejs and browser)
-    - wasm32 or wasm64
-  - js (nodejs and browser)
-    - wasm32 or wasm64
-  - native
-    - macos-x64
-    - macos-arm64
-    - linux-x64
-    - mingw-x64
-    - ios-device-arm64
-    - ios-simulator-arm64
-    - ios-simulator-x64
-    - ...
-
- */
