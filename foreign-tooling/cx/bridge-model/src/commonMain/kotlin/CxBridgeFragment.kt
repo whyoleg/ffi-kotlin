@@ -1,13 +1,18 @@
 package dev.whyoleg.foreign.tooling.cx.bridge.model
 
 import kotlinx.serialization.*
+import kotlin.jvm.*
 
-// name - common, jvm, jvmAndNix, etc
+// common, jvm, jvmAndNix, etc
 @Serializable
+@JvmInline
+public value class CxBridgeFragmentId(public val value: String)
+
+@Serializable // TODO: use maps?
 public data class CxBridgeFragment(
-    val name: String,
-    val typedefs: List<CxBridgeTypedef>,
-    val enums: List<CxBridgeEnum>,
-    val records: List<CxBridgeRecord>,
-    val functions: List<CxBridgeFunction>
+    val id: CxBridgeFragmentId,
+    val typedefs: Map<CxBridgeDeclarationId, CxBridgeTypedef>,
+    val enums: Map<CxBridgeDeclarationId, CxBridgeEnum>,
+    val records: Map<CxBridgeDeclarationId, CxBridgeRecord>,
+    val functions: Map<CxBridgeDeclarationId, CxBridgeFunction>
 )

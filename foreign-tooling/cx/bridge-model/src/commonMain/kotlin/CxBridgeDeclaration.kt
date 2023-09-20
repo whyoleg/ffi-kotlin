@@ -1,12 +1,29 @@
 package dev.whyoleg.foreign.tooling.cx.bridge.model
 
 import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.*
+import kotlinx.serialization.encoding.*
 
-@Serializable
+@Serializable(with = CxBridgeDeclarationIdSerializer::class)
 public data class CxBridgeDeclarationId(
-    val name: String,
-    val packageName: String
+    val packageName: String,
+    val declarationName: String
 )
+
+private object CxBridgeDeclarationIdSerializer : KSerializer<CxBridgeDeclarationId> {
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("CxBridgeDeclarationId", PrimitiveKind.STRING)
+
+    override fun deserialize(decoder: Decoder): CxBridgeDeclarationId {
+        val list = decoder.decodeString().split(":")
+        check(list.size == 2)
+        val (packageName, declarationName) = list
+        return CxBridgeDeclarationId(packageName, declarationName)
+    }
+
+    override fun serialize(encoder: Encoder, value: CxBridgeDeclarationId) {
+        encoder.encodeString("${value.packageName}:${value.declarationName}")
+    }
+}
 
 @Serializable
 public sealed class CxBridgeDeclaration {

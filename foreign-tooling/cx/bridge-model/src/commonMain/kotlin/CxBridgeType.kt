@@ -33,6 +33,9 @@ public sealed class CxBridgeType {
     @Serializable
     public data class Array(val elementType: CxBridgeType) : CxBridgeType()
 
-    @Serializable // TODO: better name
-    public data class Shared(val variants: List<CxBridgeType>) : CxBridgeType()
+    @Serializable // TODO: better name?
+    public data class Shared(
+        // bridge type here is strictly from fragment
+        val variants: Map<CxBridgeFragmentId, CxBridgeType>
+    ) : CxBridgeType()
 }
