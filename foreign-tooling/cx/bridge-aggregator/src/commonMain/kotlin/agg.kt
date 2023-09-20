@@ -3,12 +3,11 @@ package dev.whyoleg.foreign.tooling.cx.bridge.aggregator
 import dev.whyoleg.foreign.tooling.cx.bridge.model.*
 
 public fun List<CxBridgeFragment>.shared(): CxBridgeFragment {
-    val typedefs = map {
+    val typedefs = associate {
         // single() to ensure, that we have single such declaration - TODO: may be improve it
-        it.typedefs.groupBy { it.id }.mapValues { it.value.single() }
+        it.id to it.typedefs
     }.run {
-        intersection { it.keys }.map { id ->
-            val variants = map { it.getValue(id).aliased }.distinct()
+        values.intersection { it.keys }.map { id ->
             CxBridgeTypedef(
                 id = id,
                 aliased = sharedType { it.getValue(id).aliased }
@@ -16,27 +15,27 @@ public fun List<CxBridgeFragment>.shared(): CxBridgeFragment {
         }
     }
 
-    val records = map {
+    val records = associate {
         // single() to ensure, that we have single such declaration - TODO: may be improve it
-        it.records.groupBy { it.id }.mapValues { it.value.single() }
+        it.id to it.records
     }.run {
-        intersection { it.keys }.map { id ->
-            val variants = map { it.getValue(id) }
+        values.intersection { it.keys }.map { id ->
+            val variants = mapValues { it.value.getValue(id) }
             if (
-                variants.map { it.isUnion }.toSet().size == 1
+                variants.map { it.value.isUnion }.toSet().size == 1
             ) {
                 if (
-                    variants.map { it.fields == null }.toSet().size == 1
+                    variants.map { it.value.fields == null }.toSet().size == 1
                 ) {
                     CxBridgeRecord(
                         id = id,
-                        isUnion = variants.first().isUnion,
-                        fields = when (variants.first().fields) {
+                        isUnion = variants.values.first().isUnion,
+                        fields = when (variants.values.first().fields) {
                             null -> null
-                            else -> variants.map {
-                                it.fields!!.associateBy { it.name }
+                            else -> variants.mapValues {
+                                it.value.fields!!.associateBy { it.name }
                             }.run {
-                                intersection { it.keys }.map { fieldName ->
+                                values.intersection { it.keys }.map { fieldName ->
                                     CxBridgeRecord.Field(
                                         name = fieldName,
                                         type = sharedType { it.getValue(fieldName).type }
@@ -67,7 +66,7 @@ public fun List<CxBridgeFragment>.shared(): CxBridgeFragment {
 
 // f1+f2: struct.p1 = UInt|Int
 
-private fun <T, R> List<T>.intersection(selector: (T) -> Set<R>): Set<R> {
+private fun <T, R> Collection<T>.intersection(selector: (T) -> Set<R>): Set<R> {
     require(isNotEmpty()) { "no values: critical failure" }
     var keys: Set<R>? = null
     forEach {
@@ -77,7 +76,15 @@ private fun <T, R> List<T>.intersection(selector: (T) -> Set<R>): Set<R> {
     return keys ?: emptySet()
 }
 
-private fun <T> List<T>.sharedType(typeProvider: (T) -> CxBridgeType): CxBridgeType {
-    val variants = map(typeProvider).distinct()
-    return variants.singleOrNull() ?: CxBridgeType.Shared(variants)
+private fun <T> Map<CxBridgeFragmentId, T>.sharedType(typeProvider: (T) -> CxBridgeType): CxBridgeType {
+    val variants = mapValues { typeProvider(it.value) }
+    // TODO - may be don't merge
+    return variants.values.distinct().singleOrNull() ?: CxBridgeType.Shared(buildMap {
+        variants.forEach { (fragmentId, type) ->
+            when (type) {
+                is CxBridgeType.Shared -> putAll(type.variants)
+                else                   -> put(fragmentId, type)
+            }
+        }
+    })
 }
