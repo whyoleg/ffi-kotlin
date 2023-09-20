@@ -1,6 +1,5 @@
 package dev.whyoleg.foreign.tooling.cx.compiler.internal
 
-import dev.whyoleg.foreign.tooling.cx.compiler.*
 import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
 import kotlinx.cinterop.*
 

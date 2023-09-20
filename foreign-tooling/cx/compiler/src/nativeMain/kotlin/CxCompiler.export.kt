@@ -5,9 +5,11 @@ import kotlinx.cinterop.*
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.*
 import platform.posix.*
+import kotlin.experimental.*
 
+// TODO: sometimes bridge can fail JVM - hard to reproduce - may be need to switch to std allocator
 // the method should be public, or it will not be available for c export
-@OptIn(ExperimentalSerializationApi::class)
+@OptIn(ExperimentalSerializationApi::class, ExperimentalNativeApi::class)
 @Deprecated("Only for JNI", level = DeprecationLevel.HIDDEN)
 @CName("callCxCompiler")
 public fun callCxCompiler(
@@ -26,7 +28,7 @@ public fun callCxCompiler(
         )) {
             is CxCompilerBridge.Request.BuildIndex -> {
                 CxCompilerBridge.encode(
-                    serializer = CxCompilerBridge.Response.serializer(CxIndex.serializer()),
+                    serializer = CxCompilerBridge.Response.serializer(CxCompilerIndex.serializer()),
                     value = CxCompilerBridge.Response(
                         value = CxCompiler.buildIndex(request.mainFilePath, request.compilerArgs),
                         errorStackTrace = null

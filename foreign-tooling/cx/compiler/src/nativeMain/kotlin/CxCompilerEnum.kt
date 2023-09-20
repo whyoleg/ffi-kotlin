@@ -5,19 +5,19 @@ import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
 import dev.whyoleg.foreign.tooling.cx.compiler.model.*
 import kotlinx.cinterop.*
 
-internal fun CxIndexBuilder.buildEnum(
-    id: CxDeclarationId,
-    name: CxDeclarationName?,
-    headerName: CxHeaderName?,
+internal fun CxCompilerIndexBuilder.buildEnum(
+    id: CxCompilerDeclarationId,
+    declarationName: String?,
+    headerName: String?,
     cursor: CValue<CXCursor>,
-): CxEnum = CxEnum(
+): CxCompilerEnum = CxCompilerEnum(
     id = id,
-    name = name,
+    declarationName = declarationName,
     headerName = headerName,
     constants = buildList {
         visitChildren(cursor) { constantCursor, _ ->
             add(
-                CxEnum.Constant(
+                CxCompilerEnum.Constant(
                     name = constantCursor.spelling,
                     value = clang_getEnumConstantDeclValue(constantCursor)
                 )

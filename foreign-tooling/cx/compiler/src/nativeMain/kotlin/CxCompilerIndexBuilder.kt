@@ -5,26 +5,26 @@ import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
 import dev.whyoleg.foreign.tooling.cx.compiler.model.*
 import kotlinx.cinterop.*
 
-internal interface CxIndexBuilder {
-    fun function(cursor: CValue<CXCursor>): CxDeclarationId
-    fun typedef(cursor: CValue<CXCursor>): CxDeclarationId
-    fun record(cursor: CValue<CXCursor>): CxDeclarationId
-    fun enum(cursor: CValue<CXCursor>): CxDeclarationId
+internal interface CxCompilerIndexBuilder {
+    fun function(cursor: CValue<CXCursor>): CxCompilerDeclarationId
+    fun typedef(cursor: CValue<CXCursor>): CxCompilerDeclarationId
+    fun record(cursor: CValue<CXCursor>): CxCompilerDeclarationId
+    fun enum(cursor: CValue<CXCursor>): CxCompilerDeclarationId
 }
 
-internal fun cxIndexBuilder(): CxIndexer<CxIndex> = CxIndexBuilderImpl()
+internal fun cxCompilerIndexBuilder(): CxIndexer<CxCompilerIndex> = CxCompilerIndexBuilderImpl()
 
-private class CxIndexBuilderImpl : CxIndexBuilder, CxIndexer<CxIndex> {
-    private val typedefs = mutableMapOf<CxDeclarationId, CxTypedef>()
-    private val enums = mutableMapOf<CxDeclarationId, CxEnum>()
-    private val records = mutableMapOf<CxDeclarationId, CxRecord>()
-    private val functions = mutableMapOf<CxDeclarationId, CxFunction>()
+private class CxCompilerIndexBuilderImpl : CxCompilerIndexBuilder, CxIndexer<CxCompilerIndex> {
+    private val typedefs = mutableMapOf<CxCompilerDeclarationId, CxCompilerTypedef>()
+    private val enums = mutableMapOf<CxCompilerDeclarationId, CxCompilerEnum>()
+    private val records = mutableMapOf<CxCompilerDeclarationId, CxCompilerRecord>()
+    private val functions = mutableMapOf<CxCompilerDeclarationId, CxCompilerFunction>()
 
     private val headerByPath = mutableMapOf<String, String>()
 
-    private val dummyRecord = CxRecord(
-        id = CxDeclarationId(""),
-        name = null,
+    private val dummyRecord = CxCompilerRecord(
+        id = CxCompilerDeclarationId(""),
+        declarationName = null,
         headerName = null,
         isUnion = false,
         members = null
@@ -32,35 +32,35 @@ private class CxIndexBuilderImpl : CxIndexBuilder, CxIndexer<CxIndex> {
 
     private val reportedErrors = ArrayDeque<Throwable>()
 
-    override fun function(cursor: CValue<CXCursor>): CxDeclarationId = save(functions, cursor, null, ::buildFunction)
-    override fun typedef(cursor: CValue<CXCursor>): CxDeclarationId = save(typedefs, cursor, null, ::buildTypedef)
-    override fun record(cursor: CValue<CXCursor>): CxDeclarationId = save(records, cursor, dummyRecord, ::buildRecord)
-    override fun enum(cursor: CValue<CXCursor>): CxDeclarationId = save(enums, cursor, null, ::buildEnum)
+    override fun function(cursor: CValue<CXCursor>): CxCompilerDeclarationId = save(functions, cursor, null, ::buildFunction)
+    override fun typedef(cursor: CValue<CXCursor>): CxCompilerDeclarationId = save(typedefs, cursor, null, ::buildTypedef)
+    override fun record(cursor: CValue<CXCursor>): CxCompilerDeclarationId = save(records, cursor, dummyRecord, ::buildRecord)
+    override fun enum(cursor: CValue<CXCursor>): CxCompilerDeclarationId = save(enums, cursor, null, ::buildEnum)
 
-    private fun <T : CxDeclaration> save(
-        declarations: MutableMap<CxDeclarationId, T>,
+    private fun <T : CxCompilerDeclaration> save(
+        declarations: MutableMap<CxCompilerDeclarationId, T>,
         cursor: CValue<CXCursor>,
         dummy: T?,
         block: (
-            id: CxDeclarationId,
-            name: CxDeclarationName?,
-            headerName: CxHeaderName?,
+            id: CxCompilerDeclarationId,
+            declarationName: String?,
+            headerName: String?,
             cursor: CValue<CXCursor>
         ) -> T,
-    ): CxDeclarationId {
+    ): CxCompilerDeclarationId {
         val id = clang_getCursorUSR(cursor).useString().let {
             checkNotNull(it) { "USR = null" }
             check(it.isNotBlank()) { "USR is blank" }
-            CxDeclarationId(it)
+            CxCompilerDeclarationId(it)
         }
 
         if (id in declarations) return id
 
         val name = when (clang_Cursor_isAnonymous(cursor)) {
             1U   -> null
-            else -> CxDeclarationName(cursor.spelling)
+            else -> cursor.spelling
         }
-        val headerName = headerByPath[clang_getFileName(cursor.locationFile).useString()]?.let(::CxHeaderName)
+        val headerName = headerByPath[clang_getFileName(cursor.locationFile).useString()]
         declarations[id] = when (dummy) {
             null -> block(id, name, headerName, cursor)
             else -> {
@@ -155,7 +155,7 @@ private class CxIndexBuilderImpl : CxIndexBuilder, CxIndexer<CxIndex> {
         reportedErrors.addLast(cause)
     }
 
-    override fun buildResult(): CxIndex {
+    override fun buildResult(): CxCompilerIndex {
         if (reportedErrors.isNotEmpty()) {
 
             val message = reportedErrors.joinToString("\n - ", "Indexing failed:\n - ", transform = Throwable::toString)
@@ -165,11 +165,11 @@ private class CxIndexBuilderImpl : CxIndexBuilder, CxIndexer<CxIndex> {
             error(message)
         }
 
-        return CxIndex(
-            typedefs = typedefs.values.toList(),
-            records = records.values.toList(),
-            enums = enums.values.toList(),
-            functions = functions.values.toList()
+        return CxCompilerIndex(
+            typedefs = typedefs.toMap(),
+            records = records.toMap(),
+            enums = enums.toMap(),
+            functions = functions.toMap(),
         )
     }
 }

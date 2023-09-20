@@ -7,7 +7,7 @@ public actual object CxCompiler {
     public actual fun buildIndex(
         mainFilePath: String,
         compilerArgs: List<String>
-    ): CxIndex = call(CxCompilerBridge.Request.BuildIndex(mainFilePath, compilerArgs))
+    ): CxCompilerIndex = call(CxCompilerBridge.Request.BuildIndex(mainFilePath, compilerArgs))
 
     private inline fun <reified T> call(request: CxCompilerBridge.Request.Typed<T>): T = call(request, serializer())
 

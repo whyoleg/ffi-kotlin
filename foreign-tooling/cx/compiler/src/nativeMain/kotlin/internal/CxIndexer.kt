@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.tooling.cx.compiler
+package dev.whyoleg.foreign.tooling.cx.compiler.internal
 
 import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
 

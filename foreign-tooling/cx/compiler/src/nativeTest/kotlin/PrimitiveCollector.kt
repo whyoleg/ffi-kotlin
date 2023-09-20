@@ -5,9 +5,12 @@ import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
 import dev.whyoleg.foreign.tooling.cx.compiler.model.*
 import kotlinx.cinterop.*
 
-internal class CxIndexPrimitiveCollector : CxIndexer<Map<CxBuiltinType, Int>> {
+internal class PrimitiveCollector : CxIndexer<Map<CxPrimitiveDataType, Int>> {
     private val reportedErrors = ArrayDeque<Throwable>()
-    private val types = mutableMapOf<CxBuiltinType, Int>()
+    private val types = mutableMapOf(
+        CxPrimitiveDataType.Void to 0,
+        CxPrimitiveDataType.Bool to Byte.SIZE_BYTES
+    )
 
     override fun enteredMainFile(mainFile: CXFile) {}
     override fun ppIncludedFile(fileInfo: CXIdxIncludedFileInfo) {}
@@ -22,22 +25,22 @@ internal class CxIndexPrimitiveCollector : CxIndexer<Map<CxBuiltinType, Int>> {
             val typeSize = clang_Type_getSizeOf(fieldCursor.type).toInt()
             val type = when (typeKind) {
                 CXTypeKind.CXType_Char_U,
-                CXTypeKind.CXType_Char_S     -> CxBuiltinType.Char
-                CXTypeKind.CXType_SChar      -> CxBuiltinType.SignedChar
-                CXTypeKind.CXType_UChar      -> CxBuiltinType.UnsignedChar
-                CXTypeKind.CXType_Short      -> CxBuiltinType.Short
-                CXTypeKind.CXType_UShort     -> CxBuiltinType.UnsignedShort
-                CXTypeKind.CXType_Int        -> CxBuiltinType.Int
-                CXTypeKind.CXType_UInt       -> CxBuiltinType.UnsignedInt
-                CXTypeKind.CXType_Long       -> CxBuiltinType.Long
-                CXTypeKind.CXType_ULong      -> CxBuiltinType.UnsignedLong
-                CXTypeKind.CXType_LongLong   -> CxBuiltinType.LongLong
-                CXTypeKind.CXType_ULongLong  -> CxBuiltinType.UnsignedLongLong
-                CXTypeKind.CXType_Int128     -> CxBuiltinType.Int128
-                CXTypeKind.CXType_UInt128    -> CxBuiltinType.UnsignedInt128
-                CXTypeKind.CXType_Float      -> CxBuiltinType.Float
-                CXTypeKind.CXType_Double     -> CxBuiltinType.Double
-                CXTypeKind.CXType_LongDouble -> CxBuiltinType.LongDouble
+                CXTypeKind.CXType_Char_S     -> CxPrimitiveDataType.Char
+                CXTypeKind.CXType_SChar      -> CxPrimitiveDataType.SignedChar
+                CXTypeKind.CXType_UChar      -> CxPrimitiveDataType.UnsignedChar
+                CXTypeKind.CXType_Short      -> CxPrimitiveDataType.Short
+                CXTypeKind.CXType_UShort     -> CxPrimitiveDataType.UnsignedShort
+                CXTypeKind.CXType_Int        -> CxPrimitiveDataType.Int
+                CXTypeKind.CXType_UInt       -> CxPrimitiveDataType.UnsignedInt
+                CXTypeKind.CXType_Long       -> CxPrimitiveDataType.Long
+                CXTypeKind.CXType_ULong      -> CxPrimitiveDataType.UnsignedLong
+                CXTypeKind.CXType_LongLong   -> CxPrimitiveDataType.LongLong
+                CXTypeKind.CXType_ULongLong  -> CxPrimitiveDataType.UnsignedLongLong
+                CXTypeKind.CXType_Int128     -> CxPrimitiveDataType.Int128
+                CXTypeKind.CXType_UInt128    -> CxPrimitiveDataType.UnsignedInt128
+                CXTypeKind.CXType_Float      -> CxPrimitiveDataType.Float
+                CXTypeKind.CXType_Double     -> CxPrimitiveDataType.Double
+                CXTypeKind.CXType_LongDouble -> CxPrimitiveDataType.LongDouble
                 else                         -> error("wrong type: $typeKind")
             }
             check(types.put(type, typeSize) == null) { "$type already registered" }
@@ -62,7 +65,7 @@ internal class CxIndexPrimitiveCollector : CxIndexer<Map<CxBuiltinType, Int>> {
         reportedErrors.addLast(cause)
     }
 
-    override fun buildResult(): Map<CxBuiltinType, Int> {
+    override fun buildResult(): Map<CxPrimitiveDataType, Int> {
         if (reportedErrors.isNotEmpty()) error(
             reportedErrors.joinToString(
                 prefix = "Indexing failed:\n - ",
@@ -71,8 +74,8 @@ internal class CxIndexPrimitiveCollector : CxIndexer<Map<CxBuiltinType, Int>> {
             )
         )
 
-        check(types.keys == CxBuiltinType.entries.toSet()) {
-            "${types.keys} != ${CxBuiltinType.entries.toSet()}"
+        check(types.keys == CxPrimitiveDataType.entries.toSet()) {
+            "${types.keys} != ${CxPrimitiveDataType.entries.toSet()}"
         }
         return types
     }

@@ -1,3 +1,11 @@
+pluginManagement {
+    includeBuild("build-settings")
+}
+
+plugins {
+    id("foreignbuild.settings.default")
+}
+
 rootProject.name = "ffi-kotlin"
 
 includeBuild("foreign-runtime")
