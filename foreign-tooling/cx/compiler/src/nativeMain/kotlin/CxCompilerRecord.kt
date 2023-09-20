@@ -6,29 +6,29 @@ import dev.whyoleg.foreign.tooling.cx.compiler.libclang.CXCursorKind.*
 import dev.whyoleg.foreign.tooling.cx.compiler.model.*
 import kotlinx.cinterop.*
 
-internal fun CxIndexBuilder.buildRecord(
-    id: CxDeclarationId,
-    name: CxDeclarationName?,
-    headerName: CxHeaderName?,
+internal fun CxCompilerIndexBuilder.buildRecord(
+    id: CxCompilerDeclarationId,
+    declarationName: String?,
+    headerName: String?,
     cursor: CValue<CXCursor>,
-): CxRecord {
+): CxCompilerRecord {
     //more info on size values https://clang.llvm.org/doxygen/group__CINDEX__TYPES.html#gaaf1b95e9e7e792a08654563fef7502c1
     val size = clang_Type_getSizeOf(cursor.type)
-    return CxRecord(
+    return CxCompilerRecord(
         id = id,
-        name = name,
+        declarationName = declarationName,
         headerName = headerName,
         members = when {
             size > 0 -> {
                 val align = clang_Type_getAlignOf(cursor.type)
                 check(align > 0) { "wrong alignOf result: $align" }
-                CxRecord.Members(
+                CxCompilerRecord.Members(
                     size = size,
                     align = align,
                     fields = buildList {
                         visitFields(cursor.type) { fieldCursor ->
                             add(
-                                CxRecord.Field(
+                                CxCompilerRecord.Field(
                                     name = fieldCursor.spelling,
                                     type = buildType(fieldCursor.type)
                                 )

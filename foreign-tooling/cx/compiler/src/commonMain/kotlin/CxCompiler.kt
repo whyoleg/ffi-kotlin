@@ -6,5 +6,5 @@ public expect object CxCompiler {
     public fun buildIndex(
         mainFilePath: String,
         compilerArgs: List<String>
-    ): CxIndex
+    ): CxCompilerIndex
 }

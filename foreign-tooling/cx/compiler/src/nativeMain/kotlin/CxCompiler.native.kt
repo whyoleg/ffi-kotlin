@@ -7,10 +7,10 @@ public actual object CxCompiler {
     public actual fun buildIndex(
         mainFilePath: String,
         compilerArgs: List<String>
-    ): CxIndex = useIndex { index ->
+    ): CxCompilerIndex = useIndex { index ->
         useTranslationUnit(index, mainFilePath, compilerArgs) { translationUnit ->
             useIndexAction(index) { action ->
-                indexTranslationUnit(action, translationUnit, cxIndexBuilder())
+                indexTranslationUnit(action, translationUnit, cxCompilerIndexBuilder())
             }
         }
     }

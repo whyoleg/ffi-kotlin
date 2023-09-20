@@ -33,7 +33,7 @@ public sealed class CxBridgeDeclaration {
 @Serializable
 public data class CxBridgeTypedef(
     override val id: CxBridgeDeclarationId,
-    val aliased: CxBridgeType
+    val aliased: CxBridgeDataType
 ) : CxBridgeDeclaration()
 
 @Serializable
@@ -51,19 +51,19 @@ public data class CxBridgeRecord(
     @Serializable
     public data class Field(
         val name: String,
-        val type: CxBridgeType
+        val type: CxBridgeDataType
     )
 }
 
 @Serializable
 public data class CxBridgeFunction(
     override val id: CxBridgeDeclarationId,
-    val returnType: CxBridgeType,
+    val returnType: CxBridgeDataType,
     val parameters: List<Parameter>
 ) : CxBridgeDeclaration() {
     @Serializable
     public data class Parameter(
         val name: String,
-        val type: CxBridgeType,
+        val type: CxBridgeDataType,
     )
 }

@@ -13,18 +13,18 @@ public data class CxCompilerDependencies(
 )
 
 public fun CxCompilerArguments.forTarget(
-    target: CxTarget,
+    target: CxCompilerTarget,
     dependencies: CxCompilerDependencies
 ): List<String> {
     val isystemPath = "${dependencies.llvmPath}/lib/clang/11.1.0/include"
     val prefixPath = "${dependencies.llvmPath}/usr/bin"
     return when (target) {
-        CxTarget.MingwX64          -> mingwX64(isystemPath, prefixPath, dependencies.mingwToolchainPath)
-        CxTarget.LinuxX64          -> linuxX64(isystemPath, prefixPath, dependencies.linuxGccToolchainPath)
-        CxTarget.MacosX64          -> macosX64(isystemPath, prefixPath, dependencies.macosSdkPath)
-        CxTarget.MacosArm64        -> macosArm64(isystemPath, prefixPath, dependencies.macosSdkPath)
-        CxTarget.IosDeviceArm64    -> iosDeviceArm64(isystemPath, prefixPath, dependencies.iosDeviceSdkPath)
-        CxTarget.IosSimulatorArm64 -> iosSimulatorArm64(isystemPath, prefixPath, dependencies.iosSimulatorSdkPath)
-        CxTarget.IosSimulatorX64   -> iosSimulatorX64(isystemPath, prefixPath, dependencies.iosSimulatorSdkPath)
+        CxCompilerTarget.MingwX64          -> mingwX64(isystemPath, prefixPath, dependencies.mingwToolchainPath)
+        CxCompilerTarget.LinuxX64          -> linuxX64(isystemPath, prefixPath, dependencies.linuxGccToolchainPath)
+        CxCompilerTarget.MacosX64          -> macosX64(isystemPath, prefixPath, dependencies.macosSdkPath)
+        CxCompilerTarget.MacosArm64        -> macosArm64(isystemPath, prefixPath, dependencies.macosSdkPath)
+        CxCompilerTarget.IosDeviceArm64    -> iosDeviceArm64(isystemPath, prefixPath, dependencies.iosDeviceSdkPath)
+        CxCompilerTarget.IosSimulatorArm64 -> iosSimulatorArm64(isystemPath, prefixPath, dependencies.iosSimulatorSdkPath)
+        CxCompilerTarget.IosSimulatorX64   -> iosSimulatorX64(isystemPath, prefixPath, dependencies.iosSimulatorSdkPath)
     }
 }

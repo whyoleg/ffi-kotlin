@@ -22,23 +22,23 @@ class PrimitivesTest {
         )
 
         listOf(
-            CxTarget.MacosArm64,
-            CxTarget.MacosX64,
-            CxTarget.MingwX64,
-            CxTarget.LinuxX64,
-            CxTarget.IosDeviceArm64,
-            CxTarget.IosSimulatorArm64,
-            CxTarget.IosSimulatorX64,
+            CxCompilerTarget.MacosArm64,
+            CxCompilerTarget.MacosX64,
+            CxCompilerTarget.MingwX64,
+            CxCompilerTarget.LinuxX64,
+            CxCompilerTarget.IosDeviceArm64,
+            CxCompilerTarget.IosSimulatorArm64,
+            CxCompilerTarget.IosSimulatorX64,
         ).forEach { target ->
             val compilerArgs = CxCompilerArguments.forTarget(target, dependencies)
             val result = useIndex { index ->
                 useTranslationUnit(index, primitivesFilePath, compilerArgs) { translationUnit ->
                     useIndexAction(index) { action ->
-                        indexTranslationUnit(action, translationUnit, CxIndexPrimitiveCollector())
+                        indexTranslationUnit(action, translationUnit, PrimitiveCollector())
                     }
                 }
             }
-            assertEquals(result, target.builtinTypeSizes, target.toString())
+            assertEquals(result, target.primitiveDataTypeSizes, target.toString())
         }
     }
 }

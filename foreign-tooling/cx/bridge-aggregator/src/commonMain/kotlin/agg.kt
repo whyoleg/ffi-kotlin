@@ -76,14 +76,14 @@ private fun <T, R> Collection<T>.intersection(selector: (T) -> Set<R>): Set<R> {
     return keys ?: emptySet()
 }
 
-private fun <T> Map<CxBridgeFragmentId, T>.sharedType(typeProvider: (T) -> CxBridgeType): CxBridgeType {
+private fun <T> Map<CxBridgeFragmentId, T>.sharedType(typeProvider: (T) -> CxBridgeDataType): CxBridgeDataType {
     val variants = mapValues { typeProvider(it.value) }
     // TODO - may be don't merge
-    return variants.values.distinct().singleOrNull() ?: CxBridgeType.Shared(buildMap {
+    return variants.values.distinct().singleOrNull() ?: CxBridgeDataType.Shared(buildMap {
         variants.forEach { (fragmentId, type) ->
             when (type) {
-                is CxBridgeType.Shared -> putAll(type.variants)
-                else                   -> put(fragmentId, type)
+                is CxBridgeDataType.Shared -> putAll(type.variants)
+                else                       -> put(fragmentId, type)
             }
         }
     })

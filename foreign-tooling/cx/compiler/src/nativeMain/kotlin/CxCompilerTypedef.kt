@@ -4,14 +4,14 @@ import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
 import dev.whyoleg.foreign.tooling.cx.compiler.model.*
 import kotlinx.cinterop.*
 
-internal fun CxIndexBuilder.buildTypedef(
-    id: CxDeclarationId,
-    name: CxDeclarationName?,
-    headerName: CxHeaderName?,
+internal fun CxCompilerIndexBuilder.buildTypedef(
+    id: CxCompilerDeclarationId,
+    declarationName: String?,
+    headerName: String?,
     cursor: CValue<CXCursor>,
-): CxTypedef = CxTypedef(
+): CxCompilerTypedef = CxCompilerTypedef(
     id = id,
-    name = checkNotNull(name) { "typedef can not be unnamed" },
+    declarationName = checkNotNull(declarationName) { "typedef can not be unnamed" },
     headerName = headerName,
     aliased = buildType(clang_getTypedefDeclUnderlyingType(cursor))
 )

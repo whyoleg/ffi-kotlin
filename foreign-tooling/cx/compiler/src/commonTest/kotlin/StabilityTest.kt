@@ -19,42 +19,60 @@ class StabilityTest {
 
         val baseIncludePath = "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/test-projects/libcrypto/api/build/tmp/setupOpenssl3"
 
-        val headers = listOf(
-            "bio.h",
-            "evp.h",
-            "bn.h",
-            "aes.h",
-            "types.h",
-        )
-
-        repeat(100) {
-            listOf(
-                CxTarget.MacosArm64 to "macos-arm64",
-                CxTarget.MacosX64 to "macos-x64",
-                CxTarget.MingwX64 to "mingw-x64",
-                CxTarget.LinuxX64 to "linux-x64",
-                CxTarget.IosDeviceArm64 to "ios-device-arm64",
-                CxTarget.IosSimulatorArm64 to "ios-simulator-arm64",
-                CxTarget.IosSimulatorX64 to "ios-simulator-x64",
-            ).forEach { (target, dirName) ->
-                headers.forEach { header ->
-                    val (index, time) = measureTimedValue {
-                        CxCompiler.buildIndex(
-                            mainFilePath = "$baseIncludePath/$dirName/include/openssl/$header",
-                            compilerArgs = CxCompilerArguments.forTarget(target, dependencies) + listOf(
-                                "-I$baseIncludePath/$dirName/include"
-                            )
-                        )
+        val runs = buildList {
+            repeat(100) {
+                listOf(
+                    CxCompilerTarget.MacosArm64,
+                    CxCompilerTarget.MacosX64,
+                    CxCompilerTarget.MingwX64,
+                    CxCompilerTarget.LinuxX64,
+                    CxCompilerTarget.IosDeviceArm64,
+                    CxCompilerTarget.IosSimulatorArm64,
+                    CxCompilerTarget.IosSimulatorX64,
+                ).forEach { target ->
+                    listOf(
+                        "ec.h",
+                        "bio.h",
+                        "evp.h",
+                        "bn.h",
+                        "aes.h",
+                        "types.h",
+                        "encoder.h",
+                    ).forEach { header ->
+                        add(target to header)
                     }
-                    println("$target/$header: $time")
-                    assertTrue(
-                        index.enums.isNotEmpty() ||
-                                index.records.isNotEmpty() ||
-                                index.functions.isNotEmpty() ||
-                                index.typedefs.isNotEmpty()
-                    )
                 }
             }
+        }
+
+        runs.shuffled().forEachIndexed { index, (target, header) ->
+            val dirName = when (target) {
+                CxCompilerTarget.MacosArm64        -> "macos-arm64"
+                CxCompilerTarget.MacosX64          -> "macos-x64"
+                CxCompilerTarget.MingwX64          -> "mingw-x64"
+                CxCompilerTarget.LinuxX64          -> "linux-x64"
+                CxCompilerTarget.IosDeviceArm64    -> "ios-device-arm64"
+                CxCompilerTarget.IosSimulatorArm64 -> "ios-simulator-arm64"
+                CxCompilerTarget.IosSimulatorX64   -> "ios-simulator-x64"
+            }
+
+            val (result, time) = measureTimedValue {
+                CxCompiler.buildIndex(
+                    mainFilePath = "$baseIncludePath/$dirName/include/openssl/$header",
+                    compilerArgs = CxCompilerArguments.forTarget(target, dependencies) + listOf(
+                        "-I$baseIncludePath/$dirName/include"
+                    )
+                )
+            }
+            val r = runs.size.toString()
+            val i = index.toString().padStart(r.length)
+            println("[$i/$r] $target/$header: $time")
+            assertTrue(
+                result.enums.isNotEmpty() ||
+                        result.records.isNotEmpty() ||
+                        result.functions.isNotEmpty() ||
+                        result.typedefs.isNotEmpty()
+            )
         }
     }
 }
