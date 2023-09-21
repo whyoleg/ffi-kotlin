@@ -34,5 +34,5 @@ public sealed class CxCompilerDataType {
     public data class IncompleteArray(override val elementType: CxCompilerDataType) : Array()
 
     @Serializable
-    public data class Unknown(val name: String, val kind: String) : CxCompilerDataType()
+    public data class Unsupported(val name: String, val kind: String) : CxCompilerDataType()
 }

@@ -43,14 +43,13 @@ internal fun CxCompilerIndexBuilder.buildType(type: CValue<CXType>): CxCompilerD
     )
     CXType_IncompleteArray -> CxCompilerDataType.IncompleteArray(buildType(clang_getArrayElementType(type)))
     CXType_ConstantArray   -> CxCompilerDataType.ConstArray(buildType(clang_getArrayElementType(type)), clang_getArraySize(type))
-    CXType_BlockPointer    -> CxCompilerDataType.Unknown(type.spelling, type.kind.toString()) //TODO?
     CXType_Unexposed       -> {
         check(clang_getResultType(type).kind == CXType_Invalid)
         val canonicalType = clang_getCanonicalType(type)
         when (canonicalType.kind) {
-            CXType_Unexposed -> CxCompilerDataType.Unknown(canonicalType.spelling, canonicalType.kind.toString())
+            CXType_Unexposed -> CxCompilerDataType.Unsupported(canonicalType.spelling, canonicalType.kind.toString())
             else             -> buildType(canonicalType)
         }
     }
-    else                   -> TODO("NOT SUPPORTED: $kind | ${type.spelling}")
+    else                   -> CxCompilerDataType.Unsupported(type.spelling, type.kind.toString())
 }

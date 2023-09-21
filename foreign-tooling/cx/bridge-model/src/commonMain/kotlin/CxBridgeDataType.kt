@@ -26,6 +26,9 @@ public sealed class CxBridgeDataType {
     @Serializable
     public data class Array(val elementType: CxBridgeDataType) : CxBridgeDataType()
 
+    @Serializable
+    public data class Unsupported(val name: String, val kind: String) : CxBridgeDataType()
+
     @Serializable // TODO: better name?
     public data class Shared(
         // bridge type here is strictly from fragment
