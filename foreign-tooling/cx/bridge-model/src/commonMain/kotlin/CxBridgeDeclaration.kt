@@ -64,6 +64,7 @@ public data class CxBridgeFunction(
     @Serializable
     public data class Parameter(
         val name: String,
+        val aliasNames: Set<String>,
         val type: CxBridgeDataType,
     )
 }

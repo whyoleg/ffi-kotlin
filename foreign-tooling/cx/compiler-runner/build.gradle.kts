@@ -10,8 +10,6 @@ kotlin {
             dependencies {
                 api(projects.cx.foreignToolingCxCompilerModel)
                 implementation(projects.cx.foreignToolingCxCompiler)
-
-                api(libs.okio)
             }
         }
     }
