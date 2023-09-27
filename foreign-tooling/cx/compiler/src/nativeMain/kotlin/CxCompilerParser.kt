@@ -12,6 +12,8 @@ private typealias MutableDeclarations<T> = MutableMap<CxCompilerDeclarationId, C
 
 private fun <T : CxCompilerDeclarationData?> createMap(): MutableDeclarations<T> = mutableMapOf()
 
+private const val UNNAMED = "UNNAMED"
+
 internal class CxCompilerParser {
     private val variables = createMap<CxCompilerVariableData>()
     private val enums = createMap<CxCompilerEnumData>()
@@ -27,6 +29,7 @@ internal class CxCompilerParser {
             when (cursor.kind) {
                 // need to be parsed
                 CXCursor_InclusionDirective -> {
+                    // TODO: recheck collisions?
                     headerByPath[cursor.includedFile.fileName] =
                         CxCompilerHeaderId.Included(cursor.spelling ?: error("Include header is blank: ${cursor.debugString}"))
                 }
@@ -46,6 +49,28 @@ internal class CxCompilerParser {
 
                 else                        -> println("Not supported: ${cursor.debugString}")
             }
+        }
+
+        // fix unnamed declarations, when enum/record has no name, but there is declared typedef, f.e.:
+        //   typedef union {} XXX;
+        val unnamedEnums = enums.filterValues { it.declarationName == UNNAMED }
+        val unnamedRecords = records.filterValues { it.declarationName == UNNAMED }
+        typedefs.values.forEach { typedef ->
+            when (val type = typedef.data.aliasedType) {
+                is Enum             -> unnamedEnums[type.id]?.let {
+                    enums[it.id] = it.copy(declarationName = typedef.declarationName)
+                }
+                is Record.Reference -> unnamedRecords[type.id]?.let {
+                    records[it.id] = it.copy(declarationName = typedef.declarationName)
+                }
+                else                -> {}
+            }
+        }
+        enums.filterValues { it.declarationName == UNNAMED }.also {
+            check(it.isEmpty()) { "unnamed enums: ${it.keys}" }
+        }
+        records.filterValues { it.declarationName == UNNAMED }.also {
+            check(it.isEmpty()) { "unnamed records: ${it.keys}" }
         }
     }
 
@@ -86,7 +111,12 @@ internal class CxCompilerParser {
 
         declarations[id] = CxCompilerDeclaration(
             id = id,
-            declarationName = cursor.spelling,
+            declarationName = when (cursor.kind) {
+                CXCursor_EnumDecl,
+                CXCursor_StructDecl,
+                CXCursor_UnionDecl -> cursor.spelling ?: UNNAMED
+                else               -> checkNotNull(cursor.spelling) { "Declaration should have name: ${cursor.debugString}" }
+            },
             headerId = when (val fileName = cursor.canonical.location.file?.fileName) {
                 null -> CxCompilerHeaderId.Builtin
                 else -> headerByPath.getValue(fileName)

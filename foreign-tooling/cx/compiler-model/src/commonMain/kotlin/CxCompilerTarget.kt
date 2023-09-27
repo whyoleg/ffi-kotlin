@@ -4,9 +4,9 @@ import kotlinx.serialization.*
 
 @Serializable
 public sealed interface CxCompilerTarget {
-    public sealed interface Host : CxCompilerTarget
+    public sealed interface Desktop : CxCompilerTarget
     public sealed interface Apple : CxCompilerTarget
-    public sealed interface Macos : Apple, Host
+    public sealed interface Macos : Apple, Desktop
     public sealed interface Ios : Apple
 
     public val primitiveDataTypeSizes: Map<CxPrimitiveDataType, Int>
@@ -30,7 +30,7 @@ public sealed interface CxCompilerTarget {
     }
 
     @Serializable
-    public data object LinuxX64 : Host {
+    public data object LinuxX64 : Desktop {
         override val primitiveDataTypeSizes: Map<CxPrimitiveDataType, Int> = primitiveDataTypeSizes(
             longSize = Long.SIZE_BYTES,
             longDoubleSize = Long.SIZE_BYTES * 2
@@ -38,7 +38,7 @@ public sealed interface CxCompilerTarget {
     }
 
     @Serializable
-    public data object MingwX64 : Host {
+    public data object MingwX64 : Desktop {
         override val primitiveDataTypeSizes: Map<CxPrimitiveDataType, Int> = primitiveDataTypeSizes(
             longSize = Int.SIZE_BYTES,
             longDoubleSize = Long.SIZE_BYTES * 2
