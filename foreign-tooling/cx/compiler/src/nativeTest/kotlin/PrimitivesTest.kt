@@ -5,6 +5,7 @@ import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
 import dev.whyoleg.foreign.tooling.cx.compiler.libclang.CXCursorKind.*
 import dev.whyoleg.foreign.tooling.cx.compiler.libclang.CXTypeKind.*
 import dev.whyoleg.foreign.tooling.cx.compiler.model.*
+import dev.whyoleg.foreign.tooling.cx.compiler.test.support.*
 import kotlin.test.*
 
 class PrimitivesTest {

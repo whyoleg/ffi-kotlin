@@ -1,8 +1,10 @@
-package dev.whyoleg.foreign.tooling.cx.compiler
+package dev.whyoleg.foreign.tooling.cx.compiler.test.support
 
+import dev.whyoleg.foreign.tooling.cx.compiler.*
 import dev.whyoleg.foreign.tooling.cx.compiler.model.*
 import dev.whyoleg.foreign.tooling.cx.compiler.runner.*
 
+// TODO: fill those values via build config plugin
 private val compilerDependencies = CxCompilerDependencies(
     llvmPath = "/Users/whyoleg/.konan/dependencies/apple-llvm-20200714-macos-aarch64-essentials",
     mingwToolchainPath = "/Users/whyoleg/.konan/dependencies/msys2-mingw-w64-x86_64-2",
@@ -12,9 +14,10 @@ private val compilerDependencies = CxCompilerDependencies(
     iosSimulatorSdkPath = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk",
 )
 
-fun compilerArgs(target: CxCompilerTarget): List<String> = CxCompilerArguments.forTarget(target, compilerDependencies)
+private val openssl3RootPath: String =
+    "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/test-projects/libcrypto/api/build/tmp/setupOpenssl3"
 
-fun dirName(target: CxCompilerTarget): String = when (target) {
+private fun openssl3TargetDirName(target: CxCompilerTarget): String = when (target) {
     CxCompilerTarget.MacosArm64        -> "macos-arm64"
     CxCompilerTarget.MacosX64          -> "macos-x64"
     CxCompilerTarget.MingwX64          -> "mingw-x64"
@@ -24,3 +27,18 @@ fun dirName(target: CxCompilerTarget): String = when (target) {
     CxCompilerTarget.IosSimulatorX64   -> "ios-simulator-x64"
     else                               -> TODO()
 }
+
+public fun compilerArgs(target: CxCompilerTarget): List<String> = CxCompilerArguments.forTarget(target, compilerDependencies)
+
+public fun openssl3IncludeDir(target: CxCompilerTarget): String = "$openssl3RootPath/${openssl3TargetDirName(target)}/include"
+public fun openssl3IncludeDir(target: CxCompilerTarget, headerPath: String): String =
+    "$openssl3RootPath/${openssl3TargetDirName(target)}/include/$headerPath"
+
+public fun CxCompiler.buildIndexOverOpenssl3(
+    header: String,
+    target: CxCompilerTarget
+): CxCompilerIndex = buildIndex(
+    mainFileName = header,
+    mainFilePath = openssl3IncludeDir(target, header),
+    compilerArgs = compilerArgs(target) + listOf("-I${openssl3IncludeDir(target)}")
+)

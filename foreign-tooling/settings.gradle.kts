@@ -21,6 +21,7 @@ listOf(
     "compiler",
     "compiler-model",
     "compiler-runner",
+    "compiler-test-support",
     "bridge-model",
     "bridge-aggregator",
     "bridge-code-generator"

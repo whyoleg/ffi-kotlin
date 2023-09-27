@@ -18,7 +18,13 @@ public sealed class CxBridgeDataType {
     public data class Typedef(val id: CxBridgeDeclarationId) : CxBridgeDataType()
 
     @Serializable
-    public data class Record(val id: CxBridgeDeclarationId) : CxBridgeDataType()
+    public sealed class Record : CxBridgeDataType() {
+        @Serializable
+        public data class Reference(val id: CxBridgeDeclarationId) : Record()
+
+        @Serializable
+        public data class Anonymous(val data: CxBridgeRecordData) : Record()
+    }
 
     @Serializable
     public data class Function(val returnType: CxBridgeDataType, val parameters: List<CxBridgeDataType>) : CxBridgeDataType()
@@ -27,7 +33,7 @@ public sealed class CxBridgeDataType {
     public data class Array(val elementType: CxBridgeDataType) : CxBridgeDataType()
 
     @Serializable
-    public data class Unsupported(val name: String, val kind: String) : CxBridgeDataType()
+    public data class Unsupported(val info: String) : CxBridgeDataType()
 
     @Serializable // TODO: better name?
     public data class Shared(

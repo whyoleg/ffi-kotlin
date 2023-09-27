@@ -1,15 +1,13 @@
 package dev.whyoleg.foreign.tooling.cx.compiler
 
 import dev.whyoleg.foreign.tooling.cx.compiler.model.*
+import dev.whyoleg.foreign.tooling.cx.compiler.test.support.*
 import kotlin.test.*
 import kotlin.time.*
 
 class StabilityTest {
     @Test
     fun test() {
-
-        val baseIncludePath = "/Users/whyoleg/projects/opensource/whyoleg/ffi-kotlin/test-projects/libcrypto/api/build/tmp/setupOpenssl3"
-
         val runs = buildList {
             repeat(100) {
                 listOf(
@@ -22,14 +20,14 @@ class StabilityTest {
                     CxCompilerTarget.IosSimulatorX64,
                 ).forEach { target ->
                     listOf(
-                        "ec.h",
-                        "bio.h",
-                        "evp.h",
-                        "bn.h",
-                        "aes.h",
-                        "types.h",
-                        "encoder.h",
-                        "ssl.h",
+                        "openssl/ec.h",
+                        "openssl/bio.h",
+                        "openssl/evp.h",
+                        "openssl/bn.h",
+                        "openssl/aes.h",
+                        "openssl/types.h",
+                        "openssl/encoder.h",
+                        "openssl/ssl.h",
                     ).forEach { header ->
                         add(target to header)
                     }
@@ -38,20 +36,12 @@ class StabilityTest {
         }
 
         runs.shuffled().forEachIndexed { index, (target, header) ->
-            val dirName = dirName(target)
-
             val (result, time) = measureTimedValue {
-                CxCompiler.buildIndex(
-                    mainFileName = "openssl/$header",
-                    mainFilePath = "$baseIncludePath/$dirName/include/openssl/$header",
-                    compilerArgs = compilerArgs(target) + listOf(
-                        "-I$baseIncludePath/$dirName/include"
-                    )
-                )
+                CxCompiler.buildIndexOverOpenssl3(header, target)
             }
             val r = runs.size.toString()
             val i = index.toString().padStart(r.length)
-            println("[$i/$r] $target/$header: $time")
+            println("[$i/$r] $target|$header: $time")
             assertTrue(
                 result.enums.isNotEmpty() ||
                         result.records.isNotEmpty() ||
