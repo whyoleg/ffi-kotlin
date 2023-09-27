@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.tooling.cx.compiler.internal
+package dev.whyoleg.foreign.tooling.cx.compiler.clang
 
 import dev.whyoleg.foreign.tooling.cx.compiler.libclang.*
 
@@ -16,17 +16,5 @@ internal inline fun <R> useIndex(
         return block(index)
     } finally {
         clang_disposeIndex(index)
-    }
-}
-
-internal inline fun <T> useIndexAction(
-    index: CXIndex,
-    block: (action: CXIndexAction) -> T
-): T {
-    val action = checkNotNull(clang_IndexAction_create(index)) { "IndexAction is null" }
-    try {
-        return block(action)
-    } finally {
-        clang_IndexAction_dispose(action)
     }
 }

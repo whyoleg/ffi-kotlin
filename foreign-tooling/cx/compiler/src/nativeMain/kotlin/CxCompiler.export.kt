@@ -30,7 +30,11 @@ public fun callCxCompiler(
                 CxCompilerBridge.encode(
                     serializer = CxCompilerBridge.Response.serializer(CxCompilerIndex.serializer()),
                     value = CxCompilerBridge.Response(
-                        value = CxCompiler.buildIndex(request.mainFilePath, request.compilerArgs),
+                        value = CxCompiler.buildIndex(
+                            mainFileName = request.mainFileName,
+                            mainFilePath = request.mainFilePath,
+                            compilerArgs = request.compilerArgs
+                        ),
                         errorStackTrace = null
                     )
                 )

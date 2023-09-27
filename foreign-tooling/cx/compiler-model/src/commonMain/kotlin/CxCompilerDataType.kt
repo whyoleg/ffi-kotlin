@@ -17,7 +17,13 @@ public sealed class CxCompilerDataType {
     public data class Typedef(val id: CxCompilerDeclarationId) : CxCompilerDataType()
 
     @Serializable
-    public data class Record(val id: CxCompilerDeclarationId) : CxCompilerDataType()
+    public sealed class Record : CxCompilerDataType() {
+        @Serializable
+        public data class Reference(val id: CxCompilerDeclarationId) : Record()
+
+        @Serializable
+        public data class Anonymous(val data: CxCompilerRecordData) : Record()
+    }
 
     @Serializable
     public data class Function(val returnType: CxCompilerDataType, val parameters: List<CxCompilerDataType>) : CxCompilerDataType()
@@ -27,12 +33,12 @@ public sealed class CxCompilerDataType {
         public abstract val elementType: CxCompilerDataType
     }
 
-    @Serializable // TODO: is it needed to have const/incomplete array separation?
+    @Serializable
     public data class ConstArray(override val elementType: CxCompilerDataType, val size: Long) : Array()
 
     @Serializable
     public data class IncompleteArray(override val elementType: CxCompilerDataType) : Array()
 
     @Serializable
-    public data class Unsupported(val name: String, val kind: String) : CxCompilerDataType()
+    public data class Unsupported(val info: String) : CxCompilerDataType()
 }
