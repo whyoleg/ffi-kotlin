@@ -7,42 +7,60 @@ public fun CxBridgeFragment(
     fragments: Map<CxBridgeFragmentId, CxBridgeFragment>
 ): CxBridgeFragment = CxBridgeFragment(
     fragmentId = fragmentId,
+    variables = fragments.intersectionByKeys(CxBridgeFragment::variables).associateWith { id ->
+        CxBridgeVariable(
+            id = id,
+            returnType = fragments.sharedType { it.variables.getValue(id).returnType },
+        )
+    },
     typedefs = fragments.intersectionByKeys(CxBridgeFragment::typedefs).associateWith { id ->
         CxBridgeTypedef(
             id = id,
-            aliased = fragments.sharedType { it.typedefs.getValue(id).aliased }
+            aliasedType = fragments.sharedType { it.typedefs.getValue(id).aliasedType },
+            resolvedType = fragments.sharedType { it.typedefs.getValue(id).resolvedType },
         )
     },
     enums = fragments.intersectionByKeys(CxBridgeFragment::enums).associateWith { id ->
+        val variants = fragments.mapValues { it.value.enums.getValue(id) }
+
+        val unnamed =
+            variants.map { it.value.unnamed }.toSet().singleOrNull()
+                ?: error("something bad happens: not all enums unnamed")
+
         CxBridgeEnum(
             id = id,
+            unnamed = unnamed,
             constantNames = fragments.values.intersection { it.enums.getValue(id).constantNames }
         )
     },
     records = fragments.intersectionByKeys(CxBridgeFragment::records).associateWith { id ->
         val variants = fragments.mapValues { it.value.records.getValue(id) }
 
-        val isUnion =
-            variants.map { it.value.isUnion }.toSet().singleOrNull()
-                ?: error("something bad happens: not all unions|structs")
-
         val isOpaque =
-            variants.map { it.value.fields == null }.toSet().singleOrNull()
+            variants.map { it.value.data == null }.toSet().singleOrNull()
                 ?: error("something bad happens: not all opaque|not-opaque")
+
 
         CxBridgeRecord(
             id = id,
-            isUnion = isUnion,
-            fields = when {
+            data = when {
                 isOpaque -> null
                 else     -> {
-                    val fields = variants.mapValues { it.value.fields!!.associateBy { it.name } }
-                    fields.intersectionByKeys { it }.map { fieldName ->
-                        CxBridgeRecord.Field(
-                            name = fieldName,
-                            type = fields.sharedType { it.getValue(fieldName).type }
-                        )
-                    }
+                    val isUnion =
+                        variants.map { it.value.data!!.isUnion }.toSet().singleOrNull()
+                            ?: error("something bad happens: not all unions|structs")
+
+                    // TODO is it possible to commonize fields better?
+                    val fields = variants.mapValues { it.value.data!!.fields.associateBy { it.name } }
+                    CxBridgeRecordData(
+                        isUnion = isUnion,
+                        fields = fields.intersectionByKeys { it }.map { fieldName ->
+                            CxBridgeRecordData.Field(
+                                name = fieldName,
+                                type = fields.sharedType { it.getValue(fieldName).type }
+                            )
+                        }
+                    )
                 }
             }
         )
@@ -53,8 +71,12 @@ public fun CxBridgeFragment(
         variants.map { it.value.parameters.size }.toSet().singleOrNull()
             ?: error("something bad happens: functions has different amount of arguments")
 
+        val isVariadic = variants.map { it.value.isVariadic }.toSet().singleOrNull()
+            ?: error("something bad happens: not all functions are variadic|non-variadic")
+
         CxBridgeFunction(
             id = id,
+            isVariadic = isVariadic,
             returnType = variants.sharedType { it.returnType },
             parameters = run {
                 val params = variants.mapValues {
@@ -63,7 +85,7 @@ public fun CxBridgeFragment(
                 params.intersectionByKeys { it }.map { parameterIndex ->
                     val names = params.values.map { it.getValue(parameterIndex).name }.toSet()
                     CxBridgeFunction.Parameter(
-                        name = names.singleOrNull() ?: "p$parameterIndex",
+                        name = names.singleOrNull() ?: "p_$parameterIndex",
                         aliasNames = if (names.size == 1) emptySet() else names,
                         type = params.sharedType { it.getValue(parameterIndex).type }
                     )
@@ -72,22 +94,6 @@ public fun CxBridgeFragment(
         )
     },
 )
-
-// f1: _uint -> _uint8 -> Long
-// f2: _uint -> _uint8 -> Long
-// f3: _uint -> Int
-
-// f1+f2: _uint -> _uint8 -> Long
-// f1+f2: _uint8 -> Long
-
-// fa: _uint -> Int|Long
-
-
-// f1: struct.p1 = UInt
-// f2: struct.p1 = Int
-
-
-// f1+f2: struct.p1 = UInt|Int
 
 private fun <T, R> Collection<T>.intersection(selector: (T) -> Set<R>): Set<R> {
     require(isNotEmpty()) { "no values: critical failure" }

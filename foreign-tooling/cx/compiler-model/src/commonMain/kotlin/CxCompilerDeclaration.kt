@@ -26,11 +26,11 @@ public sealed class CxCompilerDeclarationData
 
 @Serializable
 public data class CxCompilerDeclaration<T : CxCompilerDeclarationData?>(
-    public val id: CxCompilerDeclarationId,
+    val id: CxCompilerDeclarationId,
     // TODO: decide on nullability
-    public val declarationName: String?, // can be null for enum and record if it's declared with typedef
-    public val headerId: CxCompilerHeaderId,
-    public val data: T
+    val declarationName: String?, // can be null for enum and record if it's declared with typedef
+    val headerId: CxCompilerHeaderId,
+    val data: T
 )
 
 @Serializable
@@ -47,10 +47,10 @@ public data class CxCompilerTypedefData(
 // TODO: refactor other declarations to this and make CxDeclaration just a class
 @Serializable
 public data class CxCompilerRecordData(
-    public val isUnion: Boolean,
-    public val size: Long,
-    public val align: Long,
-    public val fields: List<Field>
+    val isUnion: Boolean,
+    val size: Long,
+    val align: Long,
+    val fields: List<Field>
 ) : CxCompilerDeclarationData() {
     @Serializable
     public data class Field(

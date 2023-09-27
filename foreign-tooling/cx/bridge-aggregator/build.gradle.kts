@@ -11,5 +11,11 @@ kotlin {
                 api(projects.cx.foreignToolingCxBridgeModel)
             }
         }
+        commonTest {
+            dependencies {
+                implementation(projects.cx.foreignToolingCxCompilerTestSupport)
+                implementation(libs.kotlinx.serialization.json)
+            }
+        }
     }
 }

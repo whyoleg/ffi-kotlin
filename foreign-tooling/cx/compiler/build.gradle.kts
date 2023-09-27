@@ -1,5 +1,4 @@
 import foreignbuild.jni.*
-import org.jetbrains.kotlin.gradle.*
 import org.jetbrains.kotlin.gradle.plugin.*
 import org.jetbrains.kotlin.gradle.plugin.mpp.*
 import org.jetbrains.kotlin.gradle.targets.native.tasks.*
@@ -27,7 +26,7 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
-                implementation(projects.cx.foreignToolingCxCompilerRunner)
+                implementation(projects.cx.foreignToolingCxCompilerTestSupport)
             }
         }
     }

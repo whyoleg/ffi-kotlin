@@ -31,23 +31,30 @@ public sealed class CxBridgeDeclaration {
 }
 
 @Serializable
+public data class CxBridgeVariable(
+    override val id: CxBridgeDeclarationId,
+    val returnType: CxBridgeDataType,
+) : CxBridgeDeclaration()
+
+@Serializable
 public data class CxBridgeTypedef(
     override val id: CxBridgeDeclarationId,
-    val aliased: CxBridgeDataType
+    val aliasedType: CxBridgeDataType,
+    val resolvedType: CxBridgeDataType
 ) : CxBridgeDeclaration()
 
 @Serializable
 public data class CxBridgeEnum(
     override val id: CxBridgeDeclarationId,
+    val unnamed: Boolean,
     val constantNames: Set<String>,
 ) : CxBridgeDeclaration()
 
 @Serializable
-public data class CxBridgeRecord(
-    override val id: CxBridgeDeclarationId,
+public data class CxBridgeRecordData(
     val isUnion: Boolean,
-    val fields: List<Field>? // if null - opaque
-) : CxBridgeDeclaration() {
+    val fields: List<Field>
+) {
     @Serializable
     public data class Field(
         val name: String,
@@ -56,8 +63,15 @@ public data class CxBridgeRecord(
 }
 
 @Serializable
+public data class CxBridgeRecord(
+    override val id: CxBridgeDeclarationId,
+    val data: CxBridgeRecordData? // if null - opaque
+) : CxBridgeDeclaration()
+
+@Serializable
 public data class CxBridgeFunction(
     override val id: CxBridgeDeclarationId,
+    val isVariadic: Boolean,
     val returnType: CxBridgeDataType,
     val parameters: List<Parameter>
 ) : CxBridgeDeclaration() {
