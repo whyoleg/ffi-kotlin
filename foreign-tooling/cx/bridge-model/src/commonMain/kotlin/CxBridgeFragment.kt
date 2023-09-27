@@ -17,3 +17,4 @@ public data class CxBridgeFragment(
     val typedefs: Map<CxBridgeDeclarationId, CxBridgeTypedef>,
     val functions: Map<CxBridgeDeclarationId, CxBridgeFunction>,
 )
+

@@ -15,24 +15,31 @@ fun main() {
         CxCompilerTarget.MacosX64,
         CxCompilerTarget.MingwX64,
         CxCompilerTarget.LinuxX64,
-//        CxCompilerTarget.IosDeviceArm64,
-//        CxCompilerTarget.IosSimulatorArm64,
-//        CxCompilerTarget.IosSimulatorX64,
-    ).associate { target ->
-        val dirName = when (target) {
-            CxCompilerTarget.MacosArm64 -> "macos-arm64"
-            CxCompilerTarget.MacosX64   -> "macos-x64"
-            CxCompilerTarget.MingwX64   -> "mingw-x64"
-            CxCompilerTarget.LinuxX64   -> "linux-x64"
-//            CxCompilerTarget.IosDeviceArm64    -> "ios-device-arm64"
-//            CxCompilerTarget.IosSimulatorArm64 -> "ios-simulator-arm64"
-//            CxCompilerTarget.IosSimulatorX64   -> "ios-simulator-x64"
-        }
+        CxCompilerTarget.IosDeviceArm64,
+        CxCompilerTarget.IosSimulatorArm64,
+        CxCompilerTarget.IosSimulatorX64,
+    ).associateWith { target ->
+        println(target)
         val header = "openssl/bn.h"
 
         val index = CxCompiler.buildIndexOverOpenssl3(header, target)
 
-        val fragment = CxBridgeFragment(CxBridgeFragmentId(dirName), index) {
+//        index.typedefs.forEach { (_, t) ->
+//            when (val at = t.data.aliasedType) {
+//                is CxCompilerDataType.Record.Reference -> {
+//                    val r = index.records.getValue(at.id)
+//                    if (r.declarationName == null) {
+//                        println(t)
+//                        println(r)
+//                        println()
+//                    }
+//                }
+//                else                                   -> {}
+//            }
+//        }
+
+
+        val (fragment, mapping) = CxBridgeFragment(CxBridgeFragmentId(target.toString()), index) {
             CxBridgeDeclarationId(
                 packageName = when (val headerId = headerId) {
                     is CxCompilerHeaderId.Main     -> "openssl.main"
@@ -42,23 +49,43 @@ fun main() {
                         else                                  -> "openssl.internal"
                     }
                 },
-                declarationName = if (declarationName.isNullOrEmpty()) "FIX: ${id.value}" else declarationName!! // TODO: what to do here?
+                declarationName = declarationName
             )
         }
 
-        saveFragment(fragment)
-
-        CxBridgeFragmentId(dirName) to fragment
+        fragment
     }
 
-    val sharedFragment = CxBridgeFragment(
-        CxBridgeFragmentId("shared"),
-        fragments
-    )
+    fun sharedFragment(name: String, filter: (CxCompilerTarget) -> Boolean): CxBridgeFragment {
+        println(name)
+        return CxBridgeFragment(
+            fragmentId = CxBridgeFragmentId(name),
+            fragments = fragments.filterKeys(filter).mapKeys {
+                CxBridgeFragmentId(it.key.toString())
+            }
+        )
+    }
 
-    saveFragment(sharedFragment)
+    fun sharedFragment(name: String, fragments: List<CxBridgeFragment>): CxBridgeFragment {
+        println(name)
+        return CxBridgeFragment(
+            fragmentId = CxBridgeFragmentId(name),
+            fragments = fragments.associateBy { it.fragmentId }
+        )
+    }
+
+    val macosFragment = sharedFragment("macos") { it is CxCompilerTarget.Macos }
+    val iosFragment = sharedFragment("macos") { it is CxCompilerTarget.Ios }
+    val appleFragment = sharedFragment("apple", listOf(macosFragment, iosFragment))
+    val desktopFragment = sharedFragment("desktop") { it is CxCompilerTarget.Desktop }
+    val nativeFragment = sharedFragment("native", listOf(appleFragment, desktopFragment))
+
+    (fragments.values + listOf(macosFragment, iosFragment, appleFragment, desktopFragment, nativeFragment)).forEach {
+//        saveFragment(it)
+    }
 }
 
+@OptIn(ExperimentalSerializationApi::class)
 private val prettyJson = Json {
     prettyPrint = true
     prettyPrintIndent = "  "

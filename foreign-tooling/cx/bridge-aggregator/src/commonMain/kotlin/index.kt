@@ -3,11 +3,12 @@ package dev.whyoleg.foreign.tooling.cx.bridge.aggregator
 import dev.whyoleg.foreign.tooling.cx.bridge.model.*
 import dev.whyoleg.foreign.tooling.cx.compiler.model.*
 
+@Suppress("FunctionName")
 public fun CxBridgeFragment(
     fragmentId: CxBridgeFragmentId,
     index: CxCompilerIndex,
     declarationId: CxCompilerDeclaration<*>.() -> CxBridgeDeclarationId
-): CxBridgeFragment {
+): Pair<CxBridgeFragment, CxBridgeFragmentMapping> {
     fun <T : CxCompilerDeclarationData?> mapIndexDeclarations(declarations: CxCompilerDeclarations<T>) =
         declarations.mapValues { declarationId(it.value) to it.value }.ensureNoCollisions()
 
@@ -20,8 +21,8 @@ public fun CxBridgeFragment(
     fun CxCompilerDataType.convert(): CxBridgeDataType = when (this) {
         is CxCompilerDataType.Primitive -> CxBridgeDataType.Primitive(value)
         is CxCompilerDataType.Pointer -> CxBridgeDataType.Pointer(pointed.convert())
-        is CxCompilerDataType.Enum             -> CxBridgeDataType.Enum(enumsMapping.getValue(id).first)
-        is CxCompilerDataType.Typedef          -> CxBridgeDataType.Typedef(typedefsMapping.getValue(id).first)
+        is CxCompilerDataType.Enum        -> CxBridgeDataType.Enum(enumsMapping.getValue(id).first)
+        is CxCompilerDataType.Typedef     -> CxBridgeDataType.Typedef(typedefsMapping.getValue(id).first)
         is CxCompilerDataType.Record.Reference -> CxBridgeDataType.Record.Reference(recordsMapping.getValue(id).first)
         is CxCompilerDataType.Record.Anonymous -> CxBridgeDataType.Record.Anonymous(
             CxBridgeRecordData(
@@ -39,7 +40,7 @@ public fun CxBridgeFragment(
             parameters = parameters.map { it.convert() }
         )
         is CxCompilerDataType.Array -> CxBridgeDataType.Array(elementType.convert())
-        is CxCompilerDataType.Unsupported      -> CxBridgeDataType.Unsupported(info)
+        is CxCompilerDataType.Unsupported -> CxBridgeDataType.Unsupported(info)
     }
 
     return CxBridgeFragment(
@@ -94,6 +95,13 @@ public fun CxBridgeFragment(
                 }
             )
         },
+    ) to CxBridgeFragmentMapping(
+        fragmentId = fragmentId,
+        variables = emptyMap(),
+        enums = emptyMap(),
+        records = emptyMap(),
+        typedefs = emptyMap(),
+        functions = emptyMap(),
     )
 }
 
