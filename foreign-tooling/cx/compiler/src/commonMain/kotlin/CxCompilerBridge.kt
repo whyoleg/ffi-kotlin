@@ -17,6 +17,7 @@ internal object CxCompilerBridge {
 
         @Serializable
         data class BuildIndex(
+            val mainFileName: String,
             val mainFilePath: String,
             val compilerArgs: List<String>
         ) : Typed<CxCompilerIndex>()

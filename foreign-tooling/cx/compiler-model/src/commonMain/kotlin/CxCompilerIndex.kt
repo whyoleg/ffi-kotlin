@@ -4,8 +4,9 @@ import kotlinx.serialization.*
 
 @Serializable
 public data class CxCompilerIndex(
-    val typedefs: Map<CxCompilerDeclarationId, CxCompilerTypedef>,
-    val enums: Map<CxCompilerDeclarationId, CxCompilerEnum>,
-    val records: Map<CxCompilerDeclarationId, CxCompilerRecord>,
-    val functions: Map<CxCompilerDeclarationId, CxCompilerFunction>,
+    val variables: CxCompilerDeclarations<CxCompilerVariableData>,
+    val enums: CxCompilerDeclarations<CxCompilerEnumData>,
+    val records: CxCompilerDeclarations<CxCompilerRecordData?>,
+    val typedefs: CxCompilerDeclarations<CxCompilerTypedefData>,
+    val functions: CxCompilerDeclarations<CxCompilerFunctionData>,
 )

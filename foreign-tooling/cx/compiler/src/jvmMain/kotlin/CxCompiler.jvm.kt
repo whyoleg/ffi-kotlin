@@ -5,9 +5,10 @@ import kotlinx.serialization.*
 
 public actual object CxCompiler {
     public actual fun buildIndex(
+        mainFileName: String,
         mainFilePath: String,
         compilerArgs: List<String>
-    ): CxCompilerIndex = call(CxCompilerBridge.Request.BuildIndex(mainFilePath, compilerArgs))
+    ): CxCompilerIndex = call(CxCompilerBridge.Request.BuildIndex(mainFileName, mainFilePath, compilerArgs))
 
     private inline fun <reified T> call(request: CxCompilerBridge.Request.Typed<T>): T = call(request, serializer())
 

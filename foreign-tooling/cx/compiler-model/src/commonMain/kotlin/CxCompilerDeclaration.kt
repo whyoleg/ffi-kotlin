@@ -3,55 +3,68 @@ package dev.whyoleg.foreign.tooling.cx.compiler.model
 import kotlinx.serialization.*
 import kotlin.jvm.*
 
+public typealias CxCompilerDeclarations<T> = Map<CxCompilerDeclarationId, CxCompilerDeclaration<T>>
+
 @Serializable
 @JvmInline
 public value class CxCompilerDeclarationId(public val value: String)
 
 @Serializable
-public sealed class CxCompilerDeclaration {
-    public abstract val id: CxCompilerDeclarationId
-    public abstract val declarationName: String?
-    public abstract val headerName: String?
+public sealed class CxCompilerHeaderId {
+    @Serializable
+    public data class Main(val name: String) : CxCompilerHeaderId()
+
+    @Serializable
+    public data class Included(val value: String) : CxCompilerHeaderId()
+
+    @Serializable
+    public data object Builtin : CxCompilerHeaderId()
 }
 
 @Serializable
-public data class CxCompilerTypedef(
-    override val id: CxCompilerDeclarationId,
-    override val declarationName: String,
-    override val headerName: String?,
-    val aliased: CxCompilerDataType,
-) : CxCompilerDeclaration()
+public sealed class CxCompilerDeclarationData
 
 @Serializable
-public data class CxCompilerRecord(
-    override val id: CxCompilerDeclarationId,
-    override val declarationName: String?, // if null - anonymous
-    override val headerName: String?,
-    val isUnion: Boolean,
-    val members: Members? // if null - opaque
-) : CxCompilerDeclaration() {
+public data class CxCompilerDeclaration<T : CxCompilerDeclarationData?>(
+    public val id: CxCompilerDeclarationId,
+    // TODO: decide on nullability
+    public val declarationName: String?, // can be null for enum and record if it's declared with typedef
+    public val headerId: CxCompilerHeaderId,
+    public val data: T
+)
+
+@Serializable
+public data class CxCompilerVariableData(
+    val returnType: CxCompilerDataType
+) : CxCompilerDeclarationData()
+
+@Serializable
+public data class CxCompilerTypedefData(
+    val aliasedType: CxCompilerDataType,
+    val resolvedType: CxCompilerDataType
+) : CxCompilerDeclarationData()
+
+// TODO: refactor other declarations to this and make CxDeclaration just a class
+@Serializable
+public data class CxCompilerRecordData(
+    public val isUnion: Boolean,
+    public val size: Long,
+    public val align: Long,
+    public val fields: List<Field>
+) : CxCompilerDeclarationData() {
     @Serializable
     public data class Field(
-        val name: String,
+        val name: String?,
         val type: CxCompilerDataType,
-    )
-
-    // TODO: better name?
-    @Serializable
-    public data class Members(
-        val size: Long,
-        val align: Long,
-        val fields: List<Field>,
+        val bitWidth: Int?
     )
 }
 
 @Serializable
-public data class CxCompilerEnum(
-    override val id: CxCompilerDeclarationId,
-    override val declarationName: String?, // if null - anonymous
-    override val headerName: String?,
+public data class CxCompilerEnumData(
+    val unnamed: Boolean,
     val constants: List<Constant>,
-) : CxCompilerDeclaration() {
+) : CxCompilerDeclarationData() {
     @Serializable
     public data class Constant(
         val name: String,
@@ -60,18 +73,14 @@ public data class CxCompilerEnum(
 }
 
 @Serializable
-public data class CxCompilerFunction(
-    override val id: CxCompilerDeclarationId,
-    override val declarationName: String,
-    override val headerName: String?,
+public data class CxCompilerFunctionData(
+    val isVariadic: Boolean,
     val returnType: CxCompilerDataType,
     val parameters: List<Parameter> = emptyList(),
-) : CxCompilerDeclaration() {
-
-    // TODO: add if const?
+) : CxCompilerDeclarationData() {
     @Serializable
     public data class Parameter(
-        val name: String,
+        val name: String?,
         val type: CxCompilerDataType,
     )
 }
