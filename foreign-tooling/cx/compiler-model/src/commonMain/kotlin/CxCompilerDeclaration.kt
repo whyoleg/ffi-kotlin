@@ -27,8 +27,7 @@ public sealed class CxCompilerDeclarationData
 @Serializable
 public data class CxCompilerDeclaration<T : CxCompilerDeclarationData?>(
     val id: CxCompilerDeclarationId,
-    // TODO: decide on nullability
-    val declarationName: String?, // can be null for enum and record if it's declared with typedef
+    val declarationName: String,
     val headerId: CxCompilerHeaderId,
     val data: T
 )
@@ -44,7 +43,6 @@ public data class CxCompilerTypedefData(
     val resolvedType: CxCompilerDataType
 ) : CxCompilerDeclarationData()
 
-// TODO: refactor other declarations to this and make CxDeclaration just a class
 @Serializable
 public data class CxCompilerRecordData(
     val isUnion: Boolean,
@@ -62,7 +60,7 @@ public data class CxCompilerRecordData(
 
 @Serializable
 public data class CxCompilerEnumData(
-    val unnamed: Boolean,
+    val unnamed: Boolean, // TODO: need to drop it
     val constants: List<Constant>,
 ) : CxCompilerDeclarationData() {
     @Serializable
