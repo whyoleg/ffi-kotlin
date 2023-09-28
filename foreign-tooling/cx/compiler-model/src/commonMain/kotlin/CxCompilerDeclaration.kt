@@ -3,53 +3,70 @@ package dev.whyoleg.foreign.tooling.cx.compiler.model
 import kotlinx.serialization.*
 import kotlin.jvm.*
 
-public typealias CxCompilerDeclarations<T> = Map<CxCompilerDeclarationId, CxCompilerDeclaration<T>>
-
 @Serializable
 @JvmInline
 public value class CxCompilerDeclarationId(public val value: String)
 
 @Serializable
-public sealed class CxCompilerHeaderId {
+public sealed class CxCompilerFileId {
+    @SerialName("main")
     @Serializable
-    public data class Main(val name: String) : CxCompilerHeaderId()
+    public data class Main(val name: String) : CxCompilerFileId()
 
+    @SerialName("included")
     @Serializable
-    public data class Included(val value: String) : CxCompilerHeaderId()
+    public data class Included(val value: String) : CxCompilerFileId()
 
+    @SerialName("builtin")
     @Serializable
-    public data object Builtin : CxCompilerHeaderId()
+    public data object Builtin : CxCompilerFileId()
 }
 
 @Serializable
-public sealed class CxCompilerDeclarationData
+public sealed class CxCompilerDeclaration {
+    public abstract val id: CxCompilerDeclarationId
+    public abstract val fileId: CxCompilerFileId
+    public abstract val name: String?
+}
 
 @Serializable
-public data class CxCompilerDeclaration<T : CxCompilerDeclarationData?>(
-    val id: CxCompilerDeclarationId,
-    val declarationName: String,
-    val headerId: CxCompilerHeaderId,
-    val data: T
-)
+public data class CxCompilerVariable(
+    override val id: CxCompilerDeclarationId,
+    override val fileId: CxCompilerFileId,
+    override val name: String,
+    val type: CxCompilerDataType
+) : CxCompilerDeclaration()
 
 @Serializable
-public data class CxCompilerVariableData(
-    val returnType: CxCompilerDataType
-) : CxCompilerDeclarationData()
+public data class CxCompilerEnum(
+    override val id: CxCompilerDeclarationId,
+    override val fileId: CxCompilerFileId,
+    // TODO: TBD global anonymous vs local anonymous?
+    override val name: String?, // could have no name - anonymous - just variables
+    val constants: List<Constant>,
+) : CxCompilerDeclaration() {
+    @Serializable
+    public data class Constant(
+        val name: String,
+        val value: Long,
+    )
+}
 
 @Serializable
-public data class CxCompilerTypedefData(
-    val aliasedType: CxCompilerDataType,
-    val resolvedType: CxCompilerDataType
-) : CxCompilerDeclarationData()
-
-@Serializable
-public data class CxCompilerRecordData(
+public data class CxCompilerRecord(
+    override val id: CxCompilerDeclarationId,
+    override val fileId: CxCompilerFileId,
+    override val name: String?, // could have no name - anonymous - declared directly in another struct
     val isUnion: Boolean,
-    val size: Long,
-    val align: Long,
-    val fields: List<Field>
-) : CxCompilerDeclarationData() {
+    val definition: Definition?, // if null, means there is no definition available - opaque
+) : CxCompilerDeclaration() {
+    @Serializable
+    public data class Definition(
+        val size: Long,
+        val align: Long,
+        val fields: List<Field>
+    )
+
     @Serializable
     public data class Field(
         val name: String?,
@@ -59,23 +76,23 @@ public data class CxCompilerRecordData(
 }
 
 @Serializable
-public data class CxCompilerEnumData(
-    val unnamed: Boolean, // TODO: need to drop it
-    val constants: List<Constant>,
-) : CxCompilerDeclarationData() {
-    @Serializable
-    public data class Constant(
-        val name: String,
-        val value: Long,
-    )
-}
+public data class CxCompilerTypedef(
+    override val id: CxCompilerDeclarationId,
+    override val fileId: CxCompilerFileId,
+    override val name: String,
+    val aliasedType: CxCompilerDataType,
+    val resolvedType: CxCompilerDataType
+) : CxCompilerDeclaration()
 
 @Serializable
-public data class CxCompilerFunctionData(
+public data class CxCompilerFunction(
+    override val id: CxCompilerDeclarationId,
+    override val fileId: CxCompilerFileId,
+    override val name: String,
     val isVariadic: Boolean,
     val returnType: CxCompilerDataType,
     val parameters: List<Parameter> = emptyList(),
-) : CxCompilerDeclarationData() {
+) : CxCompilerDeclaration() {
     @Serializable
     public data class Parameter(
         val name: String?,
