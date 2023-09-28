@@ -59,6 +59,8 @@ kotlin {
         }
         compilations.configureEach {
             compilerOptions.configure {
+                // standard allocator uses MUCH LESS memory
+                freeCompilerArgs.add("-Xallocator=std")
                 freeCompilerArgs.add("-linker-option")
                 freeCompilerArgs.add(setupClangLibsTask.map { "-L${it.destinationDir}" })
             }
