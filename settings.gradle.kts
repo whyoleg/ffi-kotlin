@@ -12,3 +12,4 @@ includeBuild("foreign-runtime")
 includeBuild("foreign-tooling")
 includeBuild("foreign-gradle-plugin")
 
+includeBuild("test-projects")

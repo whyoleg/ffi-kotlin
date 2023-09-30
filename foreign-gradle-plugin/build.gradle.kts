@@ -8,10 +8,11 @@ plugins {
 kotlin {
     explicitApi()
     jvmToolchain(8)
-//    compilerOptions {
-//        apiVersion.set(KotlinVersion.KOTLIN_1_8)
-//        languageVersion.set(KotlinVersion.KOTLIN_1_8)
-//    }
+    compilerOptions {
+        // for compatibility with Gradle 8+
+        apiVersion.set(KotlinVersion.KOTLIN_1_8)
+        languageVersion.set(KotlinVersion.KOTLIN_1_8)
+    }
 }
 
 dependencies {
@@ -19,4 +20,13 @@ dependencies {
 
     compileOnly(kotlinLibs.gradle.plugin)
     compileOnly(libs.build.android)
+}
+
+gradlePlugin {
+    plugins {
+        create("dev.whyoleg.foreign") {
+            id = "dev.whyoleg.foreign"
+            implementationClass = "dev.whyoleg.foreign.gradle.ForeignPlugin"
+        }
+    }
 }

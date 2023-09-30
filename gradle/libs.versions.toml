@@ -5,7 +5,7 @@ kotlin-dokka = "1.9.0"
 kotlinx-bcv = "0.13.2"
 kotlinx-kover = "0.7.3"
 
-android = "8.0.2"
+android = "7.3.1"
 androidx-test = "1.5.2"
 
 gradle-enterprise = "3.15"
