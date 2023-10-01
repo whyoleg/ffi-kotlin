@@ -14,11 +14,9 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "foreign-gradle-plugin"
+rootProject.name = "foreign-gradle"
 
-// TODO: split plugin into API and impl
-//include("foreign-gradle-plugin")
-//include("foreign-gradle-plugin-api")
+include("foreign-gradle-plugin")
+include("foreign-gradle-plugin-api")
 
 includeBuild("../foreign-tooling")
-
