@@ -18,10 +18,11 @@ foreign {
                 initialHeaders.addAll(
                     "openssl/evp.h"
                 )
+                includeHeaders { it.startsWith("openssl/") }
                 packageName {
                     when {
-                        it.startsWith("openssl/") -> "tp.foreign.openssl"
-                        else                      -> "tp.foreign.openssl.internal"
+                        it.startsWith("openssl/") -> "foreign.bindings.openssl"
+                        else                      -> "foreign.bindings.openssl.internal"
                     }
                 }
             }

@@ -16,6 +16,13 @@ public sealed interface ForeignCxInterfaceConfiguration {
 
     public sealed interface Bindings {
         public val initialHeaders: ListProperty<String>
+
+        // these are 'soft' filters
+        // means that referenced declarations are still will be included
+        // f.e if we only include `openssl/*` headers
+        // and in some declaration (X), there will be reference to some declaration (Y) from `stdio.h` header
+        // this declaration (Y) will be also included (not referenced declarations will not be included)
+        // otherwise there will be code, which could not be compiled
         public fun includeHeaders(spec: Spec<String>)
         public fun excludeHeaders(spec: Spec<String>)
     }
