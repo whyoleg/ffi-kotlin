@@ -16,6 +16,8 @@ kotlin {
 }
 
 dependencies {
+    api(projects.foreignGradlePluginApi)
+
     compileOnly(gradleKotlinDsl())
 
     compileOnly(kotlinLibs.gradle.plugin)

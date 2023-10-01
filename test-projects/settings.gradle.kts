@@ -19,7 +19,7 @@ dependencyResolutionManagement {
 rootProject.name = "test-projects"
 
 //includeBuild("../foreign-runtime")
-includeBuild("../foreign-gradle-plugin")
+includeBuild("../foreign-gradle")
 
 includeTestProject("libcrypto", "api", "prebuilt", "shared", "test")
 
