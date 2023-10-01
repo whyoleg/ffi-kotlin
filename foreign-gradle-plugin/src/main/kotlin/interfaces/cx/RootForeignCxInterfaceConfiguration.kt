@@ -16,9 +16,13 @@ public sealed interface RootForeignCxInterfaceConfiguration : ForeignCxInterface
     public override val bindings: Bindings
 
     public sealed interface Bindings : ForeignCxInterfaceConfiguration.Bindings {
+        // false by default
         public val public: Property<Boolean>
+
+        // null by default
         public val requiresOptIn: Property<String?>
 
+        // by default will be {project.group}.{project.name.replace("-", ".")}.{interface.name}
         // for now, all of this is by header - could be improved later
         // header -> package name
         public fun packageName(transformer: Transformer<String, String>)
