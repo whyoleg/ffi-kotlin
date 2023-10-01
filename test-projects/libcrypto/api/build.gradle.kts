@@ -8,6 +8,7 @@ plugins {
 kotlin {
     jvm()
     macosArm64()
+    macosX64()
 }
 
 foreign {
@@ -31,11 +32,19 @@ foreign {
                     includeDirectories.add(openssl3.includeDirectory("macos-arm64"))
                     libraryDirectories.add(openssl3.libDirectory("macos-arm64"))
                 }
+                macosX64 {
+                    includeDirectories.add(openssl3.includeDirectory("macos-x64"))
+                    libraryDirectories.add(openssl3.libDirectory("macos-x64"))
+                }
             }
             native {
                 macosArm64 {
                     includeDirectories.add(openssl3.includeDirectory("macos-arm64"))
                     libraryDirectories.add(openssl3.libDirectory("macos-arm64"))
+                }
+                macosX64 {
+                    includeDirectories.add(openssl3.includeDirectory("macos-x64"))
+                    libraryDirectories.add(openssl3.libDirectory("macos-x64"))
                 }
             }
 //            android {
