@@ -20,6 +20,8 @@ dependencies {
 
     compileOnly(kotlinLibs.gradle.plugin)
     compileOnly(libs.build.android)
+
+    compileOnly("dev.whyoleg.foreign:foreign-tooling-cx-compiler-runner")
 }
 
 gradlePlugin {

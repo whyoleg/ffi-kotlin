@@ -9,7 +9,8 @@ kotlin {
         commonMain {
             dependencies {
                 api(projects.cx.foreignToolingCxCompilerModel)
-                implementation(projects.cx.foreignToolingCxCompiler)
+                // TODO: revisit api vs implementation
+                api(projects.cx.foreignToolingCxCompiler)
             }
         }
     }
