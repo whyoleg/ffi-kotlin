@@ -4,10 +4,9 @@ import dev.whyoleg.foreign.gradle.api.*
 import dev.whyoleg.foreign.gradle.api.interfaces.*
 import dev.whyoleg.foreign.gradle.interfaces.*
 import org.gradle.api.model.*
-import javax.inject.*
 
-public abstract class DefaultForeignExtension @Inject constructor(
+internal class DefaultForeignExtension(
     objectFactory: ObjectFactory
 ) : ForeignExtension {
-    public override val interfaces: ForeignInterfaces = DefaultForeignInterfaces(objectFactory)
+    override val interfaces: ForeignInterfaces = DefaultForeignInterfaces(objectFactory)
 }

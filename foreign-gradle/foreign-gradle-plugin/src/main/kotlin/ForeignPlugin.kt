@@ -7,11 +7,8 @@ import org.gradle.kotlin.dsl.*
 
 public class ForeignPlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        val extension = target.extensions.create(
-            publicType = ForeignExtension::class,
-            name = "foreign",
-            instanceType = DefaultForeignExtension::class
-        )
+        val extension = DefaultForeignExtension(target.objects)
+        target.extensions.add(ForeignExtension::class, "foreign", extension)
 
         extension.interfaces.all {
             when (it) {
