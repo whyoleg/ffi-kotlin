@@ -9,15 +9,15 @@ import org.gradle.kotlin.dsl.*
 
 internal abstract class DefaultLeafCxForeignInterfaceConfiguration(
     objectFactory: ObjectFactory,
-    parent: DefaultCxForeignInterfaceConfiguration?
-) : DefaultCxForeignInterfaceConfiguration(objectFactory, parent) {
+    parent: DefaultBaseCxForeignInterfaceConfiguration?
+) : DefaultBaseCxForeignInterfaceConfiguration(objectFactory, parent) {
     final override val bindings: DefaultForeignCxInterfaceConfigurationBindings =
         DefaultLeafForeignCxInterfaceConfigurationBindings(objectFactory, parent?.bindings)
 }
 
-internal abstract class DefaultCxForeignInterfaceConfiguration(
+internal abstract class DefaultBaseCxForeignInterfaceConfiguration(
     objectFactory: ObjectFactory,
-    parent: DefaultCxForeignInterfaceConfiguration?
+    parent: DefaultBaseCxForeignInterfaceConfiguration?
 ) : BaseCxForeignInterfaceConfiguration {
     final override val includeDirectories: ListProperty<Directory> =
         objectFactory.listProperty<Directory>().withAllFrom(parent?.includeDirectories)

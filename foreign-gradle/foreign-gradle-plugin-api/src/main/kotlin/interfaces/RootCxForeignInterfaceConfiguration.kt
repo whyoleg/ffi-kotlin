@@ -4,6 +4,7 @@ import org.gradle.api.*
 import org.gradle.api.provider.*
 import org.jetbrains.kotlin.gradle.plugin.*
 
+// TODO: move to interfaces.cx package? or just cx?
 // TODO: decide on name better?
 public interface RootCxForeignInterfaceConfiguration : BaseCxForeignInterfaceConfiguration, ForeignInterfaceConfiguration {
     // main by default

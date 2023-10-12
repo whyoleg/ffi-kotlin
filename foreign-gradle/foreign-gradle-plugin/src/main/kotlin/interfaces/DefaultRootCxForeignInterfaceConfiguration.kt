@@ -10,7 +10,7 @@ import javax.inject.*
 internal abstract class DefaultRootCxForeignInterfaceConfiguration @Inject constructor(
     val interfaceName: String,
     objectFactory: ObjectFactory
-) : DefaultCxForeignInterfaceConfiguration(objectFactory, null),
+) : DefaultBaseCxForeignInterfaceConfiguration(objectFactory, null),
     RootCxForeignInterfaceConfiguration {
     override fun getName(): String = interfaceName
 

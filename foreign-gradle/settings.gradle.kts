@@ -18,5 +18,6 @@ rootProject.name = "foreign-gradle"
 
 include("foreign-gradle-plugin")
 include("foreign-gradle-plugin-api")
+include("foreign-gradle-internal-tool")
 
 includeBuild("../foreign-tooling")

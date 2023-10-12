@@ -22,7 +22,7 @@ public interface BaseCxForeignInterfaceConfiguration {
         public val initialHeaders: ListProperty<String>
 
         // these are 'soft' filters
-        // means that referenced declarations are still will be included
+        // means that referenced declarations will be still included
         // f.e if we only include `openssl/*` headers
         // and in some declaration (X), there will be reference to some declaration (Y) from `stdio.h` header
         // this declaration (Y) will be also included (not referenced declarations will not be included)
