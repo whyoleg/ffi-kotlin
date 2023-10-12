@@ -15,8 +15,8 @@ kotlin {
 }
 
 dependencies {
-    // TODO: decide if it's needed here
     compileOnly(gradleApi())
+
     compileOnly(kotlinLibs.gradle.plugin)
     compileOnly(libs.build.android)
 }

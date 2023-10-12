@@ -1,5 +1,6 @@
 package dev.whyoleg.foreign.gradle.interfaces
 
+import dev.whyoleg.foreign.gradle.api.cx.*
 import dev.whyoleg.foreign.gradle.api.interfaces.*
 import dev.whyoleg.foreign.gradle.api.interfaces.JvmPlatformCxForeignInterfaceConfiguration.*
 import org.gradle.api.*
@@ -52,6 +53,11 @@ internal class DefaultJvmTargetCxForeignInterfaceConfiguration(
     parent: DefaultJvmPlatformCxForeignInterfaceConfiguration
 ) : DefaultTargetCxForeignInterfaceConfiguration(name, objectFactory, parent),
     JvmTargetCxForeignInterfaceConfiguration {
+    override val target: CxTarget
+        get() = when (name) {
+            "macosArm64" -> CxTarget.MacosArm64
+            else         -> TODO("unsupported target: $name")
+        }
 
     class Factory(
         private val objectFactory: ObjectFactory,

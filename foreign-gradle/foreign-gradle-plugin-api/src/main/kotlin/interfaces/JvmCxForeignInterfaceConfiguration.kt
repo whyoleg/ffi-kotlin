@@ -24,6 +24,8 @@ public interface JvmPlatformCxForeignInterfaceConfiguration :
 public interface JvmTargetCxForeignInterfaceConfiguration :
     JvmCxForeignInterfaceConfiguration,
     TargetCxForeignInterfaceConfiguration {
+    //embeddedLibrariesPath=foreignLibs/*os* - should it be configurable?
+    //embeddedLibrariesHashing=true
     //embedDynamicLibraries
     //embedStaticLibraries
     //embedLinkPaths - TODO?

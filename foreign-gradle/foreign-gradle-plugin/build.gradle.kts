@@ -16,14 +16,13 @@ kotlin {
 }
 
 dependencies {
-    api(projects.foreignGradlePluginApi)
-
     compileOnly(gradleKotlinDsl())
 
     compileOnly(kotlinLibs.gradle.plugin)
     compileOnly(libs.build.android)
 
-    compileOnly("dev.whyoleg.foreign:foreign-tooling-cx-compiler-runner")
+    api(projects.foreignGradlePluginApi)
+    compileOnly(projects.foreignGradleInternalTool) // needed for workers
 }
 
 gradlePlugin {
