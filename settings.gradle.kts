@@ -12,7 +12,7 @@ rootProject.name = "ffi-kotlin"
 includeBuild("foreign-tooling")
 includeBuild("foreign-gradle")
 
-includeBuild("test-projects")
+//includeBuild("test-projects")
 
 
 // TODO: decide on root project structure
