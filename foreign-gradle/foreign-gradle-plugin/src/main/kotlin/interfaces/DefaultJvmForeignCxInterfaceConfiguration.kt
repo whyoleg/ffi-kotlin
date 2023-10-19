@@ -63,7 +63,8 @@ internal class DefaultJvmTargetCxForeignInterfaceConfiguration(
         private val objectFactory: ObjectFactory,
         private val parent: DefaultJvmPlatformCxForeignInterfaceConfiguration
     ) : NamedDomainObjectFactory<DefaultJvmTargetCxForeignInterfaceConfiguration> {
-        override fun create(name: String): DefaultJvmTargetCxForeignInterfaceConfiguration =
-            DefaultJvmTargetCxForeignInterfaceConfiguration(name, objectFactory, parent)
+        override fun create(name: String): DefaultJvmTargetCxForeignInterfaceConfiguration {
+            return DefaultJvmTargetCxForeignInterfaceConfiguration(name, objectFactory, parent)
+        }
     }
 }

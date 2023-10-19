@@ -14,21 +14,25 @@ internal abstract class DefaultRootCxForeignInterfaceConfiguration @Inject const
     RootCxForeignInterfaceConfiguration {
     override fun getName(): String = interfaceName
 
-    override val sourceSetTree: Property<KotlinSourceSetTree> =
-        objectFactory
-            .property<KotlinSourceSetTree>()
-            .convention(KotlinSourceSetTree.main)
-
-    override val bindings: DefaultRootForeignCxInterfaceConfigurationBindings =
-        DefaultRootForeignCxInterfaceConfigurationBindings("TODO", objectFactory)
+    abstract override val bindings: DefaultRootForeignCxInterfaceConfigurationBindings
 
     val platforms = objectFactory.polymorphicDomainObjectContainer(
         DefaultPlatformCxForeignInterfaceConfiguration::class
     ).apply {
         registerFactory(
             DefaultJvmPlatformCxForeignInterfaceConfiguration::class.java,
-            DefaultJvmPlatformCxForeignInterfaceConfiguration.Factory(objectFactory, this@DefaultRootCxForeignInterfaceConfiguration)
+            DefaultJvmPlatformCxForeignInterfaceConfiguration.Factory(
+                objectFactory,
+                this@DefaultRootCxForeignInterfaceConfiguration
+            )
         )
+    }
+
+    init {
+        run {
+            sourceSetTree.convention(KotlinSourceSetTree.main)
+            bindings.packageName.convention { "TODO" }
+        }
     }
 
     override fun jvm(configure: JvmPlatformCxForeignInterfaceConfiguration.() -> Unit) {

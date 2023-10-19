@@ -28,8 +28,11 @@ public interface BaseCxForeignInterfaceConfiguration {
         // this declaration (Y) will be also included (not referenced declarations will not be included)
         // otherwise there will be code, which could not be compiled
         // can be called multiple times
-        public fun includeHeaders(spec: Spec<String>)
-        public fun excludeHeaders(spec: Spec<String>)
+        public val includeHeaders: ListProperty<Spec<String>>
+        public val excludeHeaders: ListProperty<Spec<String>>
+
+        public fun includeHeaders(spec: Spec<String>): Unit = includeHeaders.add(spec)
+        public fun excludeHeaders(spec: Spec<String>): Unit = excludeHeaders.add(spec)
     }
 
     public operator fun <T : Bindings> T.invoke(configure: T.() -> Unit): Unit = configure(this)
