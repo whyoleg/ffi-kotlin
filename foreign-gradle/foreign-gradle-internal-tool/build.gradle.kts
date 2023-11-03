@@ -8,9 +8,7 @@ kotlin {
 }
 
 dependencies {
-    compileOnly(gradleApi())
-    // TODO: compileOnly vs api vs implementation
-    compileOnly(projects.foreignGradlePluginApi)
+    compileOnly(projects.foreignGradleTooling)
 
     implementation("dev.whyoleg.foreign:foreign-tooling-cx-compiler-runner")
     implementation(libs.kotlinx.serialization.json)

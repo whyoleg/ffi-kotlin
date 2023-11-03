@@ -19,5 +19,7 @@ rootProject.name = "foreign-gradle"
 includeBuild("../foreign-tooling")
 
 include("foreign-gradle-plugin")
-include("foreign-gradle-plugin-api")
 include("foreign-gradle-internal-tool")
+
+// this is a candidate for usage in Gradle plugin, Kotlin compiler plugin API, IDEA plugin, etc
+include("foreign-gradle-tooling")
