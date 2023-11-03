@@ -1,5 +1,6 @@
 package dev.whyoleg.foreign.gradle.cx
 
+import dev.whyoleg.foreign.gradle.api.*
 import dev.whyoleg.foreign.gradle.api.cx.*
 import dev.whyoleg.foreign.gradle.internal.tool.*
 import org.gradle.api.*
@@ -15,8 +16,8 @@ internal abstract class DefaultGenerateCxCompilerIndexTask @Inject constructor(
     objectFactory: ObjectFactory
 ) : GenerateCxCompilerIndexTask, DefaultTask() {
     override val destinationDirectory: DirectoryProperty = objectFactory.directoryProperty()
-    override val target: Property<CxTarget> = objectFactory.property()
-    override val dependencies: MapProperty<CxDependency, FileSystemLocation> = objectFactory.mapProperty()
+    override val target: Property<ForeignTarget> = objectFactory.property()
+    override val dependencies: MapProperty<ForeignDependency, FileSystemLocation> = objectFactory.mapProperty()
 
     @get:InputFiles
     val toolClasspath: ConfigurableFileCollection = objectFactory.fileCollection()
@@ -41,8 +42,8 @@ internal interface GenerateCxCompilerIndexAction : WorkAction<GenerateCxCompiler
     interface Parameters : WorkParameters {
         val inputFile: RegularFileProperty
         val outputFile: RegularFileProperty
-        val target: Property<CxTarget>
-        val dependencies: MapProperty<CxDependency, FileSystemLocation>
+        val target: Property<ForeignTarget>
+        val dependencies: MapProperty<ForeignDependency, FileSystemLocation>
         val additionalCompilerArguments: ListProperty<String>
     }
 

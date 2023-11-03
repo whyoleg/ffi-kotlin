@@ -1,8 +1,8 @@
 package dev.whyoleg.foreign.gradle.interfaces
 
+import dev.whyoleg.foreign.gradle.api.*
 import dev.whyoleg.foreign.gradle.api.cx.*
-import dev.whyoleg.foreign.gradle.api.interfaces.*
-import dev.whyoleg.foreign.gradle.api.interfaces.JvmPlatformCxForeignInterfaceConfiguration.*
+import dev.whyoleg.foreign.gradle.api.cx.JvmPlatformCxForeignInterfaceConfiguration.*
 import org.gradle.api.*
 import org.gradle.api.model.*
 import org.gradle.api.provider.*
@@ -11,7 +11,7 @@ import org.gradle.kotlin.dsl.*
 internal class DefaultJvmPlatformCxForeignInterfaceConfiguration(
     platformName: String,
     objectFactory: ObjectFactory,
-    parent: DefaultRootCxForeignInterfaceConfiguration
+    parent: DefaultCxForeignInterface
 ) : DefaultPlatformCxForeignInterfaceConfiguration(platformName, objectFactory, parent),
     JvmPlatformCxForeignInterfaceConfiguration {
 
@@ -40,7 +40,7 @@ internal class DefaultJvmPlatformCxForeignInterfaceConfiguration(
 
     class Factory(
         private val objectFactory: ObjectFactory,
-        private val parent: DefaultRootCxForeignInterfaceConfiguration
+        private val parent: DefaultCxForeignInterface
     ) : NamedDomainObjectFactory<DefaultJvmPlatformCxForeignInterfaceConfiguration> {
         override fun create(name: String): DefaultJvmPlatformCxForeignInterfaceConfiguration =
             DefaultJvmPlatformCxForeignInterfaceConfiguration(name, objectFactory, parent)
@@ -53,9 +53,9 @@ internal class DefaultJvmTargetCxForeignInterfaceConfiguration(
     parent: DefaultJvmPlatformCxForeignInterfaceConfiguration
 ) : DefaultTargetCxForeignInterfaceConfiguration(name, objectFactory, parent),
     JvmTargetCxForeignInterfaceConfiguration {
-    override val target: CxTarget
+    override val target: ForeignTarget
         get() = when (name) {
-            "macosArm64" -> CxTarget.MacosArm64
+            "macosArm64" -> ForeignTarget.MacosArm64
             else         -> TODO("unsupported target: $name")
         }
 

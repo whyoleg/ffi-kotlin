@@ -1,16 +1,11 @@
 package dev.whyoleg.foreign.gradle.interfaces
 
 import dev.whyoleg.foreign.gradle.*
-import dev.whyoleg.foreign.gradle.api.interfaces.*
-import org.gradle.api.*
-import org.gradle.api.model.*
-import org.gradle.api.provider.*
-import org.gradle.api.specs.*
-import org.gradle.kotlin.dsl.*
+import dev.whyoleg.foreign.gradle.api.cx.*
 
 internal abstract class DefaultRootForeignCxInterfaceConfigurationBindings :
     DefaultForeignCxInterfaceConfigurationBindings(),
-    RootCxForeignInterfaceConfiguration.Bindings {
+    CxForeignInterface.Bindings {
 
     init {
         run {

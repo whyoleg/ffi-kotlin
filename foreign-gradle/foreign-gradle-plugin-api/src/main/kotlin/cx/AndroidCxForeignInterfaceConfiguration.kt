@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.gradle.api.interfaces
+package dev.whyoleg.foreign.gradle.api.cx
 
 public interface AndroidCxForeignInterfaceConfiguration : BaseCxForeignInterfaceConfiguration
 
