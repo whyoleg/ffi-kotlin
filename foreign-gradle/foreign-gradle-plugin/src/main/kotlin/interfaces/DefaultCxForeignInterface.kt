@@ -1,17 +1,16 @@
 package dev.whyoleg.foreign.gradle.interfaces
 
-import dev.whyoleg.foreign.gradle.api.interfaces.*
+import dev.whyoleg.foreign.gradle.api.cx.*
 import org.gradle.api.model.*
-import org.gradle.api.provider.*
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.plugin.*
 import javax.inject.*
 
-internal abstract class DefaultRootCxForeignInterfaceConfiguration @Inject constructor(
+internal abstract class DefaultCxForeignInterface @Inject constructor(
     val interfaceName: String,
     objectFactory: ObjectFactory
 ) : DefaultBaseCxForeignInterfaceConfiguration(objectFactory, null),
-    RootCxForeignInterfaceConfiguration {
+    CxForeignInterface {
     override fun getName(): String = interfaceName
 
     abstract override val bindings: DefaultRootForeignCxInterfaceConfigurationBindings
@@ -23,7 +22,7 @@ internal abstract class DefaultRootCxForeignInterfaceConfiguration @Inject const
             DefaultJvmPlatformCxForeignInterfaceConfiguration::class.java,
             DefaultJvmPlatformCxForeignInterfaceConfiguration.Factory(
                 objectFactory,
-                this@DefaultRootCxForeignInterfaceConfiguration
+                this@DefaultCxForeignInterface
             )
         )
     }

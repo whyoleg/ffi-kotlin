@@ -1,6 +1,7 @@
 package dev.whyoleg.foreign.gradle.interfaces
 
 import dev.whyoleg.foreign.gradle.*
+import dev.whyoleg.foreign.gradle.api.cx.*
 import dev.whyoleg.foreign.gradle.api.interfaces.*
 import org.gradle.api.file.*
 import org.gradle.api.model.*

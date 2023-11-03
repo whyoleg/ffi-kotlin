@@ -56,3 +56,46 @@ foreign {
         }
     }
 }
+
+val openssl = foreignDependencies.raw("openssl") {
+    macosArm64 {
+        includeDirectories.add(openssl3.includeDirectory("macos-arm64"))
+        libraryDirectories.add(openssl3.libDirectory("macos-arm64"))
+    }
+    macosX64 {
+        includeDirectories.add(openssl3.includeDirectory("macos-x64"))
+        libraryDirectories.add(openssl3.libDirectory("macos-x64"))
+    }
+}
+
+foreignInterfaces.cx("libcrypto") {
+    // TODO: how to better configure it
+    // it will be injected in this compilation tree (main, integrationTest, test, etc)
+    compilationTree.set("main")
+    packageName.set("")
+
+    jvm {
+        runtimeKind = JNI
+        macosArm64()
+        macosX64()
+    }
+    js {
+        nodejs()
+    }
+    native {
+        macosArm64()
+        macosX64()
+    }
+    wasm {
+        nodejs()
+    }
+
+    bindings {
+        // optIn, public, etc
+        // initialHeaders, header filters, etc
+
+        macosArm64 {
+
+        }
+    }
+}

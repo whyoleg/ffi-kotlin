@@ -1,6 +1,6 @@
 package dev.whyoleg.foreign.gradle.internal.tool
 
-import dev.whyoleg.foreign.gradle.api.cx.*
+import dev.whyoleg.foreign.gradle.api.*
 import dev.whyoleg.foreign.tooling.cx.compiler.*
 import dev.whyoleg.foreign.tooling.cx.compiler.model.*
 import dev.whyoleg.foreign.tooling.cx.compiler.runner.*
@@ -15,8 +15,8 @@ public object ForeignGradleTool
 public fun ForeignGradleTool.buildIndex(
     inputFile: File,
     outputFile: File,
-    target: CxTarget,
-    dependencies: Map<CxDependency, File>,
+    target: ForeignTarget,
+    dependencies: Map<ForeignDependency, File>,
     additionalCompilerArguments: List<String>
 ) {
     val index = CxCompiler.buildIndex(
@@ -24,21 +24,21 @@ public fun ForeignGradleTool.buildIndex(
         mainFilePath = inputFile.absolutePath,
         compilerArgs = CxCompilerArguments.forTarget(
             target = when (target) {
-                CxTarget.MingwX64          -> CxCompilerTarget.MingwX64
-                CxTarget.LinuxX64          -> CxCompilerTarget.LinuxX64
-                CxTarget.MacosX64          -> CxCompilerTarget.MacosX64
-                CxTarget.MacosArm64        -> CxCompilerTarget.MacosArm64
-                CxTarget.IosDeviceArm64    -> CxCompilerTarget.IosDeviceArm64
-                CxTarget.IosSimulatorArm64 -> CxCompilerTarget.IosSimulatorArm64
-                CxTarget.IosSimulatorX64   -> CxCompilerTarget.IosSimulatorX64
+                ForeignTarget.MingwX64          -> CxCompilerTarget.MingwX64
+                ForeignTarget.LinuxX64          -> CxCompilerTarget.LinuxX64
+                ForeignTarget.MacosX64          -> CxCompilerTarget.MacosX64
+                ForeignTarget.MacosArm64        -> CxCompilerTarget.MacosArm64
+                ForeignTarget.IosDeviceArm64    -> CxCompilerTarget.IosDeviceArm64
+                ForeignTarget.IosSimulatorArm64 -> CxCompilerTarget.IosSimulatorArm64
+                ForeignTarget.IosSimulatorX64   -> CxCompilerTarget.IosSimulatorX64
             },
             dependencies = CxCompilerDependencies(
-                llvmPath = dependencies[CxDependency.LLVM]?.absolutePath,
-                mingwToolchainPath = dependencies[CxDependency.MingwToolchain]?.absolutePath,
-                linuxGccToolchainPath = dependencies[CxDependency.LinuxGccToolchain]?.absolutePath,
-                macosSdkPath = dependencies[CxDependency.MacosSdk]?.absolutePath,
-                iosDeviceSdkPath = dependencies[CxDependency.IosDeviceSdk]?.absolutePath,
-                iosSimulatorSdkPath = dependencies[CxDependency.IosSimulatorSdk]?.absolutePath,
+                llvmPath = dependencies[ForeignDependency.LLVM]?.absolutePath,
+                mingwToolchainPath = dependencies[ForeignDependency.MingwToolchain]?.absolutePath,
+                linuxGccToolchainPath = dependencies[ForeignDependency.LinuxGccToolchain]?.absolutePath,
+                macosSdkPath = dependencies[ForeignDependency.MacosSdk]?.absolutePath,
+                iosDeviceSdkPath = dependencies[ForeignDependency.IosDeviceSdk]?.absolutePath,
+                iosSimulatorSdkPath = dependencies[ForeignDependency.IosSimulatorSdk]?.absolutePath,
             )
         ) + additionalCompilerArguments
     )

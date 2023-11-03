@@ -29,7 +29,11 @@ gradlePlugin {
     plugins {
         create("dev.whyoleg.foreign") {
             id = "dev.whyoleg.foreign"
-            implementationClass = "dev.whyoleg.foreign.gradle.ForeignPlugin"
+            implementationClass = "dev.whyoleg.foreign.gradle.api.ForeignPlugin"
+        }
+        create("dev.whyoleg.foreign.internal") {
+            id = "dev.whyoleg.foreign.internal"
+            implementationClass = "dev.whyoleg.foreign.gradle.InternalForeignPlugin"
         }
     }
 }

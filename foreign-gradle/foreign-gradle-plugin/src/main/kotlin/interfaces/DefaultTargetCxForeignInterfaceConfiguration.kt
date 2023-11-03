@@ -1,7 +1,7 @@
 package dev.whyoleg.foreign.gradle.interfaces
 
+import dev.whyoleg.foreign.gradle.api.*
 import dev.whyoleg.foreign.gradle.api.cx.*
-import dev.whyoleg.foreign.gradle.api.interfaces.*
 import dev.whyoleg.foreign.gradle.cx.*
 import org.gradle.api.*
 import org.gradle.api.model.*
@@ -16,7 +16,7 @@ internal sealed class DefaultTargetCxForeignInterfaceConfiguration(
     TargetCxForeignInterfaceConfiguration,
     Named {
     final override fun getName(): String = targetName
-    abstract val target: CxTarget
+    abstract val target: ForeignTarget
 
     private val platformName = parent.platformName
     private val interfaceName = parent.interfaceName
