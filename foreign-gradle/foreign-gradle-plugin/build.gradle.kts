@@ -21,19 +21,16 @@ dependencies {
     compileOnly(kotlinLibs.gradle.plugin)
     compileOnly(libs.build.android)
 
-    api(projects.foreignGradlePluginApi)
-    compileOnly(projects.foreignGradleInternalTool) // needed for workers
+    api(projects.foreignGradleTooling)
+    // used for workers, implementation is provided in place
+    compileOnly(projects.foreignGradleInternalTool)
 }
 
 gradlePlugin {
     plugins {
         create("dev.whyoleg.foreign") {
             id = "dev.whyoleg.foreign"
-            implementationClass = "dev.whyoleg.foreign.gradle.api.ForeignPlugin"
-        }
-        create("dev.whyoleg.foreign.internal") {
-            id = "dev.whyoleg.foreign.internal"
-            implementationClass = "dev.whyoleg.foreign.gradle.InternalForeignPlugin"
+            implementationClass = "dev.whyoleg.foreign.gradle.ForeignPlugin"
         }
     }
 }
