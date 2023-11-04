@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.gradle.internal
+package dev.whyoleg.foreign.gradle.internal.cx
 
 //internal abstract class DefaultRootForeignCxInterfaceConfigurationBindings :
 //    DefaultForeignCxInterfaceConfigurationBindings(),
