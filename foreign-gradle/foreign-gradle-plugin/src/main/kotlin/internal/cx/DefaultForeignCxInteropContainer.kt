@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.gradle.internal
+package dev.whyoleg.foreign.gradle.internal.cx
 
 import dev.whyoleg.foreign.gradle.dsl.cxinterop.*
 import org.gradle.api.*

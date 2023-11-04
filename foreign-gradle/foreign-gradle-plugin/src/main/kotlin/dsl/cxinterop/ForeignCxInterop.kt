@@ -13,8 +13,7 @@ public interface ForeignCxInterop : BaseCxInterop, Named {
     // null by default
     public val requiresOptIn: Property<String?>
 
-    public fun jvm(configure: JvmPlatformCxInterop.() -> Unit)
-    public fun native(configure: NativePlatformCxInterop.() -> Unit)
-    public fun android(configure: AndroidPlatformCxInterop.() -> Unit)
+    public fun jvm(configure: JvmPlatformCxInterop.() -> Unit) {}
+    public fun native(configure: NativePlatformCxInterop.() -> Unit) {}
+    public fun android(configure: AndroidPlatformCxInterop.() -> Unit) {}
 }
-

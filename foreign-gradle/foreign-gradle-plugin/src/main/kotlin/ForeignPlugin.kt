@@ -6,7 +6,7 @@ import org.gradle.api.*
 
 public class ForeignPlugin : Plugin<Project> {
     override fun apply(target: Project) {
-        val project = ProjectPrototype(target)
+        val project = ProjectPrototype.wrap(target)
         val extension = DefaultForeignExtension(project)
         target.extensions.add(ForeignExtension::class.java, "foreign", extension)
     }

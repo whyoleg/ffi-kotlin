@@ -16,7 +16,7 @@ kotlin {
 }
 
 dependencies {
-    compileOnly(gradleKotlinDsl())
+    //compileOnly(gradleKotlinDsl())
 
     compileOnly(kotlinLibs.gradle.plugin)
     compileOnly(libs.build.android)
