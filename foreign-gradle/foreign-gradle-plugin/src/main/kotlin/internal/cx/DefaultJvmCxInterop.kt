@@ -6,7 +6,7 @@ import dev.whyoleg.foreign.gradle.tooling.*
 import org.gradle.api.provider.*
 
 internal class DefaultJvmPlatformCxInterop(
-    project: ProjectPrototype
+    private val project: ProjectPrototype
 ) : DefaultPlatformCxInterop(project),
     JvmPlatformCxInterop {
 
@@ -15,23 +15,28 @@ internal class DefaultJvmPlatformCxInterop(
     override val runtimeKind: Property<JvmRuntimeKind> =
         project.objects.property(JvmRuntimeKind::class.java).convention(JvmRuntimeKind.JNI)
 
-    val targets =
-        project.objects.domainObjectContainer(DefaultJvmTargetCxInterop::class.java)
+    val targets = project.objects.domainObjectContainer(DefaultJvmTargetCxInterop::class.java)
+
+    private fun target(
+        target: NativeTarget
+    ): JvmTargetCxInterop = targets.findByName(target.name) ?: DefaultJvmTargetCxInterop(project, target).also { obj ->
+        obj.withAllFrom(this)
+    }.also(targets::add)
 
     override fun macosArm64(configure: JvmTargetCxInterop.() -> Unit) {
-//        hosts.maybeCreate("macosArm64").apply(configure)
+        target(NativeTarget.MacosArm64).configure()
     }
 
     override fun macosX64(configure: JvmTargetCxInterop.() -> Unit) {
-//        hosts.maybeCreate("macosX64").apply(configure)
+        target(NativeTarget.MacosX64).configure()
     }
 
     override fun linuxX64(configure: JvmTargetCxInterop.() -> Unit) {
-//        hosts.maybeCreate("linuxX64").apply(configure)
+        target(NativeTarget.LinuxX64).configure()
     }
 
     override fun mingwX64(configure: JvmTargetCxInterop.() -> Unit) {
-//        hosts.maybeCreate("mingwX64").apply(configure)
+        target(NativeTarget.MingwX64).configure()
     }
 }
 
