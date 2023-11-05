@@ -8,6 +8,6 @@ internal class DefaultForeignExtension(
     private val project: ProjectPrototype
 ) : ForeignExtension {
     override val cxInterops: ForeignCxInteropContainer = DefaultForeignCxInteropContainer(
-        project.objects.domainObjectContainer(ForeignCxInterop::class.java)
+        project.objects.domainObjectContainer(ForeignCxInterop::class.java, DefaultForeignCxInterop.Factory(project))
     )
 }
