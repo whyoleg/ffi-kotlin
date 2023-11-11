@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.*
 plugins {
     alias(kotlinLibs.plugins.jvm)
     `java-gradle-plugin`
+    alias(libs.plugins.buildconfig)
 }
 
 kotlin {
@@ -16,8 +17,6 @@ kotlin {
 }
 
 dependencies {
-    //compileOnly(gradleKotlinDsl())
-
     compileOnly(kotlinLibs.gradle.plugin)
     compileOnly(libs.build.android)
 
@@ -34,3 +33,14 @@ gradlePlugin {
         }
     }
 }
+
+buildConfig {
+    packageName("dev.whyoleg.foreign.gradle.internal")
+    useKotlinOutput {
+        topLevelConstants = true
+        internalVisibility = true
+    }
+    buildConfigField("String", "FOREIGN_VERSION", "\"$version\"")
+}
+
+tasks.maybeCreate("prepareKotlinIdeaImport").dependsOn(tasks.generateBuildConfig)

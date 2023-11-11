@@ -43,7 +43,31 @@ public fun ForeignGradleTool.buildIndex(
             )
         ) + additionalCompilerArguments
     )
+
+    val headers = buildSet {
+        fun add(declaration: CxCompilerDeclaration) {
+            val fileId = declaration.fileId
+            if (fileId is CxCompilerFileId.Main) add(fileId.name)
+        }
+        index.variables.forEach(::add)
+        index.enums.forEach(::add)
+        index.records.forEach(::add)
+        index.typedefs.forEach(::add)
+        index.functions.forEach(::add)
+    }
+
     outputFile.outputStream().use {
         Json.encodeToStream(CxCompilerIndex.serializer(), index, it)
+    }
+}
+
+@OptIn(ExperimentalSerializationApi::class)
+public fun ForeignGradleTool.filterIndex(
+    inputFile: File,
+    outputFile: File,
+    headers: Set<String>
+) {
+    val index = inputFile.inputStream().use {
+        Json.decodeFromStream(CxCompilerIndex.serializer(), it)
     }
 }

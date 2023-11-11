@@ -20,6 +20,7 @@ internal class DefaultForeignCxInterop(
     override val requiresOptIn: Property<String?> =
         project.objects.property(String::class.java).convention(null as String?)
 
+    // TODO: use polymorphic?
     val platforms = project.objects.domainObjectContainer(DefaultPlatformCxInterop::class.java)
 
     private inline fun <reified T : DefaultPlatformCxInterop> platform(
@@ -34,7 +35,7 @@ internal class DefaultForeignCxInterop(
     }
 
     override fun native(configure: NativePlatformCxInterop.() -> Unit) {
-//        platforms.maybeCreate("native", DefaultJvmPlatformForeignCxInterfaceConfiguration::class).apply(configure)
+        platform(KotlinPlatform.Native, ::DefaultNativePlatformCxInterop).configure()
     }
 
     override fun android(configure: AndroidPlatformCxInterop.() -> Unit) {

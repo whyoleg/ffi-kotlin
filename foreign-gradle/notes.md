@@ -32,9 +32,10 @@ we have:
 * native - macosArm64 + macosX64
 * Dynamic linking
 
-1. generate 4 indexes
-2. generate fragments
-3. generate sources
-4. build 2 JNI libs and add them to resources
-5. build 2 native bitcodes and add them to task
-6. add other compiler arguments to K/N compiler
+1. build 4 indexes
+2. filter indexes based on configuration
+3. generate fragments (commonization)
+4. generate Kotlin/C/etc sources
+5. build 2 JNI libs and add them to resources
+6. build 2 native bitcodes and add them to task
+7. add other compiler arguments to K/N compiler
