@@ -1,5 +1,7 @@
 package dev.whyoleg.foreign.gradle.tooling
 
+// TODO: decide on better naming to not confuse with K/N target
+//  may be use ForeignTarget...
 public enum class NativeTarget {
     MingwX64,
     LinuxX64,
