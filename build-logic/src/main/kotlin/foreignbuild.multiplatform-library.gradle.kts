@@ -3,6 +3,7 @@ plugins {
     // dokka
     // bcv
     // kover
+    // publication
 }
 
 kotlin {

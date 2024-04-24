@@ -21,6 +21,8 @@ registerSetupJdkHeadersTask(
     includesRoot = "$zuluJdkMajorVersion.jdk/Contents/Home/include"
 )
 
+// TODO: windows
+
 fun registerSetupJdkHeadersTask(
     os: String,
     osClassifier: String,

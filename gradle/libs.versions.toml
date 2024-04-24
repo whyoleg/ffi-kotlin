@@ -1,42 +1,28 @@
 [versions]
 
-kotlin = "1.9.20"
-kotlin-dokka = "1.9.0"
-kotlinx-bcv = "0.13.2"
-kotlinx-kover = "0.7.3"
-
-android = "7.3.1"
-androidx-test = "1.5.2"
-
-gradle-enterprise = "3.15"
-gradle-foojay = "0.7.0"
-
-buildconfig = "4.1.2"
+kotlin = "2.0.0-RC1"
+android = "8.2.2"
 
 # tools
-okio = "3.5.0"
-kotlinx-serialization = "1.6.0"
+kotlinx-io = "0.3.2"
+kotlinx-serialization = "1.6.3"
 
 [libraries]
 
-build-kotlin-dokka = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "kotlin-dokka" }
-build-kotlinx-bcv = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "kotlinx-bcv" }
-build-kotlinx-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kotlinx-kover" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android" }
 
-build-android = { module = "com.android.tools.build:gradle", version.ref = "android" }
-
-build-gradle-enterprise = { module = "com.gradle:gradle-enterprise-gradle-plugin", version.ref = "gradle-enterprise" }
-build-gradle-foojay = { module = "org.gradle.toolchains:foojay-resolver", version.ref = "gradle-foojay" }
-
-okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
-
+kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-kotlinx-serialization-json-okio = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-okio", version.ref = "kotlinx-serialization" }
 
-androidx-test = { module = "androidx.test:runner", version.ref = "androidx-test" }
+androidx-test = { module = "androidx.test:runner", version = "1.5.2" }
+xz = { module = "org.tukaani:xz", version = "1.9" }
+apache-commons-compress = { module = "org.apache.commons:commons-compress", version = "1.26.0" }
 
 [plugins]
-kotlin-dokka = { id = "org.jetbrains.dokka", version.ref = "kotlin-dokka" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
 android-library = { id = "com.android.library", version.ref = "android" }
-buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }

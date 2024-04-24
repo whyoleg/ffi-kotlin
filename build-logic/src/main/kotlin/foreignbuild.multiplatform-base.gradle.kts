@@ -1,28 +1,55 @@
-import org.jetbrains.kotlin.gradle.plugin.*
+import org.jetbrains.kotlin.gradle.*
+import org.jetbrains.kotlin.gradle.plugin.mpp.*
+import org.jetbrains.kotlin.gradle.targets.jvm.*
+import org.jetbrains.kotlin.gradle.tasks.*
 
 plugins {
     kotlin("multiplatform")
 }
 
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-    targets.configureEach {
+    compilerOptions {
+        allWarningsAsErrors.set(true)
+        progressiveMode.set(true)
+        freeCompilerArgs.addAll(
+            "-Xrender-internal-diagnostic-names",
+            "-Xexpect-actual-classes"
+        )
+    }
+
+    targets.withType<KotlinJvmTarget>().configureEach {
         compilations.configureEach {
-            compilerOptions.configure {
-                //progressiveMode.set(true)
-                freeCompilerArgs.add("-Xrender-internal-diagnostic-names")
-                if (platformType == KotlinPlatformType.jvm) {
+            compileTaskProvider {
+                compilerOptions {
                     freeCompilerArgs.add("-Xjvm-default=all")
                 }
             }
         }
     }
 
-    // TODO: move where needed
-    sourceSets.configureEach {
-        languageSettings {
-            // optIn in compilations are not propagated to IDE
-            optIn("kotlin.ExperimentalStdlibApi")
-            optIn("kotlinx.cinterop.ExperimentalForeignApi")
+    targets.withType<KotlinAndroidTarget>().configureEach {
+        compilations.configureEach {
+            compileTaskProvider {
+                compilerOptions {
+                    freeCompilerArgs.add("-Xjvm-default=all")
+                }
+            }
         }
     }
+
+    //setup tests running in RELEASE mode
+    targets.withType<KotlinNativeTarget>().configureEach {
+        binaries.test(listOf(NativeBuildType.RELEASE))
+    }
+    targets.withType<KotlinNativeTargetWithTests<*>>().configureEach {
+        testRuns.create("releaseTest") {
+            setExecutionSourceFrom(binaries.getTest(NativeBuildType.RELEASE))
+        }
+    }
+}
+
+// on build, link even those binaries, which it's not possible to run
+tasks.build {
+    dependsOn(tasks.withType<KotlinNativeLink>())
 }

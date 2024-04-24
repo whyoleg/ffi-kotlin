@@ -3,7 +3,7 @@ pluginManagement {
 }
 
 plugins {
-    id("foreignbuild.settings.default")
+    id("foreignsettings.default")
 }
 
 dependencyResolutionManagement {

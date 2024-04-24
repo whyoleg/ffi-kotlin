@@ -3,12 +3,10 @@ pluginManagement {
 }
 
 plugins {
-    id("foreignbuild.settings.default")
+    id("foreignsettings.default")
 }
 
 rootProject.name = "ffi-kotlin"
 
-//includeBuild("foreign-runtime")
-includeBuild("foreign-tooling")
-includeBuild("foreign-gradle")
-includeBuild("test-projects")
+includeBuild("foreign-kotlin")
+includeBuild("samples")
