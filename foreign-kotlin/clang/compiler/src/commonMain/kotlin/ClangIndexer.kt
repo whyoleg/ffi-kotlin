@@ -6,23 +6,23 @@ import dev.whyoleg.foreign.clang.compiler.libclang.CXCursorKind.*
 import dev.whyoleg.foreign.clang.compiler.libclang.CXTypeKind.*
 import kotlinx.cinterop.*
 
-private typealias USR = String
-private typealias Path = String
-
 internal class ClangIndexer {
-    private val files = mutableMapOf<Path, CxDeclarationHeader>()
+    // Path->Include
+    private val files = mutableMapOf<String, CxDeclarationId>()
 
-    private val visited = mutableSetOf<USR>()
+    private val visited = mutableSetOf<CxDeclarationId>()
 
-    private val variables = mutableMapOf<USR, CxDeclaration<CxVariableData>>()
-    private val enums = mutableMapOf<USR, CxDeclaration<CxEnumData>>()
-    private val typedefs = mutableMapOf<USR, CxDeclaration<CxTypedefData>>()
-    private val records = mutableMapOf<USR, CxDeclaration<CxRecordData>>()
-    private val functions = mutableMapOf<USR, CxDeclaration<CxFunctionData>>()
+    private val variables = mutableMapOf<CxDeclarationId, CxVariable>()
+    private val enums = mutableMapOf<CxDeclarationId, CxEnum>()
+    private val typedefs = mutableMapOf<CxDeclarationId, CxTypedef>()
+    private val records = mutableMapOf<CxDeclarationId, CxRecord>()
+    private val functions = mutableMapOf<CxDeclarationId, CxFunction>()
 
     // temporary fields, available only during indexing of unit
-    private val unnamedEnums = mutableMapOf<USR, List<CxEnumConstant>>()
-    private val unnamedRecords = mutableMapOf<USR, CxRecordDefinition>()
+    private val unnamedEnums = mutableMapOf<CxDeclarationId, CxEnum>()
+    private val unnamedRecords = mutableMapOf<CxDeclarationId, CxRecord>()
+
+    private val anonymousRecords = mutableMapOf<CxDeclarationId, CxRecord>()
 
     fun indexTranslationUnit(translationUnit: CXTranslationUnit) {
         // index includes first
@@ -38,56 +38,38 @@ internal class ClangIndexer {
         // index declarations
         translationUnit.cursor.visitChildren { cursor ->
             when (cursor.kind) {
-                CXCursor_InclusionDirective -> {} // processed earlier
-                CXCursor_VarDecl            -> visitVariable(cursor)
-                CXCursor_EnumDecl           -> visitEnum(cursor)
-                CXCursor_TypedefDecl        -> visitTypedef(cursor)
-                CXCursor_UnionDecl,
-                CXCursor_StructDecl         -> visitRecord(cursor)
-
-                CXCursor_FunctionDecl       -> visitFunction(cursor)
+                CXCursor_InclusionDirective             -> {} // processed earlier
+                CXCursor_VarDecl                        -> visitVariable(cursor)
+                CXCursor_EnumDecl                       -> visitEnum(cursor)
+                CXCursor_TypedefDecl                    -> visitTypedef(cursor)
+                CXCursor_UnionDecl, CXCursor_StructDecl -> visitRecord(cursor)
+                CXCursor_FunctionDecl                   -> visitFunction(cursor)
 
                 // it looks like we just should skip it
-                CXCursor_UnexposedDecl      -> {}
+                CXCursor_UnexposedDecl                  -> {}
                 // skip for now
                 CXCursor_MacroDefinition,
                 CXCursor_MacroExpansion,
-                                            -> {
+                                                        -> {
                 }
 
-                else                        -> {
+                else                                    -> {
                     println("UNSUPPORTED CURSOR: ${cursor.debugString}")
                 }
             }
         }
 
+        // TODO: after this we could have typedef and record with the same name
+        //  typedef for such case should not be generated
         // fix unnamed enums and records
         typedefs.forEach { (_, typedef) ->
-            when (val type = typedef.data.aliasedType) {
-                is CxType.Record -> {
-                    unnamedRecords.remove(type.id)?.let { definition ->
-                        records[type.id] = CxDeclaration(
-                            id = type.id,
-                            header = typedef.header,
-                            data = CxBasicRecordData(
-                                name = typedef.data.name,
-                                definition = definition
-                            )
-                        )
-                    }
+            when (val type = typedef.aliasedType) {
+                is CxType.Record -> unnamedRecords.remove(type.id)?.let {
+                    records[type.id] = it.copy(description = it.description.copy(name = typedef.description.name))
                 }
 
-                is CxType.Enum   -> {
-                    unnamedEnums.remove(type.id)?.let { constants ->
-                        enums[type.id] = CxDeclaration(
-                            id = type.id,
-                            header = typedef.header,
-                            CxEnumData(
-                                name = typedef.data.name,
-                                constants = constants
-                            )
-                        )
-                    }
+                is CxType.Enum   -> unnamedEnums.remove(type.id)?.let {
+                    enums[type.id] = it.copy(description = it.description.copy(name = typedef.description.name))
                 }
 
                 else             -> {}
@@ -100,6 +82,26 @@ internal class ClangIndexer {
         check(unnamedEnums.isEmpty()) {
             "there should be no unnamed enums, but was: ${unnamedEnums.keys}"
         }
+        check(anonymousRecords.isEmpty()) {
+            "there should be no anonymous records, but was: ${anonymousRecords.keys}"
+        }
+        check(records.values.none { it.description.name.isEmpty() }) {
+            "there should be no records without name, but was: ${records.filter { it.value.description.name.isEmpty() }}"
+        }
+
+        fun printBuiltins(type: String, declarations: Map<CxDeclarationId, CxDeclaration>) {
+            declarations.forEach {
+                if (it.value.description.header.isEmpty()) println("  $type $it")
+            }
+        }
+
+        println("BUILTINS")
+        printBuiltins("variable :", variables)
+        printBuiltins("enum     :", enums)
+        printBuiltins("typedef  :", typedefs)
+        printBuiltins("record   :", records)
+        printBuiltins("function :", functions)
+        println()
     }
 
     fun buildIndex(): CxIndex {
@@ -112,33 +114,26 @@ internal class ClangIndexer {
         )
     }
 
-    private inline fun <T> MutableMap<USR, T>.save(
+    private inline fun <D : CxDeclaration> MutableMap<CxDeclarationId, D>.saveDeclaration(
         cursor: CValue<CXCursor>,
-        parse: (cursor: CValue<CXCursor>) -> T
+        block: (
+            description: CxDeclarationDescription,
+            cursor: CValue<CXCursor>
+        ) -> D
     ) {
         val id = cursor.usr
         check(!containsKey(id)) { "$id is already saved" }
-        put(id, parse(cursor.canonical))
-    }
 
-    private inline fun <D : CxDeclarationData> MutableMap<USR, CxDeclaration<D>>.saveDeclaration(
-        cursor: CValue<CXCursor>,
-        block: (cursor: CValue<CXCursor>) -> D
-    ) {
-        save(cursor) {
-            CxDeclaration(
-                id = it.usr,
-                header = when (val fileName = it.location.file?.fileName) {
-                    null -> {
-                        println("BUILTIN: ${it.debugString}")
-                        ""
-                    }
-
-                    else -> files.getValue(fileName)
-                },
-                data = block(it)
-            )
-        }
+        val canonicalCursor = cursor.canonical
+        val description = CxDeclarationDescription(
+            id = id,
+            name = canonicalCursor.spelling ?: "",
+            header = when (val fileName = canonicalCursor.location.file?.fileName) {
+                null -> ""
+                else -> files.getValue(fileName)
+            }
+        )
+        put(id, block(description, canonicalCursor))
     }
 
     private inline fun visit(cursor: CValue<CXCursor>, block: () -> Unit) {
@@ -147,6 +142,7 @@ internal class ClangIndexer {
 
     private fun visitVariable(cursor: CValue<CXCursor>) {
         visit(cursor) {
+            checkNotNull(cursor.spelling) { "Variable should have a name: ${cursor.debugString}" }
             variables.saveDeclaration(cursor, ::parseVariable)
         }
     }
@@ -154,14 +150,17 @@ internal class ClangIndexer {
     private fun visitEnum(cursor: CValue<CXCursor>) {
         visit(cursor) {
             when {
-                cursor.spelling == null && !cursor.isAnonymous -> unnamedEnums.save(cursor, ::parseEnumConstants)
-                else                                           -> enums.saveDeclaration(cursor, ::parseEnum)
-            }
+                // anonymous enums are just a bag of constants
+                cursor.isAnonymous      -> enums
+                cursor.spelling == null -> unnamedEnums
+                else                    -> enums
+            }.saveDeclaration(cursor, ::parseEnum)
         }
     }
 
     private fun visitTypedef(cursor: CValue<CXCursor>) {
         visit(cursor) {
+            checkNotNull(cursor.spelling) { "Typedef should have a name: ${cursor.debugString}" }
             typedefs.saveDeclaration(cursor, ::parseTypedef)
         }
     }
@@ -169,91 +168,80 @@ internal class ClangIndexer {
     private fun visitRecord(cursor: CValue<CXCursor>) {
         visit(cursor) {
             when {
-                cursor.spelling == null && !cursor.isAnonymous -> unnamedRecords.save(cursor, ::parseRecordDefinition)
-                else                                           -> records.saveDeclaration(cursor, ::parseRecord)
-            }
+                cursor.isAnonymous      -> anonymousRecords
+                cursor.spelling == null -> unnamedRecords
+                else                    -> records
+            }.saveDeclaration(cursor, ::parseRecord)
         }
     }
 
     private fun visitFunction(cursor: CValue<CXCursor>) {
         visit(cursor) {
+            checkNotNull(cursor.spelling) { "Function should have a name: ${cursor.debugString}" }
             functions.saveDeclaration(cursor, ::parseFunction)
         }
     }
 
-    private fun parseVariable(cursor: CValue<CXCursor>): CxVariableData {
+    private fun parseVariable(description: CxDeclarationDescription, cursor: CValue<CXCursor>): CxVariable {
         cursor.ensureKind(CXCursor_VarDecl)
 
         val tag = cursor.debugString
 
-        return CxVariableData(
-            name = checkNotNull(cursor.spelling) { "Variable should have a name: $tag" },
+        return CxVariable(
+            description = description,
             variableType = parseType(tag, cursor.type)
         )
     }
 
-    private fun parseEnum(cursor: CValue<CXCursor>): CxEnumData {
+    private fun parseEnum(description: CxDeclarationDescription, cursor: CValue<CXCursor>): CxEnum {
         cursor.ensureKind(CXCursor_EnumDecl)
 
-        return CxEnumData(
-            name = cursor.spelling,
-            constants = parseEnumConstants(cursor)
+        val tag = cursor.debugString
+
+        return CxEnum(
+            description = description,
+            constants = buildList {
+                cursor.visitChildren { constantCursor ->
+                    constantCursor.ensureKind(CXCursor_EnumConstantDecl)
+                    add(
+                        CxEnumConstant(
+                            name = constantCursor.spelling
+                                ?: error("Enum constant should have a name: ${constantCursor.debugString} in $tag"),
+                            value = clang_getEnumConstantDeclValue(constantCursor)
+                        )
+                    )
+                }
+            }
         )
     }
 
-    private fun parseEnumConstants(cursor: CValue<CXCursor>): List<CxEnumConstant> = buildList {
-        val tag = cursor.debugString
-        cursor.visitChildren { constantCursor ->
-            constantCursor.ensureKind(CXCursor_EnumConstantDecl)
-
-            add(
-                CxEnumConstant(
-                    name = constantCursor.spelling
-                        ?: error("Enum constant should have a name: ${constantCursor.debugString} in $tag"),
-                    value = clang_getEnumConstantDeclValue(constantCursor)
-                )
-            )
-        }
-    }
-
-    private fun parseTypedef(cursor: CValue<CXCursor>): CxTypedefData {
+    private fun parseTypedef(description: CxDeclarationDescription, cursor: CValue<CXCursor>): CxTypedef {
         cursor.ensureKind(CXCursor_TypedefDecl)
 
         val tag = cursor.debugString
 
-        return CxTypedefData(
-            name = checkNotNull(cursor.spelling) { "Typedef should have a name: $tag" },
+        return CxTypedef(
+            description = description,
             aliasedType = parseType(tag, clang_getTypedefDeclUnderlyingType(cursor)),
             resolvedType = parseType(tag, clang_getCanonicalType(cursor.type))
         )
     }
 
-    private fun parseRecord(cursor: CValue<CXCursor>): CxRecordData {
+    private fun parseRecord(description: CxDeclarationDescription, cursor: CValue<CXCursor>): CxRecord {
         cursor.ensureKind(CXCursor_StructDecl, CXCursor_UnionDecl)
-
-        val tag = cursor.debugString
 
         val definitionCursor = cursor.definition
 
-        return when {
-            definitionCursor.kind == CXCursor_InvalidFile -> CxOpaqueRecordData(
-                name = checkNotNull(cursor.spelling) { "Opaque Record should have a name: $tag" }
-            )
-
-            definitionCursor.isAnonymous                  -> CxAnonymousRecordData(
-                definition = parseRecordDefinition(definitionCursor)
-            )
-
-            else                                          -> CxBasicRecordData(
-                name = checkNotNull(cursor.spelling) { "Basic Record should have a name: $tag" },
-                definition = parseRecordDefinition(definitionCursor)
-            )
-        }
+        return CxRecord(
+            description = description,
+            definition = when (definitionCursor.kind) {
+                CXCursor_InvalidFile -> null
+                else                 -> parseRecordDefinition(definitionCursor)
+            }
+        )
     }
 
     private fun parseRecordDefinition(cursor: CValue<CXCursor>): CxRecordDefinition {
-        cursor.ensureKind(CXCursor_StructDecl, CXCursor_UnionDecl)
-
         val tag = cursor.debugString
 
         return CxRecordDefinition(
@@ -262,8 +250,8 @@ internal class ClangIndexer {
                 CXCursor_UnionDecl  -> true
                 else                -> cursor.throwWrongKind()
             },
-            size = clang_Type_getSizeOf(cursor.type).also { check(it > 0) { "wrong sizeOf(=$it) result: $tag" } },
-            align = clang_Type_getAlignOf(cursor.type).also { check(it > 0) { "wrong alignOf(=$it) result: $tag" } },
+            size = clang_Type_getSizeOf(cursor.type).also { check(it > 0) { "wrong sizeOf(=$it) result in $tag" } },
+            align = clang_Type_getAlignOf(cursor.type).also { check(it > 0) { "wrong alignOf(=$it) result in $tag" } },
             fields = buildList {
                 cursor.visitChildren { fieldCursor ->
                     when (fieldCursor.kind) {
@@ -274,7 +262,7 @@ internal class ClangIndexer {
                                 bitWidth = clang_getFieldDeclBitWidth(fieldCursor).takeIf { it > 0 }
                             )
                         )
-                        // such declarations will be parsed in parseType
+                        // such declarations will be parsed later
                         CXCursor_StructDecl,
                         CXCursor_UnionDecl -> {
                         }
@@ -288,17 +276,35 @@ internal class ClangIndexer {
                         else               -> fieldCursor.throwWrongKind()
                     }
                 }
+            },
+            anonymousRecords = buildMap {
+                cursor.visitChildren { recordCursor ->
+                    if (recordCursor.isAnonymous) when (recordCursor.kind) {
+                        CXCursor_StructDecl,
+                        CXCursor_UnionDecl -> {
+                            val id = recordCursor.usr
+                            if (id !in this) {
+                                val definition = checkNotNull(anonymousRecords.remove(id)) {
+                                    "anonymousRecord should be present for $id in $tag"
+                                }.definition ?: error("anonymousRecord should no be opaque in $tag")
+                                put(id, definition)
+                            }
+                        }
+
+                        else               -> {}
+                    }
+                }
             }
         )
     }
 
-    private fun parseFunction(cursor: CValue<CXCursor>): CxFunctionData {
+    private fun parseFunction(description: CxDeclarationDescription, cursor: CValue<CXCursor>): CxFunction {
         cursor.ensureKind(CXCursor_FunctionDecl)
 
         val tag = cursor.debugString
 
-        return CxFunctionData(
-            name = checkNotNull(cursor.spelling) { "Function should have a name: $tag" },
+        return CxFunction(
+            description = description,
             isVariadic = clang_isFunctionTypeVariadic(cursor.type) > 0U,
             returnType = parseType(tag, clang_getCursorResultType(cursor)),
             parameters = buildList {
@@ -374,9 +380,8 @@ internal class ClangIndexer {
         CXType_ConstantArray                         -> CxType.Array(
             parseType(tag, clang_getArrayElementType(type)),
             clang_getArraySize(type).also {
-                check(it.toInt().toLong() == it) { "Array size max value is ${Int.MAX_VALUE}, but was $it in $tag" }
-                it.toInt()
-            }
+                check(it in 0..Int.MAX_VALUE) { "Array size max value is ${Int.MAX_VALUE}, but was $it in $tag" }
+            }.toInt()
         )
 
         // TODO: what to do here?

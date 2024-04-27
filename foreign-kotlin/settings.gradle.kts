@@ -26,6 +26,7 @@ projects("foreign-kotlin", prefix = "foreign") {
 
     // what is required for codegen,
     //  extracted by compiler plugin or indexer
+    // mimics `runtime` structure
     folder("bridge") {
         module("c")
     }

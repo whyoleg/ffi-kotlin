@@ -1,8 +1,5 @@
 package dev.whyoleg.foreign.bridgegen
 
-import dev.whyoleg.foreign.bridge.c.*
-import dev.whyoleg.foreign.clang.api.*
-
 // jvm-macosArm64
 // jvm-macosX64
 // native-macosArm64
@@ -19,50 +16,50 @@ import dev.whyoleg.foreign.clang.api.*
 //native = commonize(macos, linux, mingw)
 //common = commonize(jvm, native)
 
-public sealed class CFragmentKind {
-    public abstract val type: CFragmentType
-
-    public data class Platform(
-        override val type: CFragmentType.Platform,
-        val targets: List<ForeignTargetName>
-    ) : CFragmentKind()
-
-    public data class Shared(
-        val fragments: List<CFragmentName>
-    ) : CFragmentKind() {
-        override val type: CFragmentType.Shared get() = CFragmentType.Shared
-    }
-}
-
-private fun s() {
-    val indexs = listOf(
-        "jvm-macosArm64" to "1",
-        "jvm-macosX64" to "2",
-        "native-linuxX64" to "3",
-        "native-macosX64" to "3",
-        "native-macosArm64" to "3",
-    )
-
-    val relations = listOf(
-        "jvm" to platform("jvm-macosArm64", "jvm-macosX64", "jvm-linuxX64"),
-
-        "macosX64" to platform("native-macosX64"),
-        "macosArm64" to platform("native-macosArm64"),
-        "linuxX64" to platform("native-linuxX64"),
-        "mingwX64" to platform("native-mingwX64"),
-
-        "macos" to shared("macosX64", "macosArm64"),
-        "native" to shared("macos", "mingwX64", "linuxX64"),
-        "common" to shared("jvm", "native"),
-    )
-}
-
-public fun buildCBridge(
-    indexes: Map<ForeignTargetName, CxIndex>,
-    fragmentKinds: Map<ForeignFragmentName, ForeignFragmentKind>
-): Map<ForeignFragmentName, CFragment> {
-
-}
+//public sealed class CFragmentKind {
+//    public abstract val type: CFragmentType
+//
+//    public data class Platform(
+//        override val type: CFragmentType.Platform,
+//        val targets: List<ForeignTargetName>
+//    ) : CFragmentKind()
+//
+//    public data class Shared(
+//        val fragments: List<CFragmentName>
+//    ) : CFragmentKind() {
+//        override val type: CFragmentType.Shared get() = CFragmentType.Shared
+//    }
+//}
+//
+//private fun s() {
+//    val indexs = listOf(
+//        "jvm-macosArm64" to "1",
+//        "jvm-macosX64" to "2",
+//        "native-linuxX64" to "3",
+//        "native-macosX64" to "3",
+//        "native-macosArm64" to "3",
+//    )
+//
+//    val relations = listOf(
+//        "jvm" to platform("jvm-macosArm64", "jvm-macosX64", "jvm-linuxX64"),
+//
+//        "macosX64" to platform("native-macosX64"),
+//        "macosArm64" to platform("native-macosArm64"),
+//        "linuxX64" to platform("native-linuxX64"),
+//        "mingwX64" to platform("native-mingwX64"),
+//
+//        "macos" to shared("macosX64", "macosArm64"),
+//        "native" to shared("macos", "mingwX64", "linuxX64"),
+//        "common" to shared("jvm", "native"),
+//    )
+//}
+//
+//public fun buildCBridge(
+//    indexes: Map<ForeignTargetName, CxIndex>,
+//    fragmentKinds: Map<ForeignFragmentName, ForeignFragmentKind>
+//): Map<ForeignFragmentName, CFragment> {
+//
+//}
 //
 ////public fun merge(
 ////    indexes: List<CxIndex>

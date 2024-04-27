@@ -16,16 +16,15 @@ public interface ForeignCInterface : ForeignBaseCInterface, Named {
     // SOMETHING by default
     public val requiresOptIn: Property<String?>
 
+    // TODO: may be improve granularity later
+    // `foreign.{interface.name}` by default
+    public val packageName: Property<String>
+
     // true by default
     // will cause adding foreign-runtime-c to dependencies
     // if `publicApi` = true -> as `api` dependency
     // if `publicApi` = false -> as `implementation` dependency
     public val autoRuntimeDependencies: Property<Boolean>
-
-    // `foreign.{interface.name}.{header}` by default
-    // header -> package name
-    public fun packageName(value: String)
-    public fun packageName(transformer: Transformer<String, String>)
 
     public val platforms: NamedDomainObjectContainer<out ForeignPlatformCInterface>
 
@@ -62,11 +61,40 @@ public interface ForeignBaseCInterface {
     // this declaration (Y) will be also included (not referenced declarations will not be included)
     // otherwise there will be code, which could not be compiled
     // String is a wildcard pattern
+
     public val includedHeaderPatterns: ListProperty<String>
     public val excludedHeaderPatterns: ListProperty<String>
+
+    public val includedVariablePatterns: ListProperty<String>
+    public val excludedVariablePatterns: ListProperty<String>
+
+    public val includedEnumPatterns: ListProperty<String>
+    public val excludedEnumPatterns: ListProperty<String>
+
+    public val includedTypedefPatterns: ListProperty<String>
+    public val excludedTypedefPatterns: ListProperty<String>
+
+    public val includedRecordPatterns: ListProperty<String>
+    public val excludedRecordPatterns: ListProperty<String>
+
+    public val includedFunctionPatterns: ListProperty<String>
+    public val excludedFunctionPatterns: ListProperty<String>
 
     public fun includeHeaders(vararg patterns: String)
     public fun excludeHeaders(vararg patterns: String)
 
-    // TODO: filters by declaration names
+    public fun includeVariables(vararg patterns: String)
+    public fun excludeVariables(vararg patterns: String)
+
+    public fun includeEnums(vararg patterns: String)
+    public fun excludeEnums(vararg patterns: String)
+
+    public fun includeTypedefs(vararg patterns: String)
+    public fun excludeTypedefs(vararg patterns: String)
+
+    public fun includeRecords(vararg patterns: String)
+    public fun excludeRecords(vararg patterns: String)
+
+    public fun includeFunctions(vararg patterns: String)
+    public fun excludeFunctions(vararg patterns: String)
 }

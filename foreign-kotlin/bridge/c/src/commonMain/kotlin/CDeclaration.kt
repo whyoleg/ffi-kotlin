@@ -2,73 +2,64 @@ package dev.whyoleg.foreign.bridge.c
 
 import kotlinx.serialization.*
 
-public typealias CDeclarations<D> = List<CDeclaration<D>>
-public typealias CName = String
+// packageName/name
+// foreign.libcrypto/OSSL_PARAM
+// for anonymous
+// foreign.libcrypto/OSSL_PARAM|1
+// foreign.libcrypto/OSSL_PARAM|2
+// foreign.libcrypto/OSSL_PARAM|3
+public typealias CDeclarationId = String
 
 @Serializable
-public data class CDeclarationId(
+public data class CDeclarationDescription(
+    val id: CDeclarationId,
     val packageName: String,
-    val name: String,
-    val parentName: String? = null
-) {
-    init {
-        check(packageName.isNotBlank()) { "package name may not be blank" }
-        check(name.isNotBlank()) { "name may not be blank" }
-        check(parentName == null || parentName.isNotBlank()) { "parent name may not be blank" }
-    }
-
-    public constructor(packageName: String, name: String, parentId: CDeclarationId?) : this(
-        packageName = packageName,
-        name = name,
-        parentName = parentId?.name
-    ) {
-        check(parentId == null || parentId.packageName == packageName) { "parent.packageName should be the same" }
-    }
-}
-
-@Serializable
-public class CDeclaration<D : CDeclarationData>(
-    public val id: CDeclarationId,
-    public val fileName: String, // kotlin file name, coresponds to header
-    public val availableOn: List<String>?, // if `null` - available on all targets
-    public val data: D
+    val headerName: String,
+    val ktName: String, // could be empty for unnamed enum - how to handle it ID?
+    val cName: String, // could be empty for unnamed enum
+    val availableOn: List<String>?, // if `null` - available on all targets
 )
 
 @Serializable
-public sealed class CDeclarationData
+public sealed class CDeclaration {
+    public abstract val description: CDeclarationDescription
+}
 
 @SerialName("variable")
 @Serializable
-public data class CVariableData(val cName: CName, val type: CType) : CDeclarationData()
+public data class CVariable(
+    override val description: CDeclarationDescription,
+    val variableType: CType
+) : CDeclaration()
 
 @SerialName("enum")
 @Serializable
-public data class CEnumData(val cName: CName?, val constants: Set<CEnumConstant>) : CDeclarationData()
+public data class CEnum(
+    override val description: CDeclarationDescription,
+    val constants: List<CEnumConstant>
+) : CDeclaration()
 
 @Serializable
-public data class CEnumConstant(val cName: CName, val name: String, val value: Long)
+public data class CEnumConstant(
+    val ktName: String,
+    val cName: String,
+    val value: Long
+)
 
 @SerialName("typedef")
 @Serializable
-public data class CTypedefData(val cName: CName, val aliasedType: CType, val resolvedType: CType) : CDeclarationData()
+public data class CTypedef(
+    override val description: CDeclarationDescription,
+    val aliasedType: CType,
+    val resolvedType: CType
+) : CDeclaration()
 
+@SerialName("record")
 @Serializable
-public sealed class CRecordData : CDeclarationData()
-
-@SerialName("record.opaque")
-@Serializable
-public data class COpaqueRecordData(val cName: CName) : CRecordData()
-
-// basic simple record
-@SerialName("record.basic")
-@Serializable
-public data class CBasicRecordData(val cName: CName, val definition: CRecordDefinition) : CRecordData()
-
-// used in struct fields;
-// could be declared in an array/pointer
-@SerialName("record.anonymous")
-@Serializable
-public data class CAnonymousRecordData(val definition: CRecordDefinition) : CRecordData()
+public data class CRecord(
+    override val description: CDeclarationDescription,
+    val definition: CRecordDefinition?
+) : CDeclaration()
 
 @Serializable
 public data class CRecordDefinition(
@@ -76,31 +67,31 @@ public data class CRecordDefinition(
     // TODO: size and align may be not needed?
     val size: Long,
     val align: Long,
-    val fields: List<CRecordField>,
+    val anonymousRecords: Map<CDeclarationId, CRecordDefinition>, // TODO
+    val fields: List<CRecordField>
 )
 
 // TODO: field could have no name if it's a bit field
 @Serializable
 public data class CRecordField(
-    val cName: CName?, // TODO: should we have multiple names here?
-    val name: String?,
+    val ktName: String?,
+    val cName: String?, // TODO: should we have multiple names here?
     val fieldType: CType,
     val bitWidth: Int?
 )
 
 @SerialName("function")
 @Serializable
-public data class CFunctionData(
-    val cName: CName,
+public data class CFunction(
+    override val description: CDeclarationDescription,
     val isVariadic: Boolean,
     val returnType: CType,
     val parameters: List<CFunctionParameter>
-) : CDeclarationData()
+) : CDeclaration()
 
 @Serializable
 public data class CFunctionParameter(
-    // multiple names because of commonization
-    val cNames: List<CName>,
-    val name: String,
+    val ktName: String?,
+    val cNames: List<String>, // multiple names because of commonization
     val type: CType,
 )

@@ -4,9 +4,22 @@ import java.lang.foreign.*
 import java.lang.invoke.*
 import kotlin.jvm.optionals.*
 
+// lazy? Android? proguard?
+public val JdkForeignAvailable: Boolean by lazy {
+    val javaVersion = when (val specVersion = System.getProperty("java.specification.version")) {
+        "1.8" -> 8
+        else  -> specVersion.toInt()
+    }
+    javaVersion >= 22
+}
+
 // TODO: decide on name
 @Suppress("Since15")
-public object InternalForeignLinker {
+public object JdkForeignLinker {
+    init {
+        check(JdkForeignAvailable)
+    }
+
     private val linker = Linker.nativeLinker()
     private val lookup = SymbolLookup.loaderLookup().or(linker.defaultLookup())
 

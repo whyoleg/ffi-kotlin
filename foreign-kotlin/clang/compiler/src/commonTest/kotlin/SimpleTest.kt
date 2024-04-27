@@ -11,13 +11,14 @@ class SimpleTest {
 
     private fun saveIndex(outputPath: String, index: CxIndex) {
         val indexString = CxIndex.encode(index)
-        SystemFileSystem.sink(Path(outputPath)).buffered().use { output ->
-            output.writeString(indexString)
-        }
+        val path = Path(outputPath)
+        SystemFileSystem.createDirectories(path.parent!!)
+        SystemFileSystem.sink(path).buffered().use { it.writeString(indexString) }
     }
 
     @Test
     fun testSingle() {
+        val temp = "/Users/Oleg.Yukhnevich/Projects/whyoleg/ffi-kotlin/foreign-kotlin/build/foreign-temp"
         listOf(
             ClangTarget.MacosArm64,
             ClangTarget.MacosX64,
@@ -31,19 +32,11 @@ class SimpleTest {
                 headersPath = createHeadersFile(setOf("openssl/bn.h")),
                 compilerArgs = openssl3CompilerArgs(target)
             )
-
-            saveIndex(
-                "/Users/Oleg.Yukhnevich/Projects/whyoleg/ffi-kotlin/foreign-kotlin/clang/compiler/build/index-$target.json",
-                index
+            val filteredIndex = index.filter(
+                includedHeaderPatterns = listOf(Regex("openssl/bn\\.h"))
             )
-
-            saveIndex(
-                "/Users/Oleg.Yukhnevich/Projects/whyoleg/ffi-kotlin/foreign-kotlin/clang/compiler/build/index-$target.filtered.json",
-                index.filter(
-                    listOf(Regex("openssl/bn\\.h")),
-                    emptyList()
-                )
-            )
+            saveIndex("$temp/$target/bn/index.json", index)
+            saveIndex("$temp/$target/bn/index.filtered.json", filteredIndex)
         }
     }
 

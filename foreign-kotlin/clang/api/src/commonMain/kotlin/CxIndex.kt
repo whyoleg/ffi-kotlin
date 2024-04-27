@@ -7,11 +7,11 @@ import kotlinx.serialization.json.*
 // TODO: decide on builtins - there is only va_list + uint128_t
 @Serializable
 public data class CxIndex(
-    val variables: CxDeclarations<CxVariableData>,
-    val enums: CxDeclarations<CxEnumData>,
-    val typedefs: CxDeclarations<CxTypedefData>,
-    val records: CxDeclarations<CxRecordData>,
-    val functions: CxDeclarations<CxFunctionData>
+    val variables: List<CxVariable>,
+    val enums: List<CxEnum>,
+    val typedefs: List<CxTypedef>,
+    val records: List<CxRecord>,
+    val functions: List<CxFunction>
 ) {
 
     init {
@@ -30,9 +30,9 @@ public data class CxIndex(
     }
 
     private fun ensureAllDeclarationsAccessible() {
-        val typedefIds = typedefs.mapTo(mutableSetOf(), CxDeclaration<*>::id)
-        val recordIds = records.mapTo(mutableSetOf(), CxDeclaration<*>::id)
-        val enumIds = enums.mapTo(mutableSetOf(), CxDeclaration<*>::id)
+        val typedefIds = typedefs.mapTo(mutableSetOf()) { it.description.id }
+        val recordIds = records.mapTo(mutableSetOf()) { it.description.id }
+        val enumIds = enums.mapTo(mutableSetOf()) { it.description.id }
 
         fun CxType.collectIds() {
             when (this) {
@@ -57,25 +57,22 @@ public data class CxIndex(
 
         fun CxRecordDefinition.collectIds() {
             fields.forEach { it.fieldType.collectIds() }
+            anonymousRecords.values.forEach { it.collectIds() }
         }
 
         variables.forEach {
-            it.data.variableType.collectIds()
+            it.variableType.collectIds()
         }
         typedefs.forEach {
-            it.data.aliasedType.collectIds()
-            it.data.resolvedType.collectIds()
+            it.aliasedType.collectIds()
+            it.resolvedType.collectIds()
         }
         records.forEach {
-            when (val data = it.data) {
-                is CxAnonymousRecordData -> data.definition.collectIds()
-                is CxBasicRecordData     -> data.definition.collectIds()
-                is CxOpaqueRecordData    -> {}
-            }
+            it.definition?.collectIds()
         }
         functions.forEach {
-            it.data.returnType.collectIds()
-            it.data.parameters.forEach { it.type.collectIds() }
+            it.returnType.collectIds()
+            it.parameters.forEach { parameter -> parameter.type.collectIds() }
         }
 
         fun stats(
@@ -98,40 +95,48 @@ public data class CxIndex(
             }
         }
 
-        stats("Typedefs", typedefIds, typedefs.mapTo(mutableSetOf(), CxDeclaration<*>::id))
-        stats("Records", recordIds, records.mapTo(mutableSetOf(), CxDeclaration<*>::id))
-        stats("Enum", enumIds, enums.mapTo(mutableSetOf(), CxDeclaration<*>::id))
+        stats("Typedefs", typedefIds, typedefs.mapTo(mutableSetOf()) { it.description.id })
+        stats("Records", recordIds, buildSet {
+            records.forEach {
+                add(it.description.id)
+                it.definition?.anonymousRecords?.keys?.let(::addAll)
+            }
+        })
+        stats("Enum", enumIds, enums.mapTo(mutableSetOf()) { it.description.id })
     }
 }
 
 // include: openssl/*
 public fun CxIndex.filter(
-    includedHeaderPatterns: List<Regex>,
-    excludedHeaderPatterns: List<Regex>
+    includedHeaderPatterns: List<Regex> = emptyList(),
+    excludedHeaderPatterns: List<Regex> = emptyList(),
+    includedVariablePatterns: List<Regex> = emptyList(),
+    excludedVariablePatterns: List<Regex> = emptyList(),
+    includedEnumPatterns: List<Regex> = emptyList(),
+    excludedEnumPatterns: List<Regex> = emptyList(),
+    includedTypedefPatterns: List<Regex> = emptyList(),
+    excludedTypedefPatterns: List<Regex> = emptyList(),
+    includedRecordPatterns: List<Regex> = emptyList(),
+    excludedRecordPatterns: List<Regex> = emptyList(),
+    includedFunctionPatterns: List<Regex> = emptyList(),
+    excludedFunctionPatterns: List<Regex> = emptyList(),
 ): CxIndex {
-    val matches = mutableMapOf<String, Boolean>()
-    fun matches(header: CxDeclarationHeader): Boolean = matches.getOrPut(header) {
-        if (excludedHeaderPatterns.any { it.matches(header) }) false
-        else if (includedHeaderPatterns.any { it.matches(header) }) true
-        else false
-    }
-
     val referencedVariables = mutableSetOf<CxDeclarationId>()
     val referencedEnums = mutableSetOf<CxDeclarationId>()
     val referencedTypedefs = mutableSetOf<CxDeclarationId>()
     val referencedRecords = mutableSetOf<CxDeclarationId>()
     val referencedFunctions = mutableSetOf<CxDeclarationId>()
 
-    fun CxDeclaration<*>.collectReferences() {
+    fun CxDeclaration.collectReferences() {
         fun CxType.collectReferences() {
             when (this) {
                 is CxType.Enum        -> referencedEnums.add(id)
                 is CxType.Typedef     -> if (referencedTypedefs.add(id)) {
-                    typedefs.find { it.id == id }?.collectReferences()
+                    typedefs.first { it.description.id == id }.collectReferences()
                 }
 
                 is CxType.Record      -> if (referencedRecords.add(id)) {
-                    records.find { it.id == id }?.collectReferences()
+                    records.first { it.description.id == id }.collectReferences()
                 }
 
                 is CxType.Pointer     -> pointed.collectReferences()
@@ -149,57 +154,70 @@ public fun CxIndex.filter(
             }
         }
 
-        when (data) {
-            is CxVariableData -> {
-                referencedVariables.add(id)
-                data.variableType.collectReferences()
+        fun CxRecordDefinition.collectReferences() {
+            fields.forEach { it.fieldType.collectReferences() }
+            // no need to collect anonymousRecords?
+        }
+
+        when (this) {
+            is CxVariable -> {
+                referencedVariables.add(description.id)
+                variableType.collectReferences()
             }
 
-            is CxEnumData     -> {
-                referencedEnums.add(id)
+            is CxEnum     -> {
+                referencedEnums.add(description.id)
             }
 
-            is CxTypedefData  -> {
-                referencedTypedefs.add(id)
-                data.aliasedType.collectReferences()
-                data.resolvedType.collectReferences()
+            is CxTypedef  -> {
+                referencedTypedefs.add(description.id)
+                aliasedType.collectReferences()
+                resolvedType.collectReferences()
             }
 
-            is CxRecordData   -> {
-                referencedRecords.add(id)
-                when (data) {
-                    is CxAnonymousRecordData -> data.definition
-                    is CxBasicRecordData     -> data.definition
-                    is CxOpaqueRecordData    -> null
-                }?.fields?.forEach { it.fieldType.collectReferences() }
+            is CxRecord   -> {
+                referencedRecords.add(description.id)
+                definition?.collectReferences()
             }
 
-            is CxFunctionData -> {
-                referencedFunctions.add(id)
-                data.returnType.collectReferences()
-                data.parameters.forEach { it.type.collectReferences() }
+            is CxFunction -> {
+                referencedFunctions.add(description.id)
+                returnType.collectReferences()
+                parameters.forEach { it.type.collectReferences() }
             }
         }
     }
 
-    fun <D : CxDeclarationData> CxDeclarations<D>.collectReferences() {
+    fun <D : CxDeclaration> List<D>.collectReferences(
+        includedDeclarationPatterns: List<Regex>,
+        excludedDeclatationPatterns: List<Regex>,
+    ) {
+        fun List<Regex>.matches(value: String) = any { it.matches(value) }
+        fun CxDeclaration.included(): Boolean = when {
+            // exclusion goes first
+            excludedHeaderPatterns.matches(description.header) || excludedDeclatationPatterns.matches(description.name) -> false
+            includedHeaderPatterns.matches(description.header) || includedDeclarationPatterns.matches(description.name) -> true
+            else                                                                                                        -> false
+        }
         forEach { declaration ->
-            if (matches(declaration.header)) declaration.collectReferences()
+            if (declaration.included()) declaration.collectReferences()
         }
     }
 
-    variables.collectReferences()
-    enums.collectReferences()
-    typedefs.collectReferences()
-    records.collectReferences()
-    functions.collectReferences()
+    variables.collectReferences(includedVariablePatterns, excludedVariablePatterns)
+    // TODO: handle unnamed enums?
+    enums.filter { it.description.name.isNotEmpty() }.collectReferences(includedEnumPatterns, excludedEnumPatterns)
+    enums.filter { it.description.name.isEmpty() }.collectReferences(emptyList(), emptyList())
+    typedefs.collectReferences(includedTypedefPatterns, excludedTypedefPatterns)
+    records.collectReferences(includedRecordPatterns, excludedRecordPatterns)
+    functions.collectReferences(includedFunctionPatterns, excludedFunctionPatterns)
 
     return CxIndex(
-        variables = variables.filter { it.id in referencedVariables },
-        enums = enums.filter { it.id in referencedEnums },
-        typedefs = typedefs.filter { it.id in referencedTypedefs },
-        records = records.filter { it.id in referencedRecords },
-        functions = functions.filter { it.id in referencedFunctions },
+        variables = variables.filter { it.description.id in referencedVariables },
+        enums = enums.filter { it.description.id in referencedEnums },
+        typedefs = typedefs.filter { it.description.id in referencedTypedefs },
+        records = records.filter { it.description.id in referencedRecords },
+        functions = functions.filter { it.description.id in referencedFunctions },
     )
 //        .also { new ->
 //        println(

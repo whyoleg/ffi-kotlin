@@ -24,7 +24,7 @@ public sealed class CxType {
 
     @SerialName("array")
     @Serializable
-    public data class Array(val elementType: CxType, val size: Long?) : CxType()
+    public data class Array(val elementType: CxType, val size: Int?) : CxType()
 
     @SerialName("function")
     @Serializable

@@ -27,6 +27,7 @@ internal inline fun <R> useTranslationUnit(
         )
 
         if (errorCode != CXErrorCode.CXError_Success) {
+            // TODO: check diagnostics here
             error(
                 """|parseTranslationUnit failed with $errorCode
                    |sourceFile = $file

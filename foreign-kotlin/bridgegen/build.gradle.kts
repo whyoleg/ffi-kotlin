@@ -9,5 +9,10 @@ kotlin {
             api(projects.foreignBridgeC)
             api(projects.foreignClangApi)
         }
+        commonTest.dependencies {
+            implementation(projects.foreignClangArguments)
+            implementation(libs.kotlinx.io.core)
+            implementation(kotlin("test"))
+        }
     }
 }

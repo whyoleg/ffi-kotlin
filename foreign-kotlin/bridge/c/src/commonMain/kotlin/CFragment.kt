@@ -1,16 +1,29 @@
 package dev.whyoleg.foreign.bridge.c
 
 import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 
 @Serializable
 public class CFragment(
-    public val fragmentType: CFragmentType,
-    public val variables: CDeclarations<CVariableData>,
-    public val enums: CDeclarations<CEnumData>,
-    public val typedefs: CDeclarations<CTypedefData>,
-    public val records: CDeclarations<CRecordData>,
-    public val functions: CDeclarations<CFunctionData>,
-)
+    // public val fragmentType: CFragmentType,
+    public val variables: List<CVariable>,
+    public val enums: List<CEnum>,
+    public val typedefs: List<CTypedef>,
+    public val records: List<CRecord>,
+    public val functions: List<CFunction>,
+) {
+
+    public companion object {
+        @OptIn(ExperimentalSerializationApi::class)
+        private val json = Json {
+            prettyPrint = true
+            prettyPrintIndent = "  "
+        }
+
+        public fun encode(fragment: CFragment): String = json.encodeToString(serializer(), fragment)
+        public fun decode(string: String): CFragment = json.decodeFromString(serializer(), string)
+    }
+}
 
 // if shared - generate expects
 // if not shared - generate actual declarations or just declarations if it's not available in shared

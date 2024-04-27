@@ -2,12 +2,55 @@ package dev.whyoleg.foreign.samples.libcrypto
 
 import dev.whyoleg.foreign.*
 import dev.whyoleg.foreign.c.*
+import kotlin.jvm.*
 
 // 3 types of functions:
 //  1. returns `primitive` : fun NAME(args): PRIMITIVE (OPENSSL_version_major)
 //  2. returns `pointer`   : context(MemoryScope) fun NAME(rags, cleanup: (POINTER) -> Unit = {}): POINTER (OpenSSL_version)
 //  3. returns `struct`    : context(MemoryScope) fun NAME(rags): STRUCT (OSSL_PARAM_construct_end)
 
+
+fun callSomething(
+    parameter: String
+): Int = when (JdkForeignAvailable) {
+    true  -> openssl_types_ffm.callSomething(
+        parameter
+    )
+
+    false -> openssl_types_jni.callSomething(
+        parameter
+    )
+}
+
+expect object openssl_ec {
+    fun callSomething(parameter: String): Int
+}
+
+internal object libcrypto {
+    fun load() {} // empty
+}
+
+internal abstract class openssl_types {
+    init {
+        libcrypto.load()
+    }
+
+    abstract fun callSomething(parameter: String): Int
+}
+
+internal object openssl_types_jni {
+    fun callSomething(parameter: String): Int {
+        TODO("Not yet implemented")
+    }
+
+    private external fun ffi_callSomething(parameter: String): Int
+}
+
+internal object openssl_types_ffm {
+    fun callSomething(parameter: String): Int {
+        TODO("Not yet implemented")
+    }
+}
 
 // opensslv
 
