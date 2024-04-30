@@ -15,3 +15,5 @@ public sealed interface MemoryBlock {
     public fun getLong(offset: MemorySizeInt): Long
     public fun setLong(offset: MemorySizeInt, value: Long)
 }
+
+public fun Unsafe.memoryBlockAddress(block: MemoryBlock?): MemorySizeInt = TODO()

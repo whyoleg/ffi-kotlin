@@ -20,7 +20,6 @@ public value class CArray<KT : Any>
 
 // basic builders
 
-// TODO: add inline init
 public inline fun <KT : Any> MemoryScope.allocateCArray(type: CType<KT>, size: Int): CArray<KT> = TODO()
 public inline fun <KT : Any> MemoryScope.allocateCArray(type: CType<KT>, size: Int, init: (Int) -> KT): CArray<KT> =
     TODO()

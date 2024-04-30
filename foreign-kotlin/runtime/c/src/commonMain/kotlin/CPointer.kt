@@ -24,19 +24,3 @@ public inline fun <KT : Any> MemoryScope.allocateCPointer(type: CType<KT>): CPoi
 // unsafe
 
 public inline fun <KT : Any> CPointer<*>.reinterpret(type: CType<KT>): CPointer<KT> = TODO()
-
-// pointer of pointer (mostly the same for other primitives)
-
-public inline var <KT : CPointer<*>> CPointer<KT>.pointed: KT?
-    get() = TODO()
-    set(value) = TODO()
-
-public inline fun <KT : CPointer<*>> MemoryScope.allocateCPointer(type: CType<KT>, pointed: KT): CPointer<KT> = TODO()
-public inline fun <KT : CPointer<*>> MemoryScope.allocateCArray(type: CType<KT>, elements: List<KT>): CArray<KT> =
-    TODO()
-
-public inline fun <KT : CPointer<*>> MemoryScope.allocateCArray(type: CType<KT>, elements: Array<KT>): CArray<KT> =
-    TODO()
-
-public inline fun <KT : CPointer<*>> MemoryScope.allocateCArrayOf(type: CType<KT>, vararg elements: KT): CArray<KT> =
-    TODO()

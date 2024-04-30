@@ -1,8 +1,55 @@
 import dev.whyoleg.foreign.*
 import dev.whyoleg.foreign.c.*
+import java.lang.foreign.*
+import java.lang.invoke.*
 
 actual fun ERR_get_error(): PlatformUInt {
-    return err.ERR_get_error().toUInt()
+    return (err_ffm.ERR_get_error.invokeExact() as Long).toULong()
+}
+
+@Suppress("Since15", "InconsistentCommentForJavaParameter")
+private object err_ffm {
+    private val ERR_get_error: MethodHandle = JdkForeignLinker.methodHandle(
+        name = "ERR_get_error",
+        descriptor = FunctionDescriptor.of(
+            /* returns = */ ValueLayout.JAVA_LONG
+        )
+    )
+    private val ERR_error_string: MethodHandle = JdkForeignLinker.methodHandle(
+        name = "ERR_error_string",
+        descriptor = FunctionDescriptor.of(
+            /* returns = */ ValueLayout.ADDRESS,
+
+            /* e = */ ValueLayout.JAVA_LONG,
+            /* buf = */ ValueLayout.ADDRESS
+        )
+    )
+
+    fun ERR_error_string(
+        e: PlatformUInt,
+        buf: CString?,
+        cleanup: MemoryCleanupAction<CString?>?
+    ): CString? {
+        val segment = ERR_error_string.invokeExact(
+            /* e */ e.toLong(),
+            /* buf */ Unsafe.memoryBlockSegment(buf?.let(Unsafe::memoryBlock))
+        ) as MemorySegment
+        return Unsafe.wrapMemoryBlock(
+            segment = segment,
+            layout = MemoryLayout.Address(MemoryLayout.Byte()),
+            cleanupAction = cleanup,
+            wrapper = Unsafe::cString
+        )
+    }
+}
+
+actual fun ERR_error_string(
+    e: PlatformUInt,
+    buf: CString?,
+    cleanup: MemoryCleanupAction<CString?>?
+): CString? = when (JdkForeignAvailable) {
+    true -> err_ffm.ERR_error_string(e, buf, cleanup)
+    else -> err_jni.ERR_error_string(e, buf, cleanup)
 }
 
 actual fun MemoryScope.ERR_error_string(
@@ -10,9 +57,9 @@ actual fun MemoryScope.ERR_error_string(
     buf: CString?,
     cleanup: MemoryCleanupAction<CString?>?
 ): CString? {
-    val address = err.ERR_error_string(
+    val address = err_ffm.ERR_error_string(
         e = e.toInt(),
-        buf = Unsafe.memoryBlockAddress(buf?.let(Unsafe::memoryBlock)),
+        buf = buf?.let(Unsafe::memoryBlock)?.address ?: 0,
     )
     // todo: reduce allocations
     return Unsafe.wrapMemoryBlock(
@@ -28,9 +75,9 @@ actual fun MemoryScope.ERR_error_string(
     buf: CPointer<Byte>?,
     cleanup: MemoryCleanupAction<CPointer<Byte>?>?
 ): CPointer<Byte>? {
-    val address = err.ERR_error_string(
+    val address = err_ffm.ERR_error_string(
         e = e.toInt(),
-        buf = Unsafe.memoryBlockAddress(buf?.let(Unsafe::memoryBlock)),
+        buf = buf?.let(Unsafe::memoryBlock)?.address ?: 0,
     )
     // todo: reduce allocations
     return Unsafe.wrapMemoryBlock(
@@ -39,17 +86,6 @@ actual fun MemoryScope.ERR_error_string(
         cleanupAction = cleanup,
         wrapper = Unsafe::cPointer
     )
-}
-
-@JsModule("foreign-crypto-wasm")
-@JsNonModule
-@JsName("Module")
-private external object err {
-    @JsName("_ffi_ERR_get_error")
-    fun ERR_get_error(): Int
-
-    @JsName("_ffi_ERR_error_string")
-    fun ERR_error_string(e: Int, buf: Int): Int
 }
 
 actual fun EVP_DigestSignInit_ex(
@@ -62,7 +98,7 @@ actual fun EVP_DigestSignInit_ex(
     params: CArrayPointer<OSSL_PARAM>?,
 ): Int = with(Unsafe) {
     return evpdigest.EVP_DigestSignInit_ex(
-        getBlock(ctx)?.address ?: 0,
+        Unsafe.memoryBlockSegment(ctx?.let(Unsafe::memoryBlock)),
         pctx.address,
         mdname.address,
         libctx.address,
@@ -95,21 +131,15 @@ actual fun MemoryScope.OSSL_PARAM_construct_utf8_string(
     bsize: PlatformUInt,
 ): OSSL_PARAM = with(Unsafe) {
     // TODO: clash
-    val block = allocate(OSSL_PARAM)
-    osslparam.OSSL_PARAM_construct_utf8_string(
-        key.address,
-        buf.address,
-        bsize.toInt(),
-        Unsafe.memoryBlockAddress(block.memoryBlock)
-    )
-    block
+    val block = allocate(OSSL_PARAM.memoryLayout)
+    osslparam.OSSL_PARAM_construct_utf8_string(key.address, buf.address, bsize.toInt(), block.address)
+    OSSL_PARAM(block)
 }
 
 private class OSSL_PARAM(
-    @PublishedApi
-    internal val memoryBlock: MemoryBlock
-) : CRecord {
-    companion object : CType<OSSL_PARAM> {
+    private val block: MemoryBlock
+) {
+    companion object : CType.Record<OSSL_PARAM> {
     }
 }
 

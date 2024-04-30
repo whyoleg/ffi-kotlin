@@ -5,6 +5,11 @@ import kotlin.jvm.*
 
 @Suppress("UNUSED_VARIABLE", "DEPRECATION")
 private fun MemoryScope.test() {
+    // investigate
+//    val pointers = object {
+//        val b by cPointer(0)
+//    }
+//    val ii = pointers::b
     val someByte = 123.toByte()
     val b0 = allocateCPointer(CType.Byte)
     val b1 = allocateCPointer(Byte)
@@ -43,8 +48,10 @@ private fun MemoryScope.test() {
 //    val s2 = allocateCPointer(OSSL_SOMETHING, s0.pointed)
 //    val s3 = allocateCPointer(s0.pointed)
 
-    val dtp = s0.data_type
+//    val dtp = s0.data_type
     val dtv = s0.pointed.data_type
+
+//    val o = OSSL_SOMETHING::key
 
     val r = s0.pointed//.data_type = 0u
 
@@ -154,18 +161,11 @@ internal class SOME_OP private constructor() : COpaque {
 
 private typealias OSSL_SOMETHING_TD = OSSL_SOMETHING
 
-private inline val CPointer<OSSL_SOMETHING>.pointed: OSSL_SOMETHING
-    get() = OSSL_SOMETHING(memoryBlock)
-//    set(value) {
-//        Unsafe.memoryMapper(OSSL_SOMETHING).setValue(
-//            memoryBlock = Unsafe.memoryBlock(this),
-//            offset = 0.toMemorySizeInt(),
-//            value = value
-//        )
-//    }
+private inline val CPointer<OSSL_SOMETHING>.pointed: OSSL_SOMETHING get() = OSSL_SOMETHING(memoryBlock)
 
-private inline val CPointer<OSSL_SOMETHING>.data_type: CPointer<Byte>
-    get() = TODO()
+// will clash with pointed
+//private inline val CPointer<OSSL_SOMETHING>.data_type: CPointer<Byte>
+//    get() = TODO()
 
 @JvmInline
 private value class OSSL_SOMETHING @PublishedApi internal constructor(

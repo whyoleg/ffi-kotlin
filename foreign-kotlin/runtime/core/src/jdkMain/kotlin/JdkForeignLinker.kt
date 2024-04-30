@@ -5,7 +5,7 @@ import java.lang.invoke.*
 import kotlin.jvm.optionals.*
 
 // lazy? Android? proguard?
-public val JdkForeignAvailable: Boolean by lazy {
+public val JdkForeignAvailable: Boolean = run {
     val javaVersion = when (val specVersion = System.getProperty("java.specification.version")) {
         "1.8" -> 8
         else  -> specVersion.toInt()
