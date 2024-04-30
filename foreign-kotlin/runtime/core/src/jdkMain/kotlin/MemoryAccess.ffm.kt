@@ -21,19 +21,19 @@ private class FfmMemoryArena : InternalMemoryArena {
         arena.close()
     }
 
-    override fun UnsafeMemoryAccess.allocate(size: MemorySizeInt, alignment: MemorySizeInt): MemoryBlock {
+    override fun Unsafe.allocate(size: MemorySizeInt, alignment: MemorySizeInt): MemoryBlock {
         return FfmMemoryBlock(arena.allocate(size, alignment))
     }
 
-    override fun UnsafeMemoryAccess.allocate(layout: MemoryLayout): MemoryBlock {
+    override fun Unsafe.allocate(layout: MemoryLayout): MemoryBlock {
         TODO("Not yet implemented")
     }
 
-    override fun UnsafeMemoryAccess.allocateArray(elementLayout: MemoryLayout, elementsCount: Int): MemoryBlock {
+    override fun Unsafe.allocateCArray(elementLayout: MemoryLayout, elementsCount: Int): MemoryBlock {
         TODO("Not yet implemented")
     }
 
-    override fun UnsafeMemoryAccess.allocateString(value: String): MemoryBlock {
+    override fun Unsafe.allocateString(value: String): MemoryBlock {
         TODO("Not yet implemented")
     }
 }

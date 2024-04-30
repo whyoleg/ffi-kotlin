@@ -1,10 +1,10 @@
 [versions]
 
-kotlin = "2.0.0-RC1"
+kotlin = "2.0.0-RC2"
 android = "8.2.2"
 
 # tools
-kotlinx-io = "0.3.2"
+kotlinx-io = "0.3.3"
 kotlinx-serialization = "1.6.3"
 
 [libraries]
@@ -18,7 +18,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 
 androidx-test = { module = "androidx.test:runner", version = "1.5.2" }
 xz = { module = "org.tukaani:xz", version = "1.9" }
-apache-commons-compress = { module = "org.apache.commons:commons-compress", version = "1.26.0" }
+apache-commons-compress = { module = "org.apache.commons:commons-compress", version = "1.26.1" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

@@ -5,13 +5,13 @@ import dev.whyoleg.foreign.c.*
 
 fun testSha(): Unit = AutoMemoryAccess().memoryScoped {
     val md = checkNotNull(
-        EVP_MD_fetch(null, allocateFrom("SHA256"), null, ::EVP_MD_free)
+        EVP_MD_fetch(null, cPointerFrom("SHA256"), null, ::EVP_MD_free)
     )
     val context = checkNotNull(
         EVP_MD_CTX_new(::EVP_MD_CTX_free)
     )
-    val dataArray = allocateArrayFrom("Hello World".encodeToByteArray())
-    val digestArray = allocateArray(Byte, EVP_MD_get_size(md))
+    val dataArray = allocateCArray("Hello World".encodeToByteArray())
+    val digestArray = allocateCArray(Byte, EVP_MD_get_size(md))
 
     EVP_DigestInit(context, md)
     EVP_DigestUpdate(context, dataArray, dataArray.size.toPlatformUInt())

@@ -10,7 +10,6 @@ public enum class CNumber {
     Long, ULong,
     PlatformInt, PlatformUInt,
     Float, Double,
-    Mixed
 }
 
 @Serializable

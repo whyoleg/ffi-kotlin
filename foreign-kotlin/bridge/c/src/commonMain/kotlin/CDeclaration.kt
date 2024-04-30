@@ -74,7 +74,7 @@ public data class CRecordDefinition(
 // TODO: field could have no name if it's a bit field
 @Serializable
 public data class CRecordField(
-    val ktName: String?,
+    val ktName: String,
     val cName: String?, // TODO: should we have multiple names here?
     val fieldType: CType,
     val bitWidth: Int?
@@ -91,7 +91,7 @@ public data class CFunction(
 
 @Serializable
 public data class CFunctionParameter(
-    val ktName: String?,
+    val ktName: String,
     val cNames: List<String>, // multiple names because of commonization
     val type: CType,
 )

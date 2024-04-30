@@ -18,7 +18,12 @@ public fun generateCFragment(index: CxIndex, packageName: String): CFragment {
     fun CxDeclarationDescription.toCDeclarationDescription(): CDeclarationDescription = CDeclarationDescription(
         id = declarationId(name),
         packageName = packageName,
-        headerName = header,
+        headerName = if (header.isEmpty()) {
+            header
+        } else {
+            require(header.endsWith(".h") || header.endsWith(".inl")) { "failed: $header" }
+            header.substringBeforeLast(".")
+        },
         ktName = name,
         cName = name,
         availableOn = null
@@ -64,7 +69,7 @@ public fun generateCFragment(index: CxIndex, packageName: String): CFragment {
     )
 
     fun CxRecordField.toCRecordField(): CRecordField = CRecordField(
-        ktName = name,
+        ktName = name ?: "UNNAMED!!!",
         cName = name,
         fieldType = fieldType.toCType(),
         bitWidth = bitWidth
@@ -82,8 +87,8 @@ public fun generateCFragment(index: CxIndex, packageName: String): CFragment {
         }
     )
 
-    fun CxFunctionParameter.toCFunctionParameter(): CFunctionParameter = CFunctionParameter(
-        ktName = name,
+    fun CxFunctionParameter.toCFunctionParameter(ktName: String): CFunctionParameter = CFunctionParameter(
+        ktName = ktName,
         cNames = listOfNotNull(name),
         type = type.toCType(),
     )
@@ -119,7 +124,22 @@ public fun generateCFragment(index: CxIndex, packageName: String): CFragment {
                 description = declaration.description.toCDeclarationDescription(),
                 isVariadic = declaration.isVariadic,
                 returnType = declaration.returnType.toCType(),
-                parameters = declaration.parameters.map(CxFunctionParameter::toCFunctionParameter)
+                parameters = buildList {
+                    if (declaration.parameters.any { it.name == null }) {
+                        val parameterNames =
+                            declaration.parameters.mapNotNullTo(mutableSetOf(), CxFunctionParameter::name)
+                        var i = 0
+                        declaration.parameters.forEach {
+                            var ktName = "p${i++}"
+                            while (ktName in parameterNames) ktName = "p${i++}"
+                            add(it.toCFunctionParameter(ktName))
+                        }
+                    } else {
+                        declaration.parameters.forEach {
+                            add(it.toCFunctionParameter(it.name!!))
+                        }
+                    }
+                }
             )
         }
     )

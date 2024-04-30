@@ -4,24 +4,38 @@ import dev.whyoleg.foreign.codegen.*
 
 internal interface KotlinCodeBuilder : CodeBuilder<KotlinCodeBuilder>
 
+private class KotlinCodeBuilderImpl : KotlinCodeBuilder {
+    private val builder = StringBuilder()
+    override fun raw(value: String): KotlinCodeBuilder = apply {
+        builder.append(value)
+    }
+
+    override fun indented(block: KotlinCodeBuilder.() -> Unit): KotlinCodeBuilder = apply {
+        KotlinCodeBuilderImpl().apply(block).build().split("\n").joinTo(builder, "\n") {
+            if (it.isEmpty()) "" else "    $it"
+        }
+    }
+
+    fun build(): String = builder.toString()
+}
+
 internal fun FilesBuilder.kotlinFile(
     fileName: String,
     packageName: String,
     imports: List<String> = emptyList(),
-    content: KotlinCodeBuilder.() -> Unit
+    block: KotlinCodeBuilder.() -> Unit
 ) {
     check(fileName.endsWith(".kt")) { "file name must end with .kt" }
 
-    file(fileName) {
-        append("package $packageName\n\n")
+    val content = KotlinCodeBuilderImpl().apply {
+        raw("package $packageName\n\n")
+        if (imports.isNotEmpty()) {
+            imports.forEach { raw("import $it\n") }
+            raw("\n")
+        }
+    }.apply(block).build()
 
-        if (imports.isNotEmpty()) imports.joinTo(
-            buffer = this,
-            prefix = "", separator = "\n", postfix = "\n\n"
-        ) { "import $it" }
-
-//        content()
-    }
+    file(fileName, content)
 }
 
 internal fun KotlinCodeBuilder.annotation(
@@ -40,10 +54,4 @@ internal fun KotlinCodeBuilder.annotation(
         }
         raw(")\n")
     }
-}
-
-internal fun KotlinCodeBuilder.emit(
-    blocks: MutableList<KotlinCodeBuilder.() -> Unit>.() -> Unit
-) {
-
 }

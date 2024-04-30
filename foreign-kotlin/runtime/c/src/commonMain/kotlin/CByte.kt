@@ -4,24 +4,26 @@ package dev.whyoleg.foreign.c
 
 import dev.whyoleg.foreign.*
 
-// bytes
-public inline var CPointer<Byte>.value: Byte
-    get() = block.getByte(offset) // mapper.getByte(block, offset)
-    set(value) = block.setByte(offset, value) // mapper.setByte(block, offset, value)
+// TODO: decide on Byte vs CByte (UByte vs CUByte) naming for all numbers
 
-@Deprecated("use get") // error
-public var CArray<Byte>.value: Byte by CPointer<Byte>::value
+public inline var CPointer<Byte>.pointed: Byte
+    get() = memoryBlock.getByte(0.toMemorySizeInt()) // mapper.getByte(block, offset)
+    set(value) = memoryBlock.setByte(0.toMemorySizeInt(), value) // mapper.setByte(block, offset, value)
 
-public operator fun CPointer.Companion.invoke(type: Byte.Companion): CType<CPointer<Byte>?> = TODO()
-//public operator fun CArray.Companion.invoke(type: Byte.Companion, size: Int): CType<CArray<Byte>?> = TODO()
+public operator fun CPointer.Companion.invoke(type: Byte.Companion): CType<CPointer<Byte>> = CType.CPointer(CType.Byte)
+public fun CType.Companion.CPointer(type: Byte.Companion): CType<CPointer<Byte>> = CPointer(Byte)
 
-public inline fun MemoryScope.allocate(type: Byte.Companion): CPointer<Byte> = TODO()
-public inline fun MemoryScope.allocateFrom(type: Byte.Companion, value: Byte): CPointer<Byte> = TODO()
-public inline fun MemoryScope.allocateFrom(value: Byte): CPointer<Byte> = TODO()
+public inline fun MemoryScope.allocateCPointer(type: Byte.Companion): CPointer<Byte> = TODO()
+public inline fun MemoryScope.allocateCPointer(type: Byte.Companion, pointed: Byte): CPointer<Byte> = TODO()
+public inline fun MemoryScope.allocateCPointer(pointed: Byte): CPointer<Byte> = TODO()
 
-public inline fun MemoryScope.allocateArray(type: Byte.Companion, size: Int): CArray<Byte> = TODO()
-public inline fun MemoryScope.allocateArrayFrom(type: Byte.Companion, value: ByteArray): CArray<Byte> = TODO()
-public inline fun MemoryScope.allocateArrayFrom(value: ByteArray): CArray<Byte> = TODO()
+public inline fun MemoryScope.allocateCArray(type: Byte.Companion, size: Int): CArray<Byte> = TODO()
+public inline fun MemoryScope.allocateCArray(type: Byte.Companion, value: ByteArray): CArray<Byte> = TODO()
+public inline fun MemoryScope.allocateCArray(value: ByteArray): CArray<Byte> = TODO()
+
+public inline fun ByteArray.copyInto(
+    destination: CArray<Byte>
+): CArray<Byte> = TODO()
 
 public inline fun CPointer<Byte>.ofUByte(): CPointer<UByte> = TODO()
 public inline fun CArray<Byte>.ofUByte(): CArray<UByte> = TODO()
@@ -37,6 +39,7 @@ public fun CArray<Byte>.copyInto(
     endIndex: Int = size
 ): ByteArray = TODO()
 
+// naming: toByteArray(), toByteArray(size), toByteArray(fromIndex, toIndex)
 public fun CArray<Byte>.copyOfRange(fromIndex: Int, toIndex: Int): ByteArray = TODO()
 public fun CArray<Byte>.copyOf(): ByteArray = TODO()
 public fun CArray<Byte>.copyOf(size: Int): ByteArray = TODO()

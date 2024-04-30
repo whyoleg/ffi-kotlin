@@ -6,11 +6,13 @@ public sealed class MemoryLayout {
 
     @Suppress("FunctionName")
     public companion object {
+        //
+        public fun Void(): MemoryLayout = TODO()
         public fun Byte(): MemoryLayout = TODO()
         public fun Int(): MemoryLayout = TODO()
         public fun Long(): MemoryLayout = TODO()
 
-        public fun Address(): MemoryLayout = TODO()
+        public fun Address(targetLayout: MemoryLayout): MemoryLayout = TODO()
 
         // TODO: leave just Composite or Custom
         public fun Composite(vararg childLayouts: MemoryLayout): MemoryLayout = TODO()

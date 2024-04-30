@@ -2,7 +2,6 @@ package dev.whyoleg.foreign.codegen.kotlin
 
 import dev.whyoleg.foreign.bridge.c.*
 import dev.whyoleg.foreign.codegen.*
-import dev.whyoleg.foreign.codegen.impl.*
 
 // package/`header`.functions.common.kt
 // package/`header`.records.common.kt
@@ -28,130 +27,163 @@ import dev.whyoleg.foreign.codegen.impl.*
 
 // for records - generate expect/actual?
 
-internal fun FilesBuilder.generateKotlin(
+internal fun FilesBuilder.kotlinFragmentDirectory(
     configuration: KotlinCodegenConfiguration,
     fragment: CFragment,
     fragmentName: String
 ) {
-    require(fragment.fragmentType is CFragmentType.Shared)
+    val index = CFragmentIndex(
+        fragment.enums.associateBy { it.description.id },
+        fragment.typedefs.associateBy { it.description.id },
+        fragment.records.associateBy { it.description.id },
+    )
+//    require(fragment.fragmentType is CFragmentType.Shared)
 
-    fragment.functions.groupBy {
-        it.packageName to it.headerName
-    }.forEach { (key, functions) ->
-        val (packageName, headerName) = key
-        val packagePath = packageName.replace('.', '/')
-        val headerPath = headerName.replace('/', '_')
-        kotlinFile(
-            fileName = "${packagePath}/${headerPath}.functions.${fragmentName}.kt",
-            packageName = packageName,
-            imports = listOf(
-                "dev.whyoleg.foreign.*",
-                "dev.whyoleg.foreign.c.*",
-            )
-        ) {
-            functions.forEach {
-                expectFunction(configuration, it)
-                raw("\n") // in between functions
-            }
+    declarationGroup(fragment.functions, "functions.$fragmentName") { function ->
+        cFunctionDeclaration(configuration, index, KotlinActuality.EXPECT, function).raw("\n")
+    }
+
+    declarationGroup(fragment.variables, "variables.$fragmentName") { variable ->
+        if (configuration.requiresOptIn != null) {
+            annotation(configuration.requiresOptIn)
         }
-    }
-
-    fragment.functions.groupBy {
-        it.packageName to it.headerName
-    }.forEach { (key, functions) ->
-        val (packageName, headerName) = key
-        val packagePath = packageName.replace('.', '/')
-        val headerPath = headerName.replace('/', '_')
-        kotlinFile(
-            fileName = "${packagePath}/${headerPath}.functions.${fragmentName}.kt",
-            packageName = packageName,
-            imports = listOf(
-                "dev.whyoleg.foreign.*",
-                "dev.whyoleg.foreign.c.*",
+        variable.description.availableOn?.let { availableOn ->
+            annotation(
+                "PartialForeignFunctionInterface",
+                listOf(availableOn.joinToString(prefix = "[", separator = ", ", postfix = "]") { "\"$it\"" })
             )
-        ) {
-            functions.forEach {
-                function(configuration, true, it, KotlinCodeBuilder::jsFunctionBody)
-                raw("\n") // in between functions
-            }
         }
-    }
-}
+        val actuality = KotlinActuality.EXPECT
 
-private fun KotlinCodeBuilder.function(
-    configuration: KotlinCodegenConfiguration,
-    isActual: Boolean,
-    function: CDeclaration<CFunction>,
-    body: KotlinCodeBuilder.(function: CDeclaration<CFunction>) -> Unit
-): KotlinCodeBuilder = apply {
-    val actuality = when {
-        isActual -> KotlinActuality.ACTUAL
-        else     -> KotlinActuality.NONE
-    }
-    functionDeclaration(configuration, actuality, function)
-    raw("{\n")
-    indented {
-        body(function)
-    }
-    raw("}\n")
-}
-
-private fun KotlinCodeBuilder.expectFunction(
-    configuration: KotlinCodegenConfiguration,
-    function: CDeclaration<CFunction>,
-): KotlinCodeBuilder = functionDeclaration(configuration, KotlinActuality.EXPECT, function).raw("\n")
-
-// no new line at the end
-private fun KotlinCodeBuilder.functionDeclaration(
-    configuration: KotlinCodegenConfiguration,
-    actuality: KotlinActuality,
-    function: CDeclaration<CFunction>,
-): KotlinCodeBuilder = apply {
-    if (configuration.requiresOptIn != null) {
-        annotation(configuration.requiresOptIn)
-    }
-    function.availableOn?.let { availableOn ->
-        annotation(
-            "PartialForeignFunctionInterface",
-            listOf(availableOn.joinToString(prefix = "[", separator = ", ", postfix = "]") { "\"$it\"" })
-        )
+        // it could be just declaration, not expect in most cases
+        listOfNotNull(configuration.visibility.value, actuality.value).forEach { raw("$it ") }
+        raw("val ${variable.description.ktName}: ${variable.variableType.asKotlinTypeString(index)}")
     }
 
-    val visibility = when (configuration.publicApi) {
-        true -> KotlinVisibility.PUBLIC
-        else -> KotlinVisibility.INTERNAL
+    declarationGroup(fragment.typedefs, "typedefs.$fragmentName") { typedef ->
+        if (configuration.requiresOptIn != null) {
+            annotation(configuration.requiresOptIn)
+        }
+        typedef.description.availableOn?.let { availableOn ->
+            annotation(
+                "PartialForeignFunctionInterface",
+                listOf(availableOn.joinToString(prefix = "[", separator = ", ", postfix = "]") { "\"$it\"" })
+            )
+        }
+
+        val actuality = KotlinActuality.EXPECT
+
+        // it could be just declaration, not expect in most cases
+        listOfNotNull(configuration.visibility.value, actuality.value).forEach { raw("$it ") }
+
+        // TODO!!!
+        raw("class ${typedef.description.ktName}\n")
     }
 
-    listOfNotNull(visibility.value, actuality.value, "fun").forEach { raw("$it ") }
-
-    if (function.data.returnType.returnsPointer) {
-        raw("MemoryScope.${function.name}")
-    } else {
-        raw(function.name)
-    }
-
-    if (function.data.parameters.isEmpty()) {
-        raw("()")
-    } else {
-        raw("(\n")
+    declarationGroup(fragment.enums, "enums.$fragmentName") { enum ->
+        val name = enum.description.ktName
+        val visibility = configuration.visibility.value
+        // TODO: unnamed enums
+        annotation("JvmInline")
+        raw("$visibility value class $name(override val value: Int): CEnum {\n")
         indented {
-            function.data.parameters.forEach { parameter ->
-                raw("${parameter.name}: ${parameter.type.asKotlinTypeString()}, ")
-                raw("// C names: ${parameter.cNames.joinToString()}\n")
+            raw("$visibility companion object\n")
+        }
+        raw("}\n\n")
+        enum.constants.forEach {
+            raw("$visibility inline val $name.Companion.${it.ktName}: $name get() = $name(${it.value})\n")
+        }
+    }
+    // TODO: may be split records by file?
+    declarationGroup(fragment.records, "records.$fragmentName") { record ->
+        val name = record.description.ktName
+        val visibility = configuration.visibility.value
+
+        when (val definition = record.definition) {
+            null -> {
+                raw("$visibility expect class $name: COpaque {\n")
+                indented {
+                    raw("$visibility companion object: CType.Opaque<$name>\n")
+                }
+                raw("}\n")
             }
-            if (function.data.returnType.isPointerLike) {
-                // TODO: name clash
-                raw("cleanup: MemoryCleanupAction<${function.data.returnType.asKotlinTypeString()}>?")
-                if (actuality != KotlinActuality.ACTUAL) raw(" = null") // default argument
-                raw(",\n")
+
+            else -> {
+                raw("$visibility expect class $name: CStruct {\n")
+                indented {
+                    raw("$visibility companion object: CType.Record<$name>\n\n")
+
+                    // TODO: support anonymousRecords
+                    if (definition.anonymousRecords.isEmpty()) {
+                        definition.fields.forEach { field ->
+                            raw("$visibility var ${field.ktName}: ${field.fieldType.asKotlinTypeString(index)}\n")
+                        }
+                    }
+                }
+                raw("}\n")
             }
         }
-        raw(")")
-    }
-
-    if (!function.data.returnType.isVoid) {
-        raw(": ${function.data.returnType.asKotlinTypeString()}")
     }
 }
 
-internal fun CType.asKotlinTypeString(): String = TODO()
+private fun <D : CDeclaration> FilesBuilder.declarationGroup(
+    declarations: List<D>,
+    suffix: String,
+    block: KotlinCodeBuilder.(declaration: D) -> Unit
+) {
+    declarations.groupBy {
+        it.description.packageName to it.description.headerName
+    }.forEach { (key, partialDeclarations) ->
+        val (packageName, headerName) = key
+        val packagePath = packageName.replace('.', '/')
+        val headerPath = headerName//.replace('/', '.')
+        kotlinFile(
+            fileName = "${packagePath}/${headerPath}.$suffix.kt",
+            packageName = packageName,
+            imports = listOf(
+                "dev.whyoleg.foreign.*",
+                "dev.whyoleg.foreign.c.*",
+            )
+        ) {
+            partialDeclarations.forEach {
+                block(it)
+                raw("\n") // in between declarations
+            }
+        }
+    }
+}
+
+internal fun CType.asKotlinTypeString(index: CFragmentIndex): String = when (this) {
+    CType.Boolean        -> "Boolean"
+    CType.Void           -> "Unit"
+    is CType.Number      -> when (value) {
+        CNumber.Byte         -> "Byte"
+        CNumber.UByte        -> "UByte"
+        CNumber.Short        -> "Short"
+        CNumber.UShort       -> "UShort"
+        CNumber.Int          -> "Int"
+        CNumber.UInt         -> "UInt"
+        CNumber.Long         -> "Long"
+        CNumber.ULong        -> "ULong"
+        CNumber.PlatformInt  -> "PlatformInt"
+        CNumber.PlatformUInt -> "PlatformUInt"
+        CNumber.Float        -> "Float"
+        CNumber.Double       -> "Double"
+    }
+
+    is CType.Pointer     -> "CPointer<${pointed.asKotlinTypeString(index)}>?"
+
+    is CType.Array       -> when (size) {
+        // TODO: nullability of pointers
+        null -> "CArrayPointer<${elementType.asKotlinTypeString(index)}>?"
+        else -> "CArray<${elementType.asKotlinTypeString(index)}>? /*size=$size*/"
+    }
+
+    is CType.Enum        -> index.enums.getValue(id).description.ktName
+    is CType.Record      -> index.records.getValue(id).description.ktName
+    is CType.Typedef     -> index.typedefs.getValue(id).description.ktName
+
+    is CType.Function    -> "FUNCTION"
+    is CType.Unsupported -> "UNSUPPORTED"
+    is CType.Mixed       -> TODO(toString())
+}

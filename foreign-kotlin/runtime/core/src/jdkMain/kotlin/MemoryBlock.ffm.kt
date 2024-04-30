@@ -1,6 +1,7 @@
 package dev.whyoleg.foreign
 
 import java.lang.foreign.*
+import java.lang.foreign.MemoryLayout
 
 internal class FfmMemoryBlock(private val segment: MemorySegment) : InternalMemoryBlock {
     override val address: MemorySizeInt get() = segment.address()
@@ -8,6 +9,8 @@ internal class FfmMemoryBlock(private val segment: MemorySegment) : InternalMemo
     override val isAccessible: Boolean get() = segment.scope().isAlive
 
     override fun getByte(offset: MemorySizeInt): Byte {
+        ValueLayout.JAVA_BYTE.byteOffset(MemoryLayout.PathElement.groupElement(0))
+        ValueLayout.JAVA_BYTE.varHandle(MemoryLayout.PathElement.groupElement(0))
         return segment.get(ValueLayout.JAVA_BYTE, offset)
     }
 

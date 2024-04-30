@@ -7,7 +7,7 @@ import kotlinx.io.*
 import kotlinx.io.files.*
 import kotlin.test.*
 
-class SimpleTest {
+class BridgegenTest {
 
     private fun saveFragment(outputPath: String, fragment: CFragment) {
         val indexString = CFragment.encode(fragment)

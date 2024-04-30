@@ -25,21 +25,21 @@ private class NativeMemoryArena : InternalMemoryArena {
         arena.clear()
     }
 
-    override fun UnsafeMemoryAccess.allocate(size: MemorySizeInt, alignment: MemorySizeInt): MemoryBlock {
+    override fun Unsafe.allocate(size: MemorySizeInt, alignment: MemorySizeInt): MemoryBlock {
         return NativeMemoryBlock(arena.alloc(size, alignment.toInt()), size).also {
             arena.defer { it.makeInaccessible() }
         }
     }
 
-    override fun UnsafeMemoryAccess.allocate(layout: MemoryLayout): MemoryBlock {
+    override fun Unsafe.allocate(layout: MemoryLayout): MemoryBlock {
         return allocate(layout.size, layout.alignment)
     }
 
-    override fun UnsafeMemoryAccess.allocateArray(elementLayout: MemoryLayout, elementsCount: Int): MemoryBlock {
+    override fun Unsafe.allocateCArray(elementLayout: MemoryLayout, elementsCount: Int): MemoryBlock {
         TODO("Not yet implemented")
     }
 
-    override fun UnsafeMemoryAccess.allocateString(value: String): MemoryBlock {
+    override fun Unsafe.allocateString(value: String): MemoryBlock {
         TODO("Not yet implemented")
     }
 }

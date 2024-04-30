@@ -3,35 +3,36 @@
 package dev.whyoleg.foreign.c
 
 import dev.whyoleg.foreign.*
+import kotlin.jvm.*
 
 public typealias CArrayPointer<KT> = CPointer<KT>
 
-public class CArray<KT> internal constructor(
-    public val size: Int,
-    mapper: MemoryMapper<KT>,
-    block: MemoryBlock,
-    offset: MemorySizeInt
-) : CArrayPointer<KT>(mapper, block, offset),
-    // TODO: iterable vs other type?
-    Iterable<CPointer<KT>> {
-
+@JvmInline
+public value class CArray<KT : Any>
+@PublishedApi internal constructor(
+    @PublishedApi internal val memoryBlock: MemoryBlock,
+) : Iterable<CPointer<KT>> { // TODO: Iterable vs Collection vs List type?
+    public val size: Int get() = TODO()
     public operator fun get(index: Int): CPointer<KT> = TODO()
-
-    override fun iterator(): Iterator<CPointer<KT>> {
-        TODO("Not yet implemented")
-    }
-
-    public companion object {}
+    public fun getOrNull(index: Int): CPointer<KT>? = TODO()
+    override fun iterator(): Iterator<CPointer<KT>> = TODO()
 }
 
-@Deprecated("use get")
-public inline var <KT> CArray<KT>.value: KT
-    get() = mapper.getValue(block, offset)
-    set(value) = mapper.setValue(block, offset, value)
+// basic builders
 
-public inline fun <KT> MemoryScope.allocateArray(type: CType<KT>, size: Int): CArray<KT> = TODO()
-public inline fun <KT> MemoryScope.allocateArrayFrom(type: CType<KT>, value: Array<KT>): CArray<KT> = TODO()
-public inline fun <KT> MemoryScope.allocateArrayFrom(type: CType<KT>, value: List<KT>): CArray<KT> = TODO()
+// TODO: add inline init
+public inline fun <KT : Any> MemoryScope.allocateCArray(type: CType<KT>, size: Int): CArray<KT> = TODO()
+public inline fun <KT : Any> MemoryScope.allocateCArray(type: CType<KT>, size: Int, init: (Int) -> KT): CArray<KT> =
+    TODO()
 
-// TODO
-//  public inline operator fun <KT> CArray.Companion.invoke(type: CType<KT>, size: Int): CType<CArray<KT>?> = TODO()
+// unsafe
+public inline fun <KT : Any> CArrayPointer<KT>.reinterpretAsArray(size: Int): CArray<KT> = TODO()
+
+// TODO: add parameters
+public inline fun <KT : Any> Array<KT>.copyInto(
+    destination: CArray<KT>
+): CArray<KT> = TODO()
+
+public inline fun <KT : Any> List<KT>.copyInto(
+    destination: CArray<KT>
+): CArray<KT> = TODO()

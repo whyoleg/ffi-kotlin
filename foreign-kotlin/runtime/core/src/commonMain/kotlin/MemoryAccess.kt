@@ -1,7 +1,5 @@
 package dev.whyoleg.foreign
 
-public object UnsafeMemoryAccess
-
 public sealed interface MemoryAccess {
     // TODO: by default this should return Arena which will be automatically deallocated when inaccessible
     //  to not leak memory
@@ -9,11 +7,21 @@ public sealed interface MemoryAccess {
     public fun createArena(): MemoryArena
 }
 
+// now it's used as receiver, but when `context parameters` will be ready, we should migrate to them
 public sealed interface MemoryScope : MemoryAccess {
-    public fun UnsafeMemoryAccess.allocate(size: MemorySizeInt, alignment: MemorySizeInt): MemoryBlock
-    public fun UnsafeMemoryAccess.allocate(layout: MemoryLayout): MemoryBlock
-    public fun UnsafeMemoryAccess.allocateArray(elementLayout: MemoryLayout, elementsCount: Int): MemoryBlock
-    public fun UnsafeMemoryAccess.allocateString(value: String): MemoryBlock
+    public fun Unsafe.allocateCPointer(size: MemorySizeInt, alignment: MemorySizeInt): MemoryBlock
+    public fun Unsafe.allocate(layout: MemoryLayout): MemoryBlock
+    public fun Unsafe.allocateCArray(elementLayout: MemoryLayout, elementsCount: Int): MemoryBlock
+    public fun Unsafe.allocateString(value: String): MemoryBlock
+
+    // TODO: there should be something for FFM
+    // TODO: may be somehow improve this...
+    public fun <KT> Unsafe.wrapMemoryBlock(
+        address: MemorySizeInt,
+        layout: MemoryLayout,
+        cleanupAction: MemoryCleanupAction<KT>?,
+        wrapper: MemoryBlockWrapper<KT>
+    ): KT?
 
     // public fun wrap(address: MemorySizeInt, layout: MemoryLayout): MemoryBlock?
 }
@@ -26,6 +34,10 @@ public sealed interface MemoryArena : MemoryScope, AutoCloseable {
 
 public fun interface MemoryCleanupAction<T> {
     public fun cleanup(value: T)
+}
+
+public fun interface MemoryBlockWrapper<T> {
+    public fun wrap(block: MemoryBlock): T
 }
 
 public inline fun <T> MemoryAccess.memoryScoped(block: MemoryScope.() -> T): T = createArena().use(block)

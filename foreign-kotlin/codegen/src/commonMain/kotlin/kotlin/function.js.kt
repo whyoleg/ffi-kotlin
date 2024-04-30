@@ -1,23 +1,22 @@
-package dev.whyoleg.foreign.codegen.impl
+package dev.whyoleg.foreign.codegen.kotlin
 
 import dev.whyoleg.foreign.bridge.c.*
 import dev.whyoleg.foreign.codegen.*
-import dev.whyoleg.foreign.codegen.kotlin.*
 
 internal fun KotlinCodeBuilder.jsFunctionBody(
-    function: CDeclaration<CFunction>
+    function: CFunction
 ): KotlinCodeBuilder = apply {
-    if (!function.data.returnType.isVoid) {
+    if (!function.returnType.isVoid) {
         raw("return ")
     }
-    raw("${function.headerName.replace('/', '_')}.${function.name}")
+    raw("${function.description.headerName.replace('/', '_')}.${function.description.ktName}")
     // TODO: handle struct/pointer like
-    if (function.data.parameters.isEmpty()) {
+    if (function.parameters.isEmpty()) {
         raw("()")
     } else {
         raw("(\n")
         indented {
-            function.data.parameters.forEach { parameter ->
+            function.parameters.forEach { parameter ->
 //                raw("${renderParameter(parameter.name, parameter.type)},\n")
             }
         }

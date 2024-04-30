@@ -1,13 +1,26 @@
 package dev.whyoleg.foreign.c
 
-public sealed interface CType<KT> {
-    public interface Opaque<KT> : CType<KT>
-    public interface Record<KT> : CType<KT>
+import dev.whyoleg.foreign.*
 
-    public object Builtin {
-        public val Byte: CType<Byte> get() = TODO()
+public interface CType<KT : Any> {
+    public fun Unsafe.memoryLayout(): MemoryLayout
+//    public fun Unsafe.memoryMapper(): MemoryMapper<KT>
+
+    //public interface Record<KT> : CType<KT>
+
+    public companion object {
+        public val Byte: CType<Byte> = TODO()
+
+        // TODO: cache pointer in type
+        public fun <KT : Any> CPointer(type: CType<KT>): CType<CPointer<KT>> = TODO()
     }
 }
+
+//public fun <KT> CType.Companion. = TODO()
+
+//public inline fun <KT> Unsafe.memoryMapper(type: CType<KT>): MemoryMapper<KT> = with(type) { memoryMapper() }
+//public inline fun Unsafe.memoryMapper(type: Byte.Companion): MemoryMapper<Byte> = TODO()
+//public inline fun Unsafe.memoryMapper(type: UInt.Companion): MemoryMapper<UInt> = TODO()
 
 // TODO: needs compiler plugin
 //public inline fun <reified KT> cTypeOf(): CType<KT> = TODO()

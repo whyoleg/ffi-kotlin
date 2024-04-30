@@ -1,9 +1,9 @@
 package dev.whyoleg.foreign
 
 // KT = primitive, address or record
-public sealed class MemoryMapper<KT> {
-    public abstract fun getValue(block: MemoryBlock, offset: MemorySizeInt): KT
-    public abstract fun setValue(block: MemoryBlock, offset: MemorySizeInt, value: KT)
+public interface MemoryMapper<KT> {
+    public fun getValue(memoryBlock: MemoryBlock, offset: MemorySizeInt): KT
+    public fun setValue(memoryBlock: MemoryBlock, offset: MemorySizeInt, value: KT)
 
     @Suppress("FunctionName")
     public companion object {
@@ -15,7 +15,10 @@ public sealed class MemoryMapper<KT> {
     }
 }
 
-internal object ByteMemoryMapper : MemoryMapper<Byte>() {
-    override fun getValue(block: MemoryBlock, offset: MemorySizeInt): Byte = block.getByte(offset)
-    override fun setValue(block: MemoryBlock, offset: MemorySizeInt, value: Byte): Unit = block.setByte(offset, value)
+internal object ByteMemoryMapper : MemoryMapper<Byte> {
+    override fun getValue(memoryBlock: MemoryBlock, offset: MemorySizeInt): Byte =
+        memoryBlock.getByte(offset)
+
+    override fun setValue(memoryBlock: MemoryBlock, offset: MemorySizeInt, value: Byte): Unit =
+        memoryBlock.setByte(offset, value)
 }

@@ -77,6 +77,20 @@ expect class OSSL_PARAM : CStruct {
 
 expect inline fun MemoryScope.OSSL_PARAM(block: OSSL_PARAM.() -> Unit = {}): OSSL_PARAM
 
+typealias OSSL_PARAM2 = OSSL_PARAM
+
+inline fun MemoryScope.OSSL_PARAM2(block: OSSL_PARAM2.() -> Unit = {}): OSSL_PARAM2 = OSSL_PARAM(block)
+
+private fun MemoryScope.asd() {
+    val struct = OSSL_PARAM {
+
+    }
+
+    OSSL_PARAM2 {
+
+    }
+}
+
 //@JvmInline
 //value class OSSL_PARAM2 internal constructor(private val block: MemoryBlock) : CStruct<OSSL_PARAM> {
 //    var key: CString?
