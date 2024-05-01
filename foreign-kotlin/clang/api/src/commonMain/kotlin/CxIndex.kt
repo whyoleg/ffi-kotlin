@@ -38,17 +38,17 @@ public data class CxIndex(
             when (this) {
                 is CxType.Pointer     -> pointed.collectIds()
                 is CxType.Array       -> elementType.collectIds()
-                is CxType.Function    -> {
-                    returnType.collectIds()
-                    parameters.forEach(CxType::collectIds)
-                }
+//                is CxType.Function    -> {
+//                    returnType.collectIds()
+//                    parameters.forEach(CxType::collectIds)
+//                }
 
                 is CxType.Enum        -> enumIds.add(id)
                 is CxType.Record      -> recordIds.add(id)
                 is CxType.Typedef     -> typedefIds.add(id)
 
                 CxType.Void,
-                CxType.Bool,
+//                CxType.Bool,
                 is CxType.Number,
                 is CxType.Unsupported -> {
                 }
@@ -56,12 +56,12 @@ public data class CxIndex(
         }
 
         fun CxRecordDefinition.collectIds() {
-            fields.forEach { it.fieldType.collectIds() }
+            fields.forEach { it.type.collectIds() }
             anonymousRecords.values.forEach { it.collectIds() }
         }
 
         variables.forEach {
-            it.variableType.collectIds()
+            it.type.collectIds()
         }
         typedefs.forEach {
             it.aliasedType.collectIds()
@@ -141,13 +141,13 @@ public fun CxIndex.filter(
 
                 is CxType.Pointer     -> pointed.collectReferences()
                 is CxType.Array       -> elementType.collectReferences()
-                is CxType.Function    -> {
-                    returnType.collectReferences()
-                    parameters.forEach { it.collectReferences() }
-                }
+//                is CxType.Function    -> {
+//                    returnType.collectReferences()
+//                    parameters.forEach { it.collectReferences() }
+//                }
 
                 CxType.Void,
-                CxType.Bool,
+//                CxType.Bool,
                 is CxType.Number,
                 is CxType.Unsupported -> {
                 }
@@ -155,14 +155,14 @@ public fun CxIndex.filter(
         }
 
         fun CxRecordDefinition.collectReferences() {
-            fields.forEach { it.fieldType.collectReferences() }
+            fields.forEach { it.type.collectReferences() }
             // no need to collect anonymousRecords?
         }
 
         when (this) {
             is CxVariable -> {
                 referencedVariables.add(description.id)
-                variableType.collectReferences()
+                type.collectReferences()
             }
 
             is CxEnum     -> {
@@ -232,3 +232,90 @@ public fun CxIndex.filter(
 //        )
 //    }
 }
+
+// TODO: decide on unsupported filtering
+//public fun CxIndex.filterUnsupported(): CxIndex {
+//    fun CxDeclaration.isSupported(): Boolean {
+//        val visited = mutableSetOf<CxDeclarationId>()
+//        var supported = true
+//
+//        fun CxDeclaration.collectUnsupported() {
+//            if (!supported) return
+//
+//            fun CxType.collectUnsupported() {
+//                if (!supported) return
+//
+//                when (this) {
+//                    CxType.Void,
+//                    is CxType.Enum,
+//                    is CxType.Number      -> {
+//                    }
+//
+//                    is CxType.Array       -> elementType.collectUnsupported()
+//                    is CxType.Pointer     -> pointed.collectUnsupported()
+//
+//                    is CxType.Record      -> if (visited.add(id)) {
+//                        // anonymous records handled separately
+//                        records.firstOrNull { it.description.id == id }?.collectUnsupported()
+//                    }
+//
+//                    is CxType.Typedef     -> if (visited.add(id)) {
+//                        typedefs.first { it.description.id == id }.collectUnsupported()
+//                    }
+//
+//                    is CxType.Unsupported -> supported = false
+//                }
+//            }
+//
+//            fun CxRecordDefinition.collectUnsupported() {
+//                if (!supported) return
+//
+//                fields.forEach { it.type.collectUnsupported() }
+//                anonymousRecords.values.forEach { it.collectUnsupported() }
+//            }
+//
+//            when (this) {
+//                is CxEnum     -> {}
+//                is CxVariable -> type.collectUnsupported()
+//                is CxFunction -> {
+//                    returnType.collectUnsupported()
+//                    parameters.forEach { it.type.collectUnsupported() }
+//                }
+//
+//                is CxRecord   -> when (definition) {
+//                    null -> {}
+//                    else -> definition.collectUnsupported()
+//                }
+//
+//                is CxTypedef  -> {
+//                    aliasedType.collectUnsupported()
+//                    resolvedType.collectUnsupported()
+//                }
+//            }
+//        }
+//
+//        collectUnsupported()
+//        return supported.also {
+//            if(!it) println(this)
+//        }
+//    }
+//
+//    return CxIndex(
+//        variables = variables.filter { it.isSupported() },
+//        enums = enums, // all enums are supported
+//        typedefs = typedefs.filter { it.isSupported() },
+//        records = records.filter { it.isSupported() },
+//        functions = functions.filter { it.isSupported() },
+//    ).also { new ->
+//        println(
+//            """
+//            Filtered:
+//            * variables ${variables.size} -> ${new.variables.size}
+//            * enums ${enums.size} -> ${new.enums.size}
+//            * typedefs ${typedefs.size} -> ${new.typedefs.size}
+//            * records ${records.size} -> ${new.records.size}
+//            * functions ${functions.size} -> ${new.functions.size}
+//            """.trimIndent()
+//        )
+//    }
+//}

@@ -19,9 +19,9 @@ public sealed class CType {
     @Serializable
     public data object Void : CType()
 
-    @SerialName("boolean")
-    @Serializable
-    public data object Boolean : CType()
+//    @SerialName("boolean")
+//    @Serializable
+//    public data object Boolean : CType()
 
     @SerialName("number")
     @Serializable
@@ -43,9 +43,9 @@ public sealed class CType {
     @Serializable
     public data class Record(val id: CDeclarationId) : CType()
 
-    @SerialName("function")
-    @Serializable
-    public data class Function(val returnType: CType, val parameters: List<CType>) : CType()
+//    @SerialName("function")
+//    @Serializable
+//    public data class Function(val returnType: CType, val parameters: List<CType>) : CType()
 
     @SerialName("array")
     @Serializable

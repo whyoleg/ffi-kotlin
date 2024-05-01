@@ -146,7 +146,7 @@ private fun MemoryScope.test() {
 
     }
 
-    val string = cPointerFrom("string")
+    val string = allocateCString("string")
 }
 
 private typealias SOME_OP_TD = SOME_OP
@@ -172,11 +172,11 @@ private value class OSSL_SOMETHING @PublishedApi internal constructor(
     @PublishedApi internal val block: MemoryBlock
 ) : CStruct {
     var key: CString?
-        get() = TODO()
-        set(value) = TODO()
+        get() = block.getPointed(0.toMemorySizeInt(), MemoryLayout.Void())?.let(Unsafe::cString)
+        set(value) = block.setPointed(0.toMemorySizeInt(), value?.let(Unsafe::memoryBlock))
     inline var data_type: UInt
-        get() = Unsafe.memoryMapper(UInt).get(block, 8.toMemorySizeInt())
-        set(value) = block.setInt(8.toMemorySizeInt(), value.toInt())
+        get() = block.getUInt(Companion.data_type_offset.toMemorySizeInt())
+        set(value) = block.setUInt(Companion.data_type_offset.toMemorySizeInt(), value)
     var data: CPointer<Unit>?
         get() = TODO()
         set(value) = TODO()
@@ -187,25 +187,30 @@ private value class OSSL_SOMETHING @PublishedApi internal constructor(
         get() = TODO()
         set(value) = TODO()
 
-    inline val type: _type get() = _type(block)
-    inline val _type: _type get() = _type(block)
+    inline val companion: Anonymous.Companion get() = Anonymous.Companion(block)
 
-    @JvmInline
-    value class _type @PublishedApi internal constructor(
-        private val block: MemoryBlock
-    ) : CStruct {
-        override fun Unsafe.memoryLayout(): MemoryLayout {
-            TODO("Not yet implemented")
+    override fun Unsafe.memoryLayout(): MemoryLayout = Unsafe.memoryLayout(Companion)
+
+    object Anonymous {
+        @JvmInline
+        value class Companion @PublishedApi internal constructor(
+            private val block: MemoryBlock
+        ) : CStruct {
+            override fun Unsafe.memoryLayout(): MemoryLayout {
+                TODO("Not yet implemented")
+            }
+
+            companion object : CType<Anonymous.Companion> {
+                override fun Unsafe.memoryLayout(): MemoryLayout {
+                    TODO("Not yet implemented")
+                }
+            }
         }
     }
 
-    override fun Unsafe.memoryLayout(): MemoryLayout = Companion.memoryLayout
-
     companion object : CType<OSSL_SOMETHING> {
-        private val memoryLayout = MemoryLayout.Composite(
-            MemoryLayout.Int(),
-            // ...
-        )
+        private const val data_type_offset = 1
+        private val memoryLayout = MemoryLayout.of(1, 1)
 
         override fun Unsafe.memoryLayout(): MemoryLayout = memoryLayout
     }

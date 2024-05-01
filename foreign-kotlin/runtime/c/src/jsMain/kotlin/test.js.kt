@@ -12,7 +12,7 @@ actual fun MemoryScope.ERR_error_string(
 ): CString? {
     val address = err.ERR_error_string(
         e = e.toInt(),
-        buf = Unsafe.memoryBlockAddress(buf?.let(Unsafe::memoryBlock)),
+        buf = Unsafe.memoryBlockAddress(Unsafe.memoryBlock(buf)),
     )
     // todo: reduce allocations
     return Unsafe.wrapMemoryBlock(

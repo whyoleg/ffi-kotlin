@@ -1,5 +1,6 @@
 package dev.whyoleg.foreign.clang.arguments
 
+// TODO: support all K targets
 public sealed interface ClangTarget {
     public sealed interface Desktop : ClangTarget
     public sealed interface Apple : ClangTarget

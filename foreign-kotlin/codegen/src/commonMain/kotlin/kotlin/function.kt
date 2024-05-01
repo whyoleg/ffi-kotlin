@@ -67,7 +67,7 @@ internal fun KotlinCodeBuilder.cFunctionDeclaration(
         raw("()")
     }
 
-    if (!function.returnType.isVoid) {
+    if (!function.returnType.isVoid()) {
         raw(": ${function.returnType.asKotlinTypeString(index)}")
     }
 }

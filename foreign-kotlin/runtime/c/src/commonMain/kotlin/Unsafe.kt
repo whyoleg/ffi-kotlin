@@ -3,13 +3,13 @@ package dev.whyoleg.foreign.c
 import dev.whyoleg.foreign.*
 
 @Suppress("UnusedReceiverParameter")
-public inline fun Unsafe.memoryBlock(pointer: CPointer<*>): MemoryBlock = pointer.memoryBlock
+public inline fun Unsafe.memoryBlock(pointer: CPointer<*>?): MemoryBlock? = pointer?.memoryBlock
 
 @Suppress("UnusedReceiverParameter")
-public inline fun Unsafe.memoryBlock(string: CString): MemoryBlock = string.memoryBlock
+public inline fun Unsafe.memoryBlock(string: CString?): MemoryBlock? = string?.memoryBlock
 
 @Suppress("UnusedReceiverParameter")
-public inline fun Unsafe.memoryBlock(array: CArray<*>): MemoryBlock = array.memoryBlock
+public inline fun Unsafe.memoryBlock(array: CArray<*>?): MemoryBlock? = array?.memoryBlock
 
 @Suppress("UnusedReceiverParameter")
 public inline fun <KT : Any> Unsafe.cPointer(block: MemoryBlock): CPointer<KT> = CPointer(block)

@@ -37,6 +37,7 @@ public class CxNumbers private constructor(
     }
 
     public companion object {
+        // TODO: support all K targets
         public val MacosArm64: CxNumbers = primitiveDataTypes(
             longSize = Long.SIZE_BYTES,
             longDoubleSize = Long.SIZE_BYTES
@@ -71,8 +72,6 @@ public class CxNumbers private constructor(
             longDoubleSize: Int
         ): CxNumbers = CxNumbers(
             mapOf(
-//                CxNumber.Void to 0,
-//                CxNumber.Bool to Byte.SIZE_BYTES,
                 CxNumber.Char to Byte.SIZE_BYTES,
                 CxNumber.UnsignedChar to Byte.SIZE_BYTES,
                 CxNumber.SignedChar to Byte.SIZE_BYTES,

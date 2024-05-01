@@ -15,24 +15,23 @@ public data class CDeclarationDescription(
     val id: CDeclarationId,
     val packageName: String,
     val headerName: String,
-    val ktName: String, // could be empty for unnamed enum - how to handle it ID?
+    val ktName: String, // could be empty for unnamed enum - TODO how to handle it ID?
     val cName: String, // could be empty for unnamed enum
     val availableOn: List<String>?, // if `null` - available on all targets
 )
 
-@Serializable
 public sealed class CDeclaration {
     public abstract val description: CDeclarationDescription
 }
 
-@SerialName("variable")
+// TODO: refactor to support expect/actual
+
 @Serializable
 public data class CVariable(
     override val description: CDeclarationDescription,
-    val variableType: CType
+    val type: CType
 ) : CDeclaration()
 
-@SerialName("enum")
 @Serializable
 public data class CEnum(
     override val description: CDeclarationDescription,
@@ -46,7 +45,6 @@ public data class CEnumConstant(
     val value: Long
 )
 
-@SerialName("typedef")
 @Serializable
 public data class CTypedef(
     override val description: CDeclarationDescription,
@@ -54,7 +52,6 @@ public data class CTypedef(
     val resolvedType: CType
 ) : CDeclaration()
 
-@SerialName("record")
 @Serializable
 public data class CRecord(
     override val description: CDeclarationDescription,
@@ -64,23 +61,21 @@ public data class CRecord(
 @Serializable
 public data class CRecordDefinition(
     val isUnion: Boolean,
-    // TODO: size and align may be not needed?
-    val size: Long,
-    val align: Long,
+    val size: Long, // in bytes
+    val align: Long, // in bytes
     val anonymousRecords: Map<CDeclarationId, CRecordDefinition>, // TODO
     val fields: List<CRecordField>
 )
 
-// TODO: field could have no name if it's a bit field
+// no bit fields support in bridge
 @Serializable
 public data class CRecordField(
     val ktName: String,
-    val cName: String?, // TODO: should we have multiple names here?
-    val fieldType: CType,
-    val bitWidth: Int?
+    val cName: String,
+    val type: CType,
+    val offset: Long // in bytes
 )
 
-@SerialName("function")
 @Serializable
 public data class CFunction(
     override val description: CDeclarationDescription,

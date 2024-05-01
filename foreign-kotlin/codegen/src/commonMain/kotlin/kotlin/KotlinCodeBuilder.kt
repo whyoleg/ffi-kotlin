@@ -45,6 +45,8 @@ internal fun KotlinCodeBuilder.annotation(
     raw("@$name")
     if (arguments.isEmpty()) {
         raw("\n")
+    } else if (arguments.size == 1) {
+        raw("(${arguments[0]})")
     } else {
         raw("(\n")
         indented {

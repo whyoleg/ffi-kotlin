@@ -46,4 +46,21 @@ internal fun CType.isPointerLike(index: CFragmentIndex): Boolean = when (this) {
     is CType.Unsupported -> false
 }
 
-internal val CType.isVoid: Boolean get() = this == CType.Void
+internal fun CType.isVoid(): Boolean = this == CType.Void
+
+internal fun CType.asPointer(index: CFragmentIndex): CType.Pointer? = when (this) {
+    is CType.Typedef -> index.typedefs.getValue(id).resolvedType.asPointer(index)
+    is CType.Pointer -> this
+    else             -> null
+}
+
+internal fun CType.isRecord(index: CFragmentIndex): Boolean = when (this) {
+    is CType.Typedef -> index.typedefs.getValue(id).resolvedType.isRecord(index)
+    is CType.Record  -> true
+    else             -> false
+}
+
+internal fun CType.resolvedType(index: CFragmentIndex): CType = when (this) {
+    is CType.Typedef -> index.typedefs.getValue(id).resolvedType
+    else             -> this
+}

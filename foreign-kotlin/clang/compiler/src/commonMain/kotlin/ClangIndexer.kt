@@ -189,7 +189,8 @@ internal class ClangIndexer {
 
         return CxVariable(
             description = description,
-            variableType = parseType(tag, cursor.type)
+            isConst = clang_isConstQualifiedType(cursor.type) > 0u, // TODO: recheck
+            type = parseType(tag, cursor.type)
         )
     }
 
@@ -244,6 +245,8 @@ internal class ClangIndexer {
     private fun parseRecordDefinition(cursor: CValue<CXCursor>): CxRecordDefinition {
         val tag = cursor.debugString
 
+        //clang_Type_getOffsetOf()
+
         return CxRecordDefinition(
             isUnion = when (cursor.kind) {
                 CXCursor_StructDecl -> false
@@ -258,7 +261,11 @@ internal class ClangIndexer {
                         CXCursor_FieldDecl -> add(
                             CxRecordField(
                                 name = fieldCursor.spelling,
-                                fieldType = parseType(tag, fieldCursor.type),
+                                type = parseType(tag, fieldCursor.type),
+                                // TODO: bit offset for anonymous records
+                                bitOffset = clang_Cursor_getOffsetOfField(fieldCursor).also {
+                                    check(it >= 0) { "Unknown field offset $it field ${fieldCursor.debugString} in $tag" }
+                                },
                                 bitWidth = clang_getFieldDeclBitWidth(fieldCursor).takeIf { it > 0 }
                             )
                         )
@@ -323,73 +330,77 @@ internal class ClangIndexer {
     }
 
     private fun parseType(tag: String, type: CValue<CXType>): CxType = when (type.kind) {
-        CXType_Void                                  -> CxType.Void
-        CXType_Bool                                  -> CxType.Bool
+        CXType_Void                  -> CxType.Void
+//        CXType_Bool                  -> CxType.Bool
 
-        CXType_Char_U, CXType_Char_S                 -> CxType.Number(CxNumber.Char)
-        CXType_SChar                                 -> CxType.Number(CxNumber.SignedChar)
-        CXType_UChar                                 -> CxType.Number(CxNumber.UnsignedChar)
-        CXType_Short                                 -> CxType.Number(CxNumber.Short)
-        CXType_UShort                                -> CxType.Number(CxNumber.UnsignedShort)
-        CXType_Int                                   -> CxType.Number(CxNumber.Int)
-        CXType_UInt                                  -> CxType.Number(CxNumber.UnsignedInt)
-        CXType_Long                                  -> CxType.Number(CxNumber.Long)
-        CXType_ULong                                 -> CxType.Number(CxNumber.UnsignedLong)
-        CXType_LongLong                              -> CxType.Number(CxNumber.LongLong)
-        CXType_ULongLong                             -> CxType.Number(CxNumber.UnsignedLongLong)
-        CXType_Int128                                -> CxType.Number(CxNumber.Int128)
-        CXType_UInt128                               -> CxType.Number(CxNumber.UnsignedInt128)
-        CXType_Float                                 -> CxType.Number(CxNumber.Float)
-        CXType_Double                                -> CxType.Number(CxNumber.Double)
-        CXType_LongDouble                            -> CxType.Number(CxNumber.LongDouble)
+        CXType_Char_U, CXType_Char_S -> CxType.Number(CxNumber.Char)
+        CXType_SChar                 -> CxType.Number(CxNumber.SignedChar)
+        CXType_UChar                 -> CxType.Number(CxNumber.UnsignedChar)
+        CXType_Short                 -> CxType.Number(CxNumber.Short)
+        CXType_UShort                -> CxType.Number(CxNumber.UnsignedShort)
+        CXType_Int                   -> CxType.Number(CxNumber.Int)
+        CXType_UInt                  -> CxType.Number(CxNumber.UnsignedInt)
+        CXType_Long                  -> CxType.Number(CxNumber.Long)
+        CXType_ULong                 -> CxType.Number(CxNumber.UnsignedLong)
+        CXType_LongLong              -> CxType.Number(CxNumber.LongLong)
+        CXType_ULongLong             -> CxType.Number(CxNumber.UnsignedLongLong)
+        CXType_Int128                -> CxType.Number(CxNumber.Int128)
+        CXType_UInt128               -> CxType.Number(CxNumber.UnsignedInt128)
+        CXType_Float                 -> CxType.Number(CxNumber.Float)
+        CXType_Double                -> CxType.Number(CxNumber.Double)
+        CXType_LongDouble            -> CxType.Number(CxNumber.LongDouble)
 
         // artificial type
-        CXType_Elaborated                            -> parseType(tag, clang_Type_getNamedType(type))
+        CXType_Elaborated            -> parseType(tag, clang_Type_getNamedType(type))
 
         // composite types
-        CXType_Pointer                               -> CxType.Pointer(parseType(tag, clang_getPointeeType(type)))
-        CXType_Enum                                  -> {
+        CXType_Pointer               -> CxType.Pointer(parseType(tag, clang_getPointeeType(type)))
+        CXType_Enum                  -> {
             visitEnum(type.cursor)
             CxType.Enum(type.cursor.usr)
         }
 
-        CXType_Record                                -> {
+        CXType_Record                -> {
             visitRecord(type.cursor)
             CxType.Record(type.cursor.usr)
         }
 
-        CXType_Typedef                               -> {
+        CXType_Typedef               -> {
             visitTypedef(type.cursor)
             CxType.Typedef(type.cursor.usr)
         }
 
-        CXType_FunctionProto, CXType_FunctionNoProto -> CxType.Function(
-            returnType = parseType(tag, clang_getResultType(type)),
-            parameters = buildList {
-                repeat(clang_getNumArgTypes(type)) {
-                    add(parseType(tag, clang_getArgType(type, it.convert())))
-                }
-            }
-        )
+//        CXType_FunctionProto, CXType_FunctionNoProto       -> CxType.Function(
+//            returnType = parseType(tag, clang_getResultType(type)),
+//            parameters = buildList {
+//                repeat(clang_getNumArgTypes(type)) {
+//                    add(parseType(tag, clang_getArgType(type, it.convert())))
+//                }
+//            }
+//        )
 
-        CXType_IncompleteArray                       -> CxType.Array(
+        CXType_IncompleteArray       -> CxType.Array(
             parseType(tag, clang_getArrayElementType(type)),
             null
         )
 
-        CXType_ConstantArray                         -> CxType.Array(
+        CXType_ConstantArray         -> CxType.Array(
             parseType(tag, clang_getArrayElementType(type)),
             clang_getArraySize(type).also {
                 check(it in 0..Int.MAX_VALUE) { "Array size max value is ${Int.MAX_VALUE}, but was $it in $tag" }
             }.toInt()
         )
 
-        // TODO: what to do here?
-        CXType_BlockPointer                          -> CxType.Unsupported("Block pointers are not supported")
-        CXType_Vector                                -> CxType.Unsupported("Vectors are not supported")
+        // known unsupported
+        CXType_Bool,
+        CXType_FunctionProto,
+        CXType_FunctionNoProto,
+        CXType_BlockPointer,
+        CXType_Vector                -> CxType.Unsupported(type.debugString)
 
-        else                                         -> {
-            println("UNSUPPORTED TYPE: ${type.debugString} in $tag")
+        // unknown unsupported
+        else                         -> {
+            println("UNKNOWN UNSUPPORTED TYPE: ${type.debugString} in $tag")
             CxType.Unsupported(type.debugString)
         }
     }

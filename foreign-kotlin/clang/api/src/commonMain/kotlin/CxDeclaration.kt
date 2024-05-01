@@ -13,23 +13,20 @@ public data class CxDeclarationDescription(
     val header: CxDeclarationHeader // "" for builtins
 )
 
-@Serializable
 public sealed class CxDeclaration {
     public abstract val description: CxDeclarationDescription
 }
 
-// TODO: add `isConst`
-@SerialName("variable")
 @Serializable
 public data class CxVariable(
     override val description: CxDeclarationDescription,
-    val variableType: CxType
+    val isConst: Boolean, // TODO?
+    val type: CxType
 ) : CxDeclaration()
 
 // TODO: decide on unnamed enum!!!
 // enum could be unnamed (description.name="")
 // enum without a name - just a bag of constants
-@SerialName("enum")
 @Serializable
 public data class CxEnum(
     override val description: CxDeclarationDescription,
@@ -42,12 +39,6 @@ public data class CxEnumConstant(
     val value: Long
 )
 
-// TODO: Decide on resolved type
-//  may be just replace with separate type
-//  something like kind: Number(width), Void, Record, Pointer, etc
-//  TBD how it will be used
-//  could be useful for numbers, where it's typedef of typedef of typedef
-@SerialName("typedef")
 @Serializable
 public data class CxTypedef(
     override val description: CxDeclarationDescription,
@@ -56,7 +47,6 @@ public data class CxTypedef(
 ) : CxDeclaration()
 
 // WTF: https://stackoverflow.com/questions/38457109/c-how-to-access-different-types-of-anonymous-or-unnamed-nested-structs
-@SerialName("record")
 @Serializable
 public data class CxRecord(
     override val description: CxDeclarationDescription,
@@ -66,9 +56,8 @@ public data class CxRecord(
 @Serializable
 public data class CxRecordDefinition(
     val isUnion: Boolean,
-    // TODO: size and align may be not needed
-    val size: Long,
-    val align: Long,
+    val size: Long, // in bytes
+    val align: Long, // in bytes
     val fields: List<CxRecordField>,
     val anonymousRecords: Map<CxDeclarationId, CxRecordDefinition>
 )
@@ -79,11 +68,11 @@ public data class CxRecordDefinition(
 @Serializable
 public data class CxRecordField(
     val name: String?,
-    val fieldType: CxType,
-    val bitWidth: Int?
+    val type: CxType,
+    val bitOffset: Long,
+    val bitWidth: Int?,
 )
 
-@SerialName("function")
 @Serializable
 public data class CxFunction(
     override val description: CxDeclarationDescription,

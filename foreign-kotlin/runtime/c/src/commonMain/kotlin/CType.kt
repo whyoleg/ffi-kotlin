@@ -16,6 +16,8 @@ public interface CType<KT : Any> {
     }
 }
 
+public inline fun Unsafe.memoryLayout(type: CType<*>): MemoryLayout = with(type) { memoryLayout() }
+
 //public fun <KT> CType.Companion. = TODO()
 
 //public inline fun <KT> Unsafe.memoryMapper(type: CType<KT>): MemoryMapper<KT> = with(type) { memoryMapper() }

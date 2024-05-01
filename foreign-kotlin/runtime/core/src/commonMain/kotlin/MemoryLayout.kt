@@ -1,30 +1,24 @@
 package dev.whyoleg.foreign
 
-public sealed class MemoryLayout {
-    public abstract val size: MemorySizeInt
-    public abstract val alignment: MemorySizeInt
-
-    @Suppress("FunctionName")
+// TODO: make it just a data class with predefined constants for now
+public data class MemoryLayout(
+    public val size: MemorySizeInt,
+    public val alignment: MemorySizeInt
+) {
     public companion object {
-        //
-        public fun Void(): MemoryLayout = TODO()
-        public fun Byte(): MemoryLayout = TODO()
-        public fun Int(): MemoryLayout = TODO()
-        public fun Long(): MemoryLayout = TODO()
+        private fun primitive(size: MemorySizeInt): MemoryLayout = MemoryLayout(size, size)
 
-        public fun Address(targetLayout: MemoryLayout): MemoryLayout = TODO()
+        // TODO? Void? Empty? None? Unit?
+        public val Void: MemoryLayout = primitive(0.toMemorySizeInt())
 
-        // TODO: leave just Composite or Custom
-        public fun Composite(vararg childLayouts: MemoryLayout): MemoryLayout = TODO()
-        public fun Custom(size: MemorySizeInt, alignment: MemorySizeInt): MemoryLayout = TODO()
+        // TODO: C vs Kt types
+        public val Byte: MemoryLayout = primitive(kotlin.Byte.SIZE_BYTES.toMemorySizeInt())
+        public val Short: MemoryLayout = primitive(kotlin.Short.SIZE_BYTES.toMemorySizeInt())
+        public val Int: MemoryLayout = primitive(kotlin.Int.SIZE_BYTES.toMemorySizeInt())
+        public val Long: MemoryLayout = primitive(kotlin.Long.SIZE_BYTES.toMemorySizeInt())
+        public val PlatformInt: MemoryLayout = primitive(dev.whyoleg.foreign.PlatformInt.SIZE_BYTES.toMemorySizeInt())
 
-        // or split per struct and union
-        public fun Struct(vararg fieldLayouts: MemoryLayout): MemoryLayout = TODO()
-        public fun Union(vararg fieldLayouts: MemoryLayout): MemoryLayout = TODO()
+        // TODO: is MemorySizeInt fine here?
+        public val Address: MemoryLayout = primitive(MemorySizeInt.SIZE_BYTES.toMemorySizeInt())
     }
-}
-
-internal object ByteMemoryLayout : MemoryLayout() {
-    override val size: MemorySizeInt get() = Byte.SIZE_BYTES.toMemorySizeInt()
-    override val alignment: MemorySizeInt get() = Byte.SIZE_BYTES.toMemorySizeInt()
 }

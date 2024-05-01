@@ -57,7 +57,7 @@ internal fun FilesBuilder.kotlinFragmentDirectory(
 
         // it could be just declaration, not expect in most cases
         listOfNotNull(configuration.visibility.value, actuality.value).forEach { raw("$it ") }
-        raw("val ${variable.description.ktName}: ${variable.variableType.asKotlinTypeString(index)}")
+        raw("val ${variable.description.ktName}: ${variable.type.asKotlinTypeString(index)}")
     }
 
     declarationGroup(fragment.typedefs, "typedefs.$fragmentName") { typedef ->
@@ -116,7 +116,7 @@ internal fun FilesBuilder.kotlinFragmentDirectory(
                     // TODO: support anonymousRecords
                     if (definition.anonymousRecords.isEmpty()) {
                         definition.fields.forEach { field ->
-                            raw("$visibility var ${field.ktName}: ${field.fieldType.asKotlinTypeString(index)}\n")
+                            raw("$visibility var ${field.ktName}: ${field.type.asKotlinTypeString(index)}\n")
                         }
                     }
                 }
@@ -153,37 +153,48 @@ private fun <D : CDeclaration> FilesBuilder.declarationGroup(
     }
 }
 
-internal fun CType.asKotlinTypeString(index: CFragmentIndex): String = when (this) {
-    CType.Boolean        -> "Boolean"
-    CType.Void           -> "Unit"
-    is CType.Number      -> when (value) {
-        CNumber.Byte         -> "Byte"
-        CNumber.UByte        -> "UByte"
-        CNumber.Short        -> "Short"
-        CNumber.UShort       -> "UShort"
-        CNumber.Int          -> "Int"
-        CNumber.UInt         -> "UInt"
-        CNumber.Long         -> "Long"
-        CNumber.ULong        -> "ULong"
-        CNumber.PlatformInt  -> "PlatformInt"
-        CNumber.PlatformUInt -> "PlatformUInt"
-        CNumber.Float        -> "Float"
-        CNumber.Double       -> "Double"
+internal fun CType.asKotlinTypeString(index: CFragmentIndex): String {
+    fun CType.asKotlinTypeString2(index: CFragmentIndex): String = when (this) {
+        CType.Boolean        -> "Boolean"
+        CType.Void           -> "Unit"
+        is CType.Number      -> when (value) {
+            CNumber.Byte         -> "Byte"
+            CNumber.UByte        -> "UByte"
+            CNumber.Short        -> "Short"
+            CNumber.UShort       -> "UShort"
+            CNumber.Int          -> "Int"
+            CNumber.UInt         -> "UInt"
+            CNumber.Long         -> "Long"
+            CNumber.ULong        -> "ULong"
+            CNumber.PlatformInt  -> "PlatformInt"
+            CNumber.PlatformUInt -> "PlatformUInt"
+            CNumber.Float        -> "Float"
+            CNumber.Double       -> "Double"
+        }
+
+        is CType.Pointer     -> "CPointer<${pointed.asKotlinTypeString2(index)}>"
+
+        is CType.Array       -> when (size) {
+            // TODO: nullability of pointers
+            null -> "CArrayPointer<${elementType.asKotlinTypeString2(index)}>"
+            else -> "CArray<${elementType.asKotlinTypeString2(index)}> /*size=$size*/"
+        }
+
+        is CType.Enum        -> index.enums.getValue(id).description.ktName
+        is CType.Record      -> index.records.getValue(id).description.ktName
+        is CType.Typedef     -> index.typedefs.getValue(id).description.ktName
+
+        is CType.Function    -> "FUNCTION"
+        is CType.Unsupported -> "UNSUPPORTED"
+        is CType.Mixed       -> TODO(toString())
     }
 
-    is CType.Pointer     -> "CPointer<${pointed.asKotlinTypeString(index)}>?"
+    val ktName = asKotlinTypeString2(index)
 
-    is CType.Array       -> when (size) {
-        // TODO: nullability of pointers
-        null -> "CArrayPointer<${elementType.asKotlinTypeString(index)}>?"
-        else -> "CArray<${elementType.asKotlinTypeString(index)}>? /*size=$size*/"
+    // only root type should have a `?`
+    return when (resolvedType(index)) {
+        is CType.Pointer -> "$ktName?"
+        is CType.Array   -> "$ktName?"
+        else             -> ktName
     }
-
-    is CType.Enum        -> index.enums.getValue(id).description.ktName
-    is CType.Record      -> index.records.getValue(id).description.ktName
-    is CType.Typedef     -> index.typedefs.getValue(id).description.ktName
-
-    is CType.Function    -> "FUNCTION"
-    is CType.Unsupported -> "UNSUPPORTED"
-    is CType.Mixed       -> TODO(toString())
 }

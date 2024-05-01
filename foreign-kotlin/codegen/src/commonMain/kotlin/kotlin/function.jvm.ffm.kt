@@ -11,6 +11,7 @@ internal fun KotlinCodeBuilder.jsFunctionBody(
     }
     raw("${function.description.headerName.replace('/', '_')}.${function.description.ktName}")
     // TODO: handle struct/pointer like
+
     if (function.parameters.isEmpty()) {
         raw("()")
     } else {
@@ -24,7 +25,7 @@ internal fun KotlinCodeBuilder.jsFunctionBody(
     }
 }
 
-internal fun KotlinCodeBuilder.jsFunctionsHolder(
+internal fun KotlinCodeBuilder.jvmFfmFunctionsHolder(
     index: CFragmentIndex,
     headerName: String,
     functions: List<CFunction>

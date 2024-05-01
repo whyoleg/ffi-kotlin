@@ -1,4 +1,5 @@
 import dev.whyoleg.foreign.*
+import dev.whyoleg.foreign.MemoryLayout
 import dev.whyoleg.foreign.c.*
 import java.lang.foreign.*
 import java.lang.invoke.*
@@ -32,7 +33,7 @@ private object err_ffm {
     ): CString? {
         val segment = ERR_error_string.invokeExact(
             /* e */ e.toLong(),
-            /* buf */ Unsafe.memoryBlockSegment(buf?.let(Unsafe::memoryBlock))
+            /* buf */ Unsafe.memoryBlockSegment(Unsafe.memoryBlock(buf))
         ) as MemorySegment
         return Unsafe.wrapMemoryBlock(
             segment = segment,
