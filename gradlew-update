@@ -1,0 +1,15 @@
+#!/bin/sh
+set -e
+
+echo "Gradle version: $1"
+
+./gradlew wrapper --gradle-version=$1
+./gradlew wrapper --gradle-version=$1
+
+cd foreign-kotlin
+./gradlew wrapper --gradle-version=$1
+./gradlew wrapper --gradle-version=$1
+
+cd ../samples
+./gradlew wrapper --gradle-version=$1
+./gradlew wrapper --gradle-version=$1

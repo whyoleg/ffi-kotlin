@@ -1,6 +1,6 @@
 /**
  * run to check for dependencies:
- *  ./gradlew dependencyUpdates --init-script gradle/libs.updates.gradle.kts
+ *  ./gradlew dependencyUpdates --init-script libs.updates.gradle.kts
  */
 
 initscript {
