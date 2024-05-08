@@ -31,6 +31,10 @@ public sealed class CType {
     @Serializable
     public data class Pointer(val pointed: CType) : CType()
 
+    @SerialName("array")
+    @Serializable
+    public data class Array(val elementType: CType, val size: Int?) : CType()
+
     @SerialName("enum")
     @Serializable
     public data class Enum(val id: CDeclarationId) : CType()
@@ -47,10 +51,6 @@ public sealed class CType {
 //    @Serializable
 //    public data class Function(val returnType: CType, val parameters: List<CType>) : CType()
 
-    @SerialName("array")
-    @Serializable
-    public data class Array(val elementType: CType, val size: Int?) : CType()
-
     @SerialName("mixed")
     @Serializable
     public data class Mixed(val variants: List<CType>) : CType()
@@ -59,3 +59,12 @@ public sealed class CType {
     @Serializable
     public data class Unsupported(val info: String) : CType()
 }
+
+private val replacement =
+    CNumber.PlatformInt to mapOf(
+        "macos-arm64" to CNumber.Long,
+        "macos-x64" to CNumber.Long,
+        "linux-x64" to CNumber.Long,
+        "mingw-x64" to CNumber.Int,
+        // ...
+    )

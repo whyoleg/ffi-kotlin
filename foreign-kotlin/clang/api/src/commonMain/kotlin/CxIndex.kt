@@ -8,6 +8,7 @@ import kotlinx.serialization.json.*
 @Serializable
 public data class CxIndex(
     val variables: List<CxVariable>,
+    val unnamedEnumConstants: List<CxUnnamedEnumConstant>,
     val enums: List<CxEnum>,
     val typedefs: List<CxTypedef>,
     val records: List<CxRecord>,
@@ -112,6 +113,8 @@ public fun CxIndex.filter(
     excludedHeaderPatterns: List<Regex> = emptyList(),
     includedVariablePatterns: List<Regex> = emptyList(),
     excludedVariablePatterns: List<Regex> = emptyList(),
+    includedUnnamedEnumConstantPatterns: List<Regex> = emptyList(),
+    excludedUnnamedEnumConstantPatterns: List<Regex> = emptyList(),
     includedEnumPatterns: List<Regex> = emptyList(),
     excludedEnumPatterns: List<Regex> = emptyList(),
     includedTypedefPatterns: List<Regex> = emptyList(),
@@ -122,6 +125,7 @@ public fun CxIndex.filter(
     excludedFunctionPatterns: List<Regex> = emptyList(),
 ): CxIndex {
     val referencedVariables = mutableSetOf<CxDeclarationId>()
+    val referencedUnnamedEnumConstants = mutableSetOf<CxDeclarationId>()
     val referencedEnums = mutableSetOf<CxDeclarationId>()
     val referencedTypedefs = mutableSetOf<CxDeclarationId>()
     val referencedRecords = mutableSetOf<CxDeclarationId>()
@@ -160,27 +164,31 @@ public fun CxIndex.filter(
         }
 
         when (this) {
-            is CxVariable -> {
+            is CxVariable            -> {
                 referencedVariables.add(description.id)
                 type.collectReferences()
             }
 
-            is CxEnum     -> {
+            is CxUnnamedEnumConstant -> {
+                referencedUnnamedEnumConstants.add(description.id)
+            }
+
+            is CxEnum                -> {
                 referencedEnums.add(description.id)
             }
 
-            is CxTypedef  -> {
+            is CxTypedef             -> {
                 referencedTypedefs.add(description.id)
                 aliasedType.collectReferences()
                 resolvedType.collectReferences()
             }
 
-            is CxRecord   -> {
+            is CxRecord              -> {
                 referencedRecords.add(description.id)
                 definition?.collectReferences()
             }
 
-            is CxFunction -> {
+            is CxFunction            -> {
                 referencedFunctions.add(description.id)
                 returnType.collectReferences()
                 parameters.forEach { it.type.collectReferences() }
@@ -205,15 +213,15 @@ public fun CxIndex.filter(
     }
 
     variables.collectReferences(includedVariablePatterns, excludedVariablePatterns)
-    // TODO: handle unnamed enums?
-    enums.filter { it.description.name.isNotEmpty() }.collectReferences(includedEnumPatterns, excludedEnumPatterns)
-    enums.filter { it.description.name.isEmpty() }.collectReferences(emptyList(), emptyList())
+    unnamedEnumConstants.collectReferences(includedUnnamedEnumConstantPatterns, excludedUnnamedEnumConstantPatterns)
+    enums.collectReferences(includedEnumPatterns, excludedEnumPatterns)
     typedefs.collectReferences(includedTypedefPatterns, excludedTypedefPatterns)
     records.collectReferences(includedRecordPatterns, excludedRecordPatterns)
     functions.collectReferences(includedFunctionPatterns, excludedFunctionPatterns)
 
     return CxIndex(
         variables = variables.filter { it.description.id in referencedVariables },
+        unnamedEnumConstants = unnamedEnumConstants.filter { it.description.id in referencedUnnamedEnumConstants },
         enums = enums.filter { it.description.id in referencedEnums },
         typedefs = typedefs.filter { it.description.id in referencedTypedefs },
         records = records.filter { it.description.id in referencedRecords },

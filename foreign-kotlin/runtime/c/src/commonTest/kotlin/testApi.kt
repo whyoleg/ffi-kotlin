@@ -172,8 +172,8 @@ private value class OSSL_SOMETHING @PublishedApi internal constructor(
     @PublishedApi internal val block: MemoryBlock
 ) : CStruct {
     var key: CString?
-        get() = block.getPointed(0.toMemorySizeInt(), MemoryLayout.Void())?.let(Unsafe::cString)
-        set(value) = block.setPointed(0.toMemorySizeInt(), value?.let(Unsafe::memoryBlock))
+        get() = block.getPointed(0.toMemorySizeInt(), MemoryLayout.Void)?.let(Unsafe::cString)
+        set(value) = block.setPointedAddress(0.toMemorySizeInt(), value?.let(Unsafe::memoryBlock))
     inline var data_type: UInt
         get() = block.getUInt(Companion.data_type_offset.toMemorySizeInt())
         set(value) = block.setUInt(Companion.data_type_offset.toMemorySizeInt(), value)
@@ -209,7 +209,7 @@ private value class OSSL_SOMETHING @PublishedApi internal constructor(
     }
 
     companion object : CType<OSSL_SOMETHING> {
-        private const val data_type_offset = 1
+        internal const val data_type_offset = 1
         private val memoryLayout = MemoryLayout.of(1, 1)
 
         override fun Unsafe.memoryLayout(): MemoryLayout = memoryLayout

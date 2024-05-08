@@ -7,6 +7,9 @@ import org.gradle.api.provider.*
 import org.jetbrains.kotlin.gradle.plugin.*
 
 public interface ForeignCInterface : ForeignBaseCInterface, Named {
+    //
+//    public val sharedSourceSetName: Property<String>
+
     // main by default
     public val sourceSetTree: Property<KotlinSourceSetTree>
 
@@ -16,9 +19,14 @@ public interface ForeignCInterface : ForeignBaseCInterface, Named {
     // SOMETHING by default
     public val requiresOptIn: Property<String?>
 
-    // TODO: may be improve granularity later
-    // `foreign.{interface.name}` by default
-    public val packageName: Property<String>
+//    // `foreign.{interface.name}` by default
+//    public val mainPackageName: Property<String>
+//
+//    // `foreign.{interface.name}.support` by default
+//    public val supportPackageName: Property<String>
+//
+//    // * by default - all in the main package
+//    public val mainPackageHeadersRegex: Property<String>
 
     // true by default
     // will cause adding foreign-runtime-c to dependencies

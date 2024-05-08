@@ -13,6 +13,7 @@ internal class ClangIndexer {
     private val visited = mutableSetOf<CxDeclarationId>()
 
     private val variables = mutableMapOf<CxDeclarationId, CxVariable>()
+    private val unnamedEnumConstants = mutableMapOf<CxDeclarationId, CxUnnamedEnumConstant>()
     private val enums = mutableMapOf<CxDeclarationId, CxEnum>()
     private val typedefs = mutableMapOf<CxDeclarationId, CxTypedef>()
     private val records = mutableMapOf<CxDeclarationId, CxRecord>()
@@ -107,6 +108,7 @@ internal class ClangIndexer {
     fun buildIndex(): CxIndex {
         return CxIndex(
             variables = variables.values.toList(),
+            unnamedEnumConstants = unnamedEnumConstants.values.toList(),
             enums = enums.values.toList(),
             typedefs = typedefs.values.toList(),
             records = records.values.toList(),
@@ -125,16 +127,17 @@ internal class ClangIndexer {
         check(!containsKey(id)) { "$id is already saved" }
 
         val canonicalCursor = cursor.canonical
-        val description = CxDeclarationDescription(
-            id = id,
-            name = canonicalCursor.spelling ?: "",
-            header = when (val fileName = canonicalCursor.location.file?.fileName) {
-                null -> ""
-                else -> files.getValue(fileName)
-            }
-        )
-        put(id, block(description, canonicalCursor))
+        put(id, block(description(canonicalCursor), canonicalCursor))
     }
+
+    private fun description(cursor: CValue<CXCursor>): CxDeclarationDescription = CxDeclarationDescription(
+        id = cursor.usr,
+        name = cursor.spelling ?: "",
+        header = when (val fileName = cursor.location.file?.fileName) {
+            null -> ""
+            else -> files.getValue(fileName)
+        }
+    )
 
     private inline fun visit(cursor: CValue<CXCursor>, block: () -> Unit) {
         if (visited.add(cursor.usr)) block()
@@ -151,10 +154,16 @@ internal class ClangIndexer {
         visit(cursor) {
             when {
                 // anonymous enums are just a bag of constants
-                cursor.isAnonymous      -> enums
-                cursor.spelling == null -> unnamedEnums
-                else                    -> enums
-            }.saveDeclaration(cursor, ::parseEnum)
+                cursor.isAnonymous -> cursor.visitChildren { constantCursor ->
+                    checkNotNull(constantCursor.spelling) { "Enum constant should have a name: ${constantCursor.debugString}" }
+                    unnamedEnumConstants.saveDeclaration(constantCursor, ::parseUnnamedEnumConstant)
+                }
+
+                else               -> when {
+                    cursor.spelling == null -> unnamedEnums
+                    else                    -> enums
+                }.saveDeclaration(cursor, ::parseEnum)
+            }
         }
     }
 
@@ -190,7 +199,7 @@ internal class ClangIndexer {
         return CxVariable(
             description = description,
             isConst = clang_isConstQualifiedType(cursor.type) > 0u, // TODO: recheck
-            type = parseType(tag, cursor.type)
+            type = parseType(tag, cursor.type),
         )
     }
 
@@ -213,6 +222,19 @@ internal class ClangIndexer {
                     )
                 }
             }
+        )
+    }
+
+    private fun parseUnnamedEnumConstant(
+        description: CxDeclarationDescription,
+        cursor: CValue<CXCursor>
+    ): CxUnnamedEnumConstant {
+        cursor.ensureKind(CXCursor_EnumConstantDecl)
+
+        return CxUnnamedEnumConstant(
+            description = description,
+            value = clang_getEnumConstantDeclValue(cursor),
+            enumId = clang_getCursorLexicalParent(cursor).usr
         )
     }
 
@@ -245,16 +267,14 @@ internal class ClangIndexer {
     private fun parseRecordDefinition(cursor: CValue<CXCursor>): CxRecordDefinition {
         val tag = cursor.debugString
 
-        //clang_Type_getOffsetOf()
-
         return CxRecordDefinition(
             isUnion = when (cursor.kind) {
                 CXCursor_StructDecl -> false
                 CXCursor_UnionDecl  -> true
                 else                -> cursor.throwWrongKind()
             },
-            size = clang_Type_getSizeOf(cursor.type).also { check(it > 0) { "wrong sizeOf(=$it) result in $tag" } },
-            align = clang_Type_getAlignOf(cursor.type).also { check(it > 0) { "wrong alignOf(=$it) result in $tag" } },
+            byteSize = clang_Type_getSizeOf(cursor.type).also { check(it > 0) { "wrong sizeOf(=$it) result in $tag" } },
+            byteAlignment = clang_Type_getAlignOf(cursor.type).also { check(it > 0) { "wrong alignOf(=$it) result in $tag" } },
             fields = buildList {
                 cursor.visitChildren { fieldCursor ->
                     when (fieldCursor.kind) {

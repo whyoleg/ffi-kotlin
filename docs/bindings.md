@@ -4,6 +4,63 @@ indexes: 3 desktop, 2 android, 3 ios, 1 wasm = 9 - input
 kotlin targets: 2 jvm-like, 7 native, 2 web = 11 - intermediate
 source sets: 18
 
+naming:
+
+* common — most common source set, first, where declaration appear
+* shared — shared between multiple targets
+* target — source set for Kotlin target
+
+for enum (and unnamed enums):
+
+* No need to have expect/actual
+* value class in common
+    * constants in a companion object
+* additional constants in shared/target source sets
+* for unnamed enum - just `const val` without value class
+
+for variables:
+
+* expect in common source set **IF** it's possible to commonize a type
+* actual in a target source set
+
+for typedefs:
+
+* expect in a common source set with some commonized type **IF** it's possible to commonize resolved type
+* actual in a target source set
+
+for records:
+
+* expect in a common source set **always**
+    * fields, only if they are the same—via extension properties
+* additional expect fields in shared source sets
+* actual in a target source set
+
+for functions:
+
+structure:
+
+- common
+    - jvmCommon
+        - jvm
+        - android
+    - native
+        - desktop
+            - macos
+            - linux
+            - mingw
+        - apple
+            - ios
+            - tvos
+            - watchos
+            - macos
+        - linux
+            - x64
+            - arm64
+        - mingw (x64)
+        - androidNative
+            - archs
+
+
 - common
     - jvmCommon
         - jvm (macosArm64 + macosX64)

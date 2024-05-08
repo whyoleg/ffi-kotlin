@@ -24,7 +24,7 @@ class BridgegenTest {
     @Test
     fun test() {
         val temp = "/Users/Oleg.Yukhnevich/Projects/whyoleg/ffi-kotlin/foreign-kotlin/build/foreign-temp"
-        listOf(
+        val map = listOf(
             ClangTarget.MacosArm64,
             ClangTarget.MacosX64,
             ClangTarget.MingwX64,
@@ -32,13 +32,16 @@ class BridgegenTest {
             ClangTarget.IosDeviceArm64,
             ClangTarget.IosSimulatorArm64,
             ClangTarget.IosSimulatorX64,
-        ).forEach { target ->
+        ).associate { target ->
             val index = readIndex("$temp/$target/bn/index.json")
             val filteredIndex = readIndex("$temp/$target/bn/index.filtered.json")
             val fragment = generateCFragment(index, "foreign.libcrypto.bn")
             val filteredFragment = generateCFragment(filteredIndex, "foreign.libcrypto.bn")
             saveFragment("$temp/$target/bn/fragment.json", fragment)
             saveFragment("$temp/$target/bn/fragment.filtered.json", filteredFragment)
+            target.toString() to fragment
         }
+
+        mergeFragments(map)
     }
 }

@@ -27,8 +27,8 @@ internal class DefaultCInterface(
     override val autoRuntimeDependencies: Property<Boolean> =
         objects.property(Boolean::class.java).convention(true)
 
-    override val packageName: Property<String> =
-        objects.property(String::class.java).convention("foreign.$name")
+//    override val packageName: Property<String> =
+//        objects.property(String::class.java).convention("foreign.$name")
 
     override val platforms: NamedDomainObjectContainer<DefaultPlatformCInterface> =
         objects.domainObjectContainer(DefaultPlatformCInterface::class.java)

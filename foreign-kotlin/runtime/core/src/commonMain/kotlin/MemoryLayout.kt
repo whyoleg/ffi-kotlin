@@ -19,6 +19,7 @@ public data class MemoryLayout(
         public val PlatformInt: MemoryLayout = primitive(dev.whyoleg.foreign.PlatformInt.SIZE_BYTES.toMemorySizeInt())
 
         // TODO: is MemorySizeInt fine here?
+        // TODO: check windows
         public val Address: MemoryLayout = primitive(MemorySizeInt.SIZE_BYTES.toMemorySizeInt())
     }
 }

@@ -34,7 +34,7 @@ public fun generateCFragment(index: CxIndex, packageName: String): CFragment {
             header.substringBeforeLast(".")
         },
         ktName = name,
-        cName = name,
+        cNames = listOf(name),
         availableOn = null
     )
 
@@ -72,14 +72,13 @@ public fun generateCFragment(index: CxIndex, packageName: String): CFragment {
 
     fun CxEnumConstant.toCEnumConstant(): CEnumConstant = CEnumConstant(
         ktName = name,
-        cName = name,
+        cNames = listOf(name),
         value = value
     )
 
     fun CxRecordDefinition.toCRecordDefinition(): CRecordDefinition = CRecordDefinition(
         isUnion = isUnion,
-        size = size,
-        align = align,
+        layout = CRecordLayout(byteSize, byteAlignment),
         fields = buildList {
             fields.forEach {
                 // unsupported for now
@@ -88,7 +87,7 @@ public fun generateCFragment(index: CxIndex, packageName: String): CFragment {
                 add(
                     CRecordField(
                         ktName = name,
-                        cName = name,
+                        cNames = listOf(name),
                         type = it.type.toCType(),
                         offset = it.bitOffset / 8
                     )
