@@ -1,11 +1,11 @@
 [versions]
 
-kotlin = "2.0.0"
+kotlin = "2.0.21"
 android = "8.2.2"
 
 # tools
-kotlinx-io = "0.3.3"
-kotlinx-serialization = "1.6.3"
+kotlinx-io = "0.5.4"
+kotlinx-serialization = "1.7.3"
 
 [libraries]
 
@@ -15,6 +15,7 @@ android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json-io = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json-io", version.ref = "kotlinx-serialization" }
 
 androidx-test = { module = "androidx.test:runner", version = "1.6.1" }
 xz = { module = "org.tukaani:xz", version = "1.9" }
