@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.bridge.c
+package dev.whyoleg.foreign.tooling.cbridge
 
 import kotlinx.serialization.*
 
@@ -11,6 +11,15 @@ public enum class CNumber {
     PlatformInt, PlatformUInt,
     Float, Double,
 }
+
+private val replacement =
+    CNumber.PlatformInt to mapOf(
+        "macos-arm64" to CNumber.Long,
+        "macos-x64" to CNumber.Long,
+        "linux-x64" to CNumber.Long,
+        "mingw-x64" to CNumber.Int,
+        // ...
+    )
 
 @Serializable
 public sealed class CType {
@@ -53,18 +62,9 @@ public sealed class CType {
 
     @SerialName("mixed")
     @Serializable
-    public data class Mixed(val variants: List<CType>) : CType()
+    public data class Mixed(val variants: Map<CTarget, CType>) : CType()
 
     @SerialName("unsupported")
     @Serializable
     public data class Unsupported(val info: String) : CType()
 }
-
-private val replacement =
-    CNumber.PlatformInt to mapOf(
-        "macos-arm64" to CNumber.Long,
-        "macos-x64" to CNumber.Long,
-        "linux-x64" to CNumber.Long,
-        "mingw-x64" to CNumber.Int,
-        // ...
-    )

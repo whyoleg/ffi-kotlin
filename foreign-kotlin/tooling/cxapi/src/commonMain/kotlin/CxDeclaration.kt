@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.clang.api
+package dev.whyoleg.foreign.tooling.cxapi
 
 import kotlinx.serialization.*
 

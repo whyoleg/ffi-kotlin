@@ -1,7 +1,6 @@
-package dev.whyoleg.foreign.clang.api
+package dev.whyoleg.foreign.tooling.cxapi
 
 import kotlinx.serialization.*
-import kotlinx.serialization.json.*
 
 // TODO: may be add some meta information?
 // TODO: decide on builtins - there is only va_list + uint128_t
@@ -17,17 +16,6 @@ public data class CxIndex(
 
     init {
         ensureAllDeclarationsAccessible()
-    }
-
-    public companion object {
-        @OptIn(ExperimentalSerializationApi::class)
-        private val json = Json {
-            prettyPrint = true
-            prettyPrintIndent = "  "
-        }
-
-        public fun encode(index: CxIndex): String = json.encodeToString(serializer(), index)
-        public fun decode(string: String): CxIndex = json.decodeFromString(serializer(), string)
     }
 
     private fun ensureAllDeclarationsAccessible() {
