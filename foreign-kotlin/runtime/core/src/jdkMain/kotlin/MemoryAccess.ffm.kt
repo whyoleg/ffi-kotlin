@@ -9,7 +9,6 @@ private object FfmMemoryAccess : InternalMemoryAccess {
 }
 
 private class FfmMemoryArena : InternalMemoryArena {
-    @Suppress("Since15") // TODO 15?
     private val arena = Arena.ofShared()
 
     override fun createArena(): MemoryArena {
@@ -29,11 +28,11 @@ private class FfmMemoryArena : InternalMemoryArena {
         TODO("Not yet implemented")
     }
 
-    override fun Unsafe.allocateCArray(elementLayout: MemoryLayout, elementsCount: Int): MemoryBlock {
+    override fun Unsafe.allocateArray(elementLayout: MemoryLayout, elementsCount: Int): MemoryBlock {
         TODO("Not yet implemented")
     }
 
-    override fun Unsafe.allocateString(value: String): MemoryBlock {
+    override fun Unsafe.allocateFromString(value: String): MemoryBlock {
         TODO("Not yet implemented")
     }
 }

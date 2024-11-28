@@ -24,12 +24,6 @@ public object JdkForeignLinker {
     private val lookup = SymbolLookup.loaderLookup().or(linker.defaultLookup())
 
     private fun get(name: String): MemorySegment {
-        FunctionDescriptor.of(
-            ValueLayout.ADDRESS,
-
-            ValueLayout.ADDRESS,
-            ValueLayout.ADDRESS,
-        )
         return lookup.find(name).getOrNull() ?: error("Foreign function is not found: $name")
     }
 

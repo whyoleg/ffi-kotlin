@@ -35,11 +35,11 @@ private class NativeMemoryArena : InternalMemoryArena {
         return allocate(layout.size, layout.alignment)
     }
 
-    override fun Unsafe.allocateCArray(elementLayout: MemoryLayout, elementsCount: Int): MemoryBlock {
+    override fun Unsafe.allocateArray(elementLayout: MemoryLayout, elementsCount: Int): MemoryBlock {
         TODO("Not yet implemented")
     }
 
-    override fun Unsafe.allocateString(value: String): MemoryBlock {
+    override fun Unsafe.allocateFromString(value: String): MemoryBlock {
         TODO("Not yet implemented")
     }
 }

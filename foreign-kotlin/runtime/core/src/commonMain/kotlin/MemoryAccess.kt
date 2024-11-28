@@ -1,18 +1,16 @@
 package dev.whyoleg.foreign
 
 public sealed interface MemoryAccess {
-    // TODO: by default this should return Arena which will be automatically deallocated when inaccessible
-    //  to not leak memory
-    //  should be flag/separate functions, etc
+    // should be closed!
     public fun createArena(): MemoryArena
 }
 
 // now it's used as receiver, but when `context parameters` will be ready, we should migrate to them
 public sealed interface MemoryScope : MemoryAccess {
-    public fun Unsafe.allocateCPointer(size: MemorySizeInt, alignment: MemorySizeInt): MemoryBlock
     public fun Unsafe.allocate(layout: MemoryLayout): MemoryBlock
-    public fun Unsafe.allocateCArray(elementLayout: MemoryLayout, elementsCount: Int): MemoryBlock
-    public fun Unsafe.allocateString(value: String): MemoryBlock
+    public fun Unsafe.allocate(size: MemorySizeInt, alignment: MemorySizeInt): MemoryBlock
+    public fun Unsafe.allocateArray(elementLayout: MemoryLayout, elementsCount: Int): MemoryBlock
+    public fun Unsafe.allocateFromString(value: String): MemoryBlock
 
     // TODO: there should be something for FFM
     // TODO: may be somehow improve this...
