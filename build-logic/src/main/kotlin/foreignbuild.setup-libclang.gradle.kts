@@ -31,11 +31,3 @@ registerTarGzDependencySetupTask(
     include("apple-llvm-20200714-macos-aarch64-essentials/lib/libclang.dylib")
     eachFile { path = "libclang.dylib" }
 }
-
-registerTarXzDependencySetupTask(
-    "setupClangHeaders",
-    "foreignbuild.llvm:clang:11.1.0@src.tar.xz"
-) {
-    include("clang-11.1.0.src/include/clang-c/*.h")
-    eachFile { path = "clang-c/$name" }
-}

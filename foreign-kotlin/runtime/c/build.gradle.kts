@@ -1,11 +1,14 @@
 import foreignbuild.*
 
 plugins {
-    id("foreignbuild.multiplatform-library")
+    id("foreignbuild.kotlin")
+    kotlin("multiplatform")
 }
 
 kotlin {
-    jvmTarget(8)
+    jvmToolchain(8)
+
+    jvmTarget()
     nativeTargets()
     webTargets()
 

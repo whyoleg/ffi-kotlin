@@ -18,40 +18,27 @@ dependencyResolutionManagement {
 }
 
 projects("foreign-kotlin", prefix = "foreign") {
-    // what is used in runtime
     folder("runtime") {
+        // foreign memory API a.k.a. java.lang.foreign
         module("core")
+        // KMP C API
         module("c")
+        // uses chasm wasm runtime to execute wasm functions
+        // module("chasm")
+    }
+    folder("tooling") {
+        module("cxapi")
+        module("cbridge")
+        // API and CLI to work with `libclang`
+        module("clang")
+        // generates code (C, Kotlin, etc)
+        module("codegen")
     }
 
-    // what is required for codegen,
-    //  extracted by compiler plugin or indexer
-    // mimics `runtime` structure
-    folder("bridge") {
-        module("c")
+    module("gradle-plugin") {
+        module("worker")
+        module("worker-classpath")
     }
-
-    // generates `bridge` models from `clang`(or other) models
-    module("bridgegen")
-
-    // ideally, it should generate code which will be processed then by compiler plugin
-    // but for now it will generate all code from models
-    // generates code (C, Kotlin, etc)
-    module("codegen")
-
-    // API and CLI to work with `libclang`
-    folder("clang") {
-        module("api")
-        module("arguments")
-        module("compiler")
-        module("cli")
-        module("cli-commands")
-    }
-
-    // processes declarations, modifies code and produce `bridge` models to generate C/JNI/etc via `codegen`
-    //module("compiler-plugin")
-
-    module("gradle-plugin")
 }
 
 dependencyResolutionManagement {

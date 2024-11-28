@@ -16,9 +16,8 @@
 
 package foreignbuild
 
+import org.jetbrains.kotlin.gradle.*
 import org.jetbrains.kotlin.gradle.dsl.*
-import org.jetbrains.kotlin.gradle.plugin.mpp.*
-import org.jetbrains.kotlin.gradle.targets.js.dsl.*
 import org.jetbrains.kotlin.gradle.targets.jvm.*
 
 fun KotlinMultiplatformExtension.nativeTargets() {
@@ -50,13 +49,6 @@ fun KotlinMultiplatformExtension.nativeTargets() {
     androidNativeArm32()
 }
 
-fun KotlinMultiplatformExtension.nativeDesktopTargets(block: KotlinNativeTargetWithHostTests.() -> Unit = {}) {
-    linuxX64(block)
-    mingwX64(block)
-    macosX64(block)
-    macosArm64(block)
-}
-
 // TODO: wasm wasi
 @OptIn(ExperimentalWasmDsl::class)
 fun KotlinMultiplatformExtension.webTargets() {
@@ -71,11 +63,9 @@ fun KotlinMultiplatformExtension.webTargets() {
 }
 
 fun KotlinMultiplatformExtension.jvmTarget(
-    jdkVersion: Int = 8,
-    //jdkAdditionalTestVersions: Set<Int> = setOf(11, 17, 21),
+    jdkTestVersions: Set<Int> = setOf(8, 11, 17, 21, 22, 23),
     configure: KotlinJvmTarget.() -> Unit = {}
 ) {
-    jvmToolchain(jdkVersion)
     jvm {
         configure()
 //        val javaToolchains = project.extensions.getByName<JavaToolchainService>("javaToolchains")

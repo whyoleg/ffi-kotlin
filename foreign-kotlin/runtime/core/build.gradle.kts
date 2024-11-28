@@ -4,40 +4,35 @@ import org.jetbrains.kotlin.gradle.dsl.*
 import org.jetbrains.kotlin.gradle.plugin.*
 
 plugins {
-    id("foreignbuild.multiplatform-library")
-    id("foreignbuild.setup-jdk")
+    id("foreignbuild.kotlin")
+    kotlin("multiplatform")
     alias(libs.plugins.android.library)
+
+    id("foreignbuild.setup-jdk")
 }
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-    jvmTarget(22) {
-        compilations.configureEach {
-            compileTaskProvider {
-                compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_1_8)
-                }
-            }
+    // 22 - min JDK for Panama
+    jvmToolchain(22)
+
+    jvmTarget {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
         }
     }
 
     androidTarget {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
+        }
+
         instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
         unitTestVariant.sourceSetTree.set(KotlinSourceSetTree.unitTest)
-
-        compilations.configureEach {
-            compileTaskProvider {
-                compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_1_8)
-                }
-            }
-        }
     }
 
     nativeTargets()
     webTargets()
-
-    // TODO: hwo to support wasmWasi ?
 
     sourceSets.invokeWhenCreated("androidInstrumentedTest") {
         dependencies {
@@ -88,7 +83,7 @@ kotlin {
                         withIos()
                         withTvos()
 
-                        // TODO!!!
+                        // TODO - recheck
                         withAndroidNative()
                     }
                 }
@@ -105,10 +100,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // ndk.abiFilters += listOf("x86_64", "arm64-v8a")
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
+//    compileOptions {
+//        sourceCompatibility = JavaVersion.VERSION_1_8
+//        targetCompatibility = JavaVersion.VERSION_1_8
+//    }
     externalNativeBuild {
         ndkBuild {
             path("src/jdkAndroidMain/jni/Android.mk")
