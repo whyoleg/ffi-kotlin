@@ -3,11 +3,9 @@ package dev.whyoleg.foreign.codegen.kotlin
 import dev.whyoleg.foreign.bridge.c.*
 import dev.whyoleg.foreign.codegen.*
 
-// package/`header`.functions.common.kt
-// package/`header`.records.common.kt
-// package/`header`.typedefs.common.kt
-// package/`header`.enums.common.kt
-// package/`header`.variables.common.kt
+// package/`header`.kt = typedefs + variables + functions
+// package/`RECORD_NAME`.kt
+// package/`ENUM_NAME`.kt
 
 // package/`header`.functions.jvm.jni.kt
 // package/`header`.records.jvm.jni.kt

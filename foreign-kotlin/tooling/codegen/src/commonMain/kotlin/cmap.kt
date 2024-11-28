@@ -1,9 +1,24 @@
-package dev.whyoleg.foreign.bridgegen
+package dev.whyoleg.foreign.tooling.codegen
 
-import dev.whyoleg.foreign.bridge.c.*
-import dev.whyoleg.foreign.clang.api.*
+import dev.whyoleg.foreign.tooling.cbridge.*
+import dev.whyoleg.foreign.tooling.cxapi.*
 
-public fun generateCFragment(index: CxIndex, packageName: String): CFragment {
+internal class CMapping(
+    private val ids: Map<CDeclarationId, CxDeclarationId>
+) {
+    fun convert(id: CDeclarationId): CxDeclarationId = ids.getValue(id)
+}
+
+internal class CFragmentMapping(
+    val index: CxIndex,
+    val fragment: CFragment,
+    val mapping: CMapping
+)
+
+internal fun CFragmentMapping(
+    index: CxIndex,
+    packageName: String
+): CFragmentMapping {
     fun declarationId(name: String): CDeclarationId = "$packageName/$name"
     fun anonymousDeclarationId(name: String, index: Int): CDeclarationId = "$packageName/$name|$index"
 
@@ -24,24 +39,22 @@ public fun generateCFragment(index: CxIndex, packageName: String): CFragment {
         }
     }
 
-    fun CxDeclarationDescription.toCDeclarationDescription(): CDeclarationDescription = CDeclarationDescription(
-        id = declarationId(name),
-        packageName = packageName,
-        headerName = if (header.isEmpty()) {
-            header
-        } else {
-            require(header.endsWith(".h") || header.endsWith(".inl")) { "failed: $header" }
-            header.substringBeforeLast(".")
-        },
-        ktName = name,
-        cNames = listOf(name),
-        availableOn = null
-    )
+    val ids = mutableMapOf<CDeclarationId, CxDeclarationId>()
+
+    fun CxDeclarationDescription.toCDeclarationDescription(): CDeclarationDescription {
+        val cId = declarationId(name)
+        ids[cId] = this.id
+        return CDeclarationDescription(
+            id = cId,
+            name = name,
+            packageName = packageName,
+        )
+    }
 
     fun CxType.toCType(): CType = when (this) {
         CxType.Void           -> CType.Void
 //        CxType.Bool           -> CType.Boolean
-        is CxType.Number  -> when (value) {
+        is CxType.Number      -> when (value) {
             CxNumber.Char, CxNumber.SignedChar -> CNumber.Byte
             CxNumber.UnsignedChar              -> CNumber.UByte
             CxNumber.Short                     -> CNumber.Short
@@ -59,9 +72,9 @@ public fun generateCFragment(index: CxIndex, packageName: String): CFragment {
             CxNumber.LongDouble                -> null
         }?.let(CType::Number) ?: CType.Unsupported("Unsupported number $value")
 
-        is CxType.Enum    -> CType.Enum(enumMapping.getValue(id))
-        is CxType.Typedef -> CType.Typedef(typedefMapping.getValue(id))
-        is CxType.Record  -> CType.Record(anonymousRecordMapping[id] ?: recordMapping.getValue(id))
+        is CxType.Enum        -> CType.Enum(enumMapping.getValue(id))
+        is CxType.Typedef     -> CType.Typedef(typedefMapping.getValue(id))
+        is CxType.Record      -> CType.Record(anonymousRecordMapping[id] ?: recordMapping.getValue(id))
 
         is CxType.Pointer     -> CType.Pointer(pointed.toCType())
         is CxType.Array       -> CType.Array(elementType.toCType(), size)
@@ -70,28 +83,16 @@ public fun generateCFragment(index: CxIndex, packageName: String): CFragment {
         is CxType.Unsupported -> CType.Unsupported(info)
     }
 
-    fun CxEnumConstant.toCEnumConstant(): CEnumConstant = CEnumConstant(
-        ktName = name,
-        cNames = listOf(name),
-        value = value
-    )
+    fun CxEnumConstant.toCEnumConstant(): CEnumConstant = CEnumConstant(name)
 
     fun CxRecordDefinition.toCRecordDefinition(): CRecordDefinition = CRecordDefinition(
         isUnion = isUnion,
-        layout = CRecordLayout(byteSize, byteAlignment),
         fields = buildList {
             fields.forEach {
                 // unsupported for now
                 if (it.bitWidth != null) return@forEach
                 val name = it.name ?: return@forEach
-                add(
-                    CRecordField(
-                        ktName = name,
-                        cNames = listOf(name),
-                        type = it.type.toCType(),
-                        offset = it.bitOffset / 8
-                    )
-                )
+                add(CRecordField(name, it.type.toCType()))
             }
         },
         anonymousRecords = buildMap {
@@ -101,17 +102,20 @@ public fun generateCFragment(index: CxIndex, packageName: String): CFragment {
         }
     )
 
-    fun CxFunctionParameter.toCFunctionParameter(ktName: String): CFunctionParameter = CFunctionParameter(
-        ktName = ktName,
-        cNames = listOfNotNull(name),
-        type = type.toCType(),
-    )
+    fun CxFunctionParameter.toCFunctionParameter(name: String): CFunctionParameter =
+        CFunctionParameter(name, type = type.toCType())
 
-    return CFragment(
+    val fragment = CFragment(
         variables = index.variables.map { declaration ->
             CVariable(
                 description = declaration.description.toCDeclarationDescription(),
                 type = declaration.type.toCType()
+            )
+        },
+        unnamedEnumConstants = index.unnamedEnumConstants.map { declaration ->
+            CUnnamedEnumConstant(
+                description = declaration.description.toCDeclarationDescription(),
+                enumId = declarationId(declaration.description.name)
             )
         },
         enums = index.enums.map { declaration ->
@@ -157,4 +161,6 @@ public fun generateCFragment(index: CxIndex, packageName: String): CFragment {
             )
         }
     )
+
+    return CFragmentMapping(index, fragment, CMapping(ids))
 }

@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.codegen
+package dev.whyoleg.foreign.tooling.codegen
 
 internal interface CodeBuilder<C : CodeBuilder<C>> {
     fun raw(value: String): C
