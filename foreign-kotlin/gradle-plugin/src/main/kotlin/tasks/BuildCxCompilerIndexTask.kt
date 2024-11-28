@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.gradle.plugin.tasks
+package dev.whyoleg.foreign.gradle.tasks
 
 //public interface BuildCxCompilerIndexTask : Task {
 //

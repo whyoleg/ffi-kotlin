@@ -1,66 +1,25 @@
-package dev.whyoleg.foreign.gradle.plugin.dsl.cinterface
+package dev.whyoleg.foreign.gradle.dsl.c
 
-import dev.whyoleg.foreign.gradle.plugin.dsl.*
+import dev.whyoleg.foreign.gradle.dsl.*
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.api.provider.*
 import org.jetbrains.kotlin.gradle.plugin.*
 
-public interface ForeignCInterface : ForeignBaseCInterface, Named {
-    //
-//    public val sharedSourceSetName: Property<String>
-
-    // main by default
-    public val sourceSetTree: Property<KotlinSourceSetTree>
-
-    // false by default
-    public val publicApi: Property<Boolean>
-
-    // SOMETHING by default
-    public val requiresOptIn: Property<String?>
-
-//    // `foreign.{interface.name}` by default
-//    public val mainPackageName: Property<String>
-//
-//    // `foreign.{interface.name}.support` by default
-//    public val supportPackageName: Property<String>
-//
-//    // * by default - all in the main package
-//    public val mainPackageHeadersRegex: Property<String>
-
-    // true by default
-    // will cause adding foreign-runtime-c to dependencies
-    // if `publicApi` = true -> as `api` dependency
-    // if `publicApi` = false -> as `implementation` dependency
-    public val autoRuntimeDependencies: Property<Boolean>
-
-    public val platforms: NamedDomainObjectContainer<out ForeignPlatformCInterface>
-
-    public fun jvm(configure: ForeignJvmCInterface.() -> Unit = {})
-    public fun android(configure: ForeignAndroidCInterface.() -> Unit = {})
-    public fun native(configure: ForeignNativeCInterface.() -> Unit = {})
-
-//    public fun js(configure: ForeignWasmCInterface.() -> Unit) {}
-//    public fun wasmJs(configure: ForeignWasmCInterface.() -> Unit) {}
-}
-
-public interface ForeignPlatformCInterface : ForeignBaseCInterface, Named {
-    public val foreignPlatform: ForeignPlatform
-    public val targets: NamedDomainObjectContainer<out ForeignTargetCInterface>
-}
-
-public interface ForeignTargetCInterface : ForeignBaseCInterface, Named {
+public interface ForeignCInterfaceTarget : Named {
+    public val kotlinPlatformType: KotlinPlatformType
     public val foreignTarget: ForeignTarget
-}
 
-public interface ForeignBaseCInterface {
-    public val headerDirectories: ListProperty<Directory>
-    public val libraryDirectories: ListProperty<Directory>
-    public val libraryLinkageNames: ListProperty<String>
+    // configuration
+
+    public val headerSearchDirectories: ListProperty<Directory>
+    public val librarySearchDirectories: ListProperty<Directory>
+    public val libraryNames: ListProperty<String>
 
     //public val linkerArgs: ListProperty<String>
 
     public val initialHeaders: ListProperty<String>
+    public fun initialHeaders(vararg headers: String)
 
     // these are 'soft' filters:
     // it means that referenced declarations will be still included
@@ -105,4 +64,30 @@ public interface ForeignBaseCInterface {
 
     public fun includeFunctions(vararg patterns: String)
     public fun excludeFunctions(vararg patterns: String)
+}
+
+public interface ForeignJvmCInterfaceTarget : ForeignCInterfaceTarget {
+    //embeddedLibrariesPath=foreignLibs/*os* - should it be configurable?
+    //embeddedLibrariesHashing=true
+    //embedDynamicLibraries
+    //embedStaticLibraries
+    //embedLinkPaths - TODO?
+}
+
+public interface ForeignAndroidCInterfaceTarget : ForeignCInterfaceTarget {
+    //embeddedLibrariesPath=foreignLibs/*os* - should it be configurable?
+    //embeddedLibrariesHashing=true
+    //embedDynamicLibraries
+    //embedStaticLibraries
+    //embedLinkPaths - TODO?
+}
+
+public interface ForeignNativeCInterfaceTarget : ForeignCInterfaceTarget {
+    //embedStaticLibraries
+    //embedLinkPaths
+}
+
+public interface ForeignWasmCInterfaceTarget : ForeignCInterfaceTarget {
+    //embedStaticLibraries
+    //embedLinkPaths
 }

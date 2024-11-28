@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.gradle.plugin.internal
+package dev.whyoleg.foreign.gradle.internal
 
 import org.gradle.api.*
 import org.gradle.api.provider.*

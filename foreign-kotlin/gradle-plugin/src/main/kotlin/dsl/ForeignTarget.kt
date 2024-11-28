@@ -1,36 +1,19 @@
-package dev.whyoleg.foreign.gradle.plugin.dsl
+package dev.whyoleg.foreign.gradle.dsl
 
-// TODO: add os, family, arch, etc
-public sealed interface ForeignTarget {
-    public sealed interface Jvm : ForeignTarget
-    public sealed interface Android : ForeignTarget
-    public sealed interface Native : ForeignTarget
-    public sealed interface Js : ForeignTarget
-    public sealed interface WasmJs : ForeignTarget
+public enum class ForeignTarget {
+    MacosArm64,
+    MacosX64,
+    LinuxX64,
+    MingwX64,
 
-    public object MacosArm64 : Native, Jvm
-    public object MacosX64 : Native, Jvm
-    public object LinuxX64 : Native, Jvm
-    public object MingwX64 : Native, Jvm
+    IosDeviceArm64,
+    IosSimulatorArm64,
+    IosSimulatorX64,
 
-    public object IosDeviceArm64 : Native
-    public object IosSimulatorArm64 : Native
-    public object IosSimulatorX64 : Native
+    AndroidArm32,
+    AndroidArm64,
+    AndroidX64,
+    AndroidX86,
 
-    public object AndroidArm32 : Native, Android
-    public object AndroidArm64 : Native, Android
-    public object AndroidX64 : Native, Android
-    public object AndroidX86 : Native, Android
-
-    public object Wasm : Js, WasmJs
-
-    public val name: String get() = this.javaClass.simpleName // TODO: recheck
-}
-
-public enum class ForeignPlatform {
-    Jvm,
-    Android,
-    Native,
-    Js,
-    WasmJs
+    Wasm,
 }

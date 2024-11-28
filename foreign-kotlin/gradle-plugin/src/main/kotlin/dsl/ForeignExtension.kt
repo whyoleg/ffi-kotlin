@@ -1,11 +1,9 @@
-package dev.whyoleg.foreign.gradle.plugin.dsl
+package dev.whyoleg.foreign.gradle.dsl
 
-import dev.whyoleg.foreign.gradle.plugin.dsl.cinterface.*
+import dev.whyoleg.foreign.gradle.dsl.c.*
 import org.gradle.api.*
 
 public interface ForeignExtension {
-    public val cInterfaces: NamedDomainObjectContainer<out ForeignCInterface>
-    public fun cInterface(name: String, configure: ForeignCInterface.() -> Unit)
-
-    //public val toolchainDependencies: MapProperty<ToolchainDependency, FileSystemLocation>
+    public val interfaces: PolymorphicDomainObjectContainer<out ForeignInterface>
+    public fun c(name: String, configure: ForeignCInterface.() -> Unit)
 }
