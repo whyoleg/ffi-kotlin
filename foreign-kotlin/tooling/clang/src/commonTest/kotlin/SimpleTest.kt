@@ -1,24 +1,15 @@
-package dev.whyoleg.foreign.clang.compiler
+package dev.whyoleg.foreign.tooling.clang
 
-import dev.whyoleg.foreign.clang.api.*
-import dev.whyoleg.foreign.clang.arguments.*
-import kotlinx.io.*
+import dev.whyoleg.foreign.tooling.cxapi.*
 import kotlinx.io.files.*
 import kotlin.test.*
 import kotlin.time.*
 
 class SimpleTest {
 
-    private fun saveIndex(outputPath: String, index: CxIndex) {
-        val indexString = CxIndex.encode(index)
-        val path = Path(outputPath)
-        SystemFileSystem.createDirectories(path.parent!!)
-        SystemFileSystem.sink(path).buffered().use { it.writeString(indexString) }
-    }
-
     @Test
     fun testSingle() {
-        val temp = "/Users/Oleg.Yukhnevich/Projects/whyoleg/ffi-kotlin/foreign-kotlin/build/foreign-temp"
+        val tempPath = Path("build/foreign-temp")
         listOf(
             ClangTarget.MacosArm64,
             ClangTarget.MacosX64,
@@ -29,14 +20,14 @@ class SimpleTest {
             ClangTarget.IosSimulatorX64,
         ).forEach { target ->
             val index = ClangCompiler.buildIndex(
-                headersPath = createHeadersFile(setOf("openssl/bn.h")),
+                headers = setOf("openssl/bn.h"),
                 compilerArgs = openssl3CompilerArgs(target)
             )
             val filteredIndex = index.filter(
                 includedHeaderPatterns = listOf(Regex("openssl/bn\\.h"))
             )
-            saveIndex("$temp/$target/bn/index.json", index)
-            saveIndex("$temp/$target/bn/index.filtered.json", filteredIndex)
+            encode(Path(tempPath, "$target/bn/index.json"), index)
+            encode(Path(tempPath, "$target/bn/index.filtered.json"), filteredIndex)
         }
     }
 
@@ -81,7 +72,7 @@ class SimpleTest {
             println("[$indexP/${runs.size}] $targetP | $headerP: START")
             val (result, time) = measureTimedValue {
                 ClangCompiler.buildIndex(
-                    headersPath = createHeadersFile(setOf(header)),
+                    headers = setOf(header),
                     compilerArgs = openssl3CompilerArgs(target)
                 )
             }

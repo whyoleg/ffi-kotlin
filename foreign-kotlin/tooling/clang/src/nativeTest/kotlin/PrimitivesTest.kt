@@ -1,19 +1,17 @@
-package dev.whyoleg.foreign.clang.compiler
+package dev.whyoleg.foreign.tooling.clang
 
-import dev.whyoleg.foreign.clang.api.*
-import dev.whyoleg.foreign.clang.arguments.*
-import dev.whyoleg.foreign.clang.compiler.libclang.*
-import dev.whyoleg.foreign.clang.compiler.libclang.CXCursorKind.*
-import dev.whyoleg.foreign.clang.compiler.libclang.CXTypeKind.*
+import dev.whyoleg.foreign.tooling.clang.libclang.*
+import dev.whyoleg.foreign.tooling.clang.libclang.CXCursorKind.*
+import dev.whyoleg.foreign.tooling.clang.libclang.CXTypeKind.*
+import dev.whyoleg.foreign.tooling.cxapi.*
+import kotlinx.io.files.*
 import kotlin.test.*
 
 class PrimitivesTest {
 
     @Test
     fun test() {
-        val headersPath =
-            "/Users/Oleg.Yukhnevich/Projects/whyoleg/ffi-kotlin/foreign-kotlin/clang/compiler/src/commonTest/resources/primitives.h"
-
+        val headersPath = SystemFileSystem.resolve(Path("src/nativeTest/resources/primitives.h")).toString()
         listOf(
             ClangTarget.MacosArm64,
             ClangTarget.MacosX64,

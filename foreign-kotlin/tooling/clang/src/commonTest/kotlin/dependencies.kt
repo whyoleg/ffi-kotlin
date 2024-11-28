@@ -1,6 +1,5 @@
-package dev.whyoleg.foreign.clang.compiler
+package dev.whyoleg.foreign.tooling.clang
 
-import dev.whyoleg.foreign.clang.arguments.*
 import kotlinx.io.*
 import kotlinx.io.files.*
 import kotlin.random.*
@@ -15,8 +14,7 @@ private val compilerDependencies = ClangDependencies(
     iosSimulatorSdkPath = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk",
 )
 
-private val openssl3RootPath: String =
-    "/Users/Oleg.Yukhnevich/Projects/whyoleg/ffi-kotlin/foreign-kotlin/clang/compiler/build/tmp/setupOpenssl_v3_2"
+private val openssl3RootPath: String = TestConstants.OPENSSL3_ROOT_PATH
 
 private fun openssl3TargetDirName(target: ClangTarget): String = when (target) {
     ClangTarget.MacosArm64        -> "macos-arm64"

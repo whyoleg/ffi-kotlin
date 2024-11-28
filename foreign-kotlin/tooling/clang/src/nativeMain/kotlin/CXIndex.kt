@@ -1,6 +1,6 @@
-package dev.whyoleg.foreign.clang.compiler
+package dev.whyoleg.foreign.tooling.clang
 
-import dev.whyoleg.foreign.clang.compiler.libclang.*
+import dev.whyoleg.foreign.tooling.clang.libclang.*
 
 internal inline fun <R> useIndex(
     excludeDeclarationsFromPCH: Boolean = false, // disables visitChildren to visit declarations from imported translation units

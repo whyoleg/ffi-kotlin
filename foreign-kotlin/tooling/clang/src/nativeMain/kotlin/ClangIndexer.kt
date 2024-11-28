@@ -1,9 +1,9 @@
-package dev.whyoleg.foreign.clang.compiler
+package dev.whyoleg.foreign.tooling.clang
 
-import dev.whyoleg.foreign.clang.api.*
-import dev.whyoleg.foreign.clang.compiler.libclang.*
-import dev.whyoleg.foreign.clang.compiler.libclang.CXCursorKind.*
-import dev.whyoleg.foreign.clang.compiler.libclang.CXTypeKind.*
+import dev.whyoleg.foreign.tooling.clang.libclang.*
+import dev.whyoleg.foreign.tooling.clang.libclang.CXCursorKind.*
+import dev.whyoleg.foreign.tooling.clang.libclang.CXTypeKind.*
+import dev.whyoleg.foreign.tooling.cxapi.*
 import kotlinx.cinterop.*
 
 internal class ClangIndexer {

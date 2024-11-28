@@ -1,4 +1,4 @@
-package dev.whyoleg.foreign.clang.arguments
+package dev.whyoleg.foreign.tooling.clang
 
 public enum class ClangDependencyKind {
     LLVM,

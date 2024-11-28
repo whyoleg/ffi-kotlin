@@ -1,4 +1,4 @@
-package = dev.whyoleg.foreign.clang.compiler.libclang
+package = dev.whyoleg.foreign.tooling.clang.libclang
 headerFilter = clang-c/**
 headers = clang-c/Index.h
 

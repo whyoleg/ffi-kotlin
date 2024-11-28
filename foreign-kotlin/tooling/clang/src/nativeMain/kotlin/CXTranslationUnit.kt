@@ -1,7 +1,7 @@
-package dev.whyoleg.foreign.clang.compiler
+package dev.whyoleg.foreign.tooling.clang
 
-import dev.whyoleg.foreign.clang.compiler.libclang.*
-import dev.whyoleg.foreign.clang.compiler.libclang.CXDiagnosticSeverity.*
+import dev.whyoleg.foreign.tooling.clang.libclang.*
+import dev.whyoleg.foreign.tooling.clang.libclang.CXDiagnosticSeverity.*
 import kotlinx.cinterop.*
 
 internal val CXTranslationUnit.cursor: CValue<CXCursor> get() = clang_getTranslationUnitCursor(this)
