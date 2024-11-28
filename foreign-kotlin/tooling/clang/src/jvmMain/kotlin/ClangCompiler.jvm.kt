@@ -21,12 +21,13 @@ public actual object ClangCompiler {
     @OptIn(ExperimentalUuidApi::class)
     public actual fun buildIndex(
         headers: Set<String>,
-        compilerArgs: List<String>
+        compilerArgs: List<String>,
+        outputPath: String?
     ): CxIndex {
         val requestDirectoryPath = Path(temporaryDirectoryPath, "requests", Uuid.random().toString())
         SystemFileSystem.createDirectories(requestDirectoryPath)
         val inputFilePath = Path(requestDirectoryPath, "input")
-        val outputFilePath = Path(requestDirectoryPath, "output")
+        val outputFilePath = outputPath?.let(::Path) ?: Path(requestDirectoryPath, "output")
 
         encode<ClangCommand>(inputFilePath, ClangCommand.BuildIndex(headers, compilerArgs))
 

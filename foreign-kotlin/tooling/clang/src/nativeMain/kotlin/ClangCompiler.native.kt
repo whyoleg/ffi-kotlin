@@ -8,11 +8,16 @@ import kotlin.uuid.*
 public actual object ClangCompiler {
     public actual fun buildIndex(
         headers: Set<String>,
-        compilerArgs: List<String>
-    ): CxIndex = useIndex { index ->
-        val indexer = ClangIndexer()
-        useTranslationUnit(index, createHeadersFile(headers), compilerArgs, indexer::indexTranslationUnit)
-        indexer.buildIndex()
+        compilerArgs: List<String>,
+        outputPath: String?
+    ): CxIndex {
+        val index = useIndex { index ->
+            val indexer = ClangIndexer()
+            useTranslationUnit(index, createHeadersFile(headers), compilerArgs, indexer::indexTranslationUnit)
+            indexer.buildIndex()
+        }
+        outputPath?.let { encode(Path(it), index) }
+        return index
     }
 }
 

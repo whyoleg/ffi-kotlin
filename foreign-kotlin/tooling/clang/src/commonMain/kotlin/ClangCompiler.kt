@@ -10,7 +10,8 @@ import kotlinx.serialization.json.io.*
 public expect object ClangCompiler {
     public fun buildIndex(
         headers: Set<String>,
-        compilerArgs: List<String>
+        compilerArgs: List<String>,
+        outputPath: String? = null
     ): CxIndex
 }
 
