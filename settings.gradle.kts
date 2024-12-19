@@ -9,4 +9,4 @@ plugins {
 rootProject.name = "ffi-kotlin"
 
 includeBuild("foreign-kotlin")
-//includeBuild("samples")
+includeBuild("samples")

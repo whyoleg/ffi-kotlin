@@ -37,7 +37,6 @@ projects("foreign-kotlin", prefix = "foreign") {
 
     module("gradle-plugin", "gradle") {
         module("worker")
-        module("worker-classpath")
     }
 }
 

@@ -1,5 +1,6 @@
-package dev.whyoleg.foreign.gradle.worker
+package dev.whyoleg.foreign.gradle.tasks
 
+import dev.whyoleg.foreign.gradle.*
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.api.tasks.*
@@ -20,7 +21,7 @@ public abstract class ForeignWorkerTask : DefaultTask() {
     }
 }
 
-public fun Project.configureWorkerClasspath(task: TaskProvider<ForeignWorkerTask>) {
+internal fun Project.configureWorkerClasspath(task: TaskProvider<ForeignWorkerTask>) {
     val classpath = workerClasspath()
     task.configure {
         it.workerClasspath.from(classpath)
@@ -46,11 +47,11 @@ private fun Project.workerClasspath(): FileCollection {
 
     dependencies.add(
         FOREIGN_WORKER_CLASSPATH_CONFIGURATION,
-        "dev.whyoleg.foreign:foreign-gradle-worker-classpath:${WorkerConstants.VERSION}"
+        "dev.whyoleg.foreign:foreign-gradle-worker:${ForeignConstants.version}"
     )
 
     return configurationResolver
 }
 
 private const val FOREIGN_WORKER_CLASSPATH_CONFIGURATION = "foreign-worker-classpath"
-private const val FOREIGN_WORKER_CLASSPATH_RESOLVER_CONFIGURATION = "foreign-worker-resolver-classpath"
+private const val FOREIGN_WORKER_CLASSPATH_RESOLVER_CONFIGURATION = "foreign-worker-classpath-resolver"

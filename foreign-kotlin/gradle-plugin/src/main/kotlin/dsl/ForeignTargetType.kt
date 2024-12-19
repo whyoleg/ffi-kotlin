@@ -1,8 +1,12 @@
 package dev.whyoleg.foreign.gradle.dsl
 
-public enum class ForeignTarget {
+import org.gradle.api.*
+import java.io.*
+
+public enum class ForeignTargetType : Named, Serializable {
     MacosArm64,
     MacosX64,
+    LinuxArm64,
     LinuxX64,
     MingwX64,
 
@@ -15,5 +19,8 @@ public enum class ForeignTarget {
     AndroidX64,
     AndroidX86,
 
-    Wasm,
+    Wasm;
+
+    override fun toString(): String = name
+    override fun getName(): String = name
 }

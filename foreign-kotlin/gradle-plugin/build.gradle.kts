@@ -1,3 +1,5 @@
+import foreignbuild.*
+
 plugins {
     id("foreignbuild.kotlin-gradle")
     `java-gradle-plugin`
@@ -7,8 +9,7 @@ dependencies {
     compileOnly(kotlin("stdlib"))
     compileOnly(libs.kotlin.gradle.plugin)
     compileOnly(libs.android.gradle.plugin)
-
-    implementation(projects.foreignGradleWorker)
+    compileOnly(projects.foreignGradleWorker)
 }
 
 gradlePlugin {
@@ -18,4 +19,13 @@ gradlePlugin {
             implementationClass = "dev.whyoleg.foreign.gradle.ForeignPlugin"
         }
     }
+}
+
+registerGenerateConstantsTask("generateForeignConstants", kotlin.sourceSets.main) {
+    packageName = "dev.whyoleg.foreign.gradle"
+    className = "ForeignConstants"
+    properties.put(
+        "version",
+        provider { project.version.toString() }
+    )
 }
