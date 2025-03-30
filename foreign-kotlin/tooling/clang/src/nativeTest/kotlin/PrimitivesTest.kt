@@ -11,7 +11,7 @@ class PrimitivesTest {
 
     @Test
     fun test() {
-        val headersPath = SystemFileSystem.resolve(Path("src/nativeTest/resources/primitives.h")).toString()
+        val headersPath = SystemFileSystem.resolve(Path("src/nativeTest/resources/headers")).toString()
         listOf(
             ClangTarget.MacosArm64,
             ClangTarget.MacosX64,
@@ -23,7 +23,11 @@ class PrimitivesTest {
         ).forEach { target ->
             val types = mutableMapOf<CxNumber, Int>()
             useIndex { index ->
-                useTranslationUnit(index, headersPath, compilerArgs(target)) { translationUnit ->
+                useTranslationUnit(
+                    index = index,
+                    headers = setOf("primitives.h"),
+                    compilerArgs = compilerArgs(target)  + listOf("-I$headersPath")
+                ) { translationUnit ->
                     translationUnit.cursor.visitChildren { cursor ->
                         if (cursor.spelling != "primitives") return@visitChildren
 
