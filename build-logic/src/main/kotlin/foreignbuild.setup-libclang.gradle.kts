@@ -2,32 +2,32 @@ import foreignbuild.dependencies.*
 
 registerTarGzDependencySetupTask(
     "setupClangLibsLinuxX64",
-    "foreignbuild.kotlin-native:llvm-11.1.0-linux-x64-essentials@tar.gz"
+    "foreignbuild.kotlin-native:16.0.0-x86_64-linux:80@tar.gz"
 ) {
-    include("llvm-11.1.0-linux-x64-essentials/lib/libclang.so.11.1")
+    include("llvm-16.0.0-x86_64-linux-essentials-80/lib/libclang.so.16.0.6")
     eachFile { path = "libclang.so" }
 }
 
 registerZipDependencySetupTask(
     "setupClangLibsMingwX64",
-    "foreignbuild.kotlin-native:llvm-11.1.0-windows-x64-essentials@zip"
+    "foreignbuild.kotlin-native:16.0.0-x86_64-windows:56@zip"
 ) {
-    include("llvm-11.1.0-windows-x64-essentials/lib/libclang.lib")
+    include("llvm-16.0.0-x86_64-windows-essentials-56/lib/libclang.lib")
     eachFile { path = "libclang.lib" }
 }
 
 registerTarGzDependencySetupTask(
     "setupClangLibsMacosX64",
-    "foreignbuild.kotlin-native:apple-llvm-20200714-macos-x64-essentials@tar.gz"
+    "foreignbuild.kotlin-native:16.0.0-x86_64-macos:56@tar.gz"
 ) {
-    include("apple-llvm-20200714-macos-x64-essentials/lib/libclang.dylib")
+    include("llvm-16.0.0-x86_64-macos-essentials-56/lib/libclang.dylib")
     eachFile { path = "libclang.dylib" }
 }
 
 registerTarGzDependencySetupTask(
     "setupClangLibsMacosArm64",
-    "foreignbuild.kotlin-native:apple-llvm-20200714-macos-aarch64-essentials@tar.gz"
+    "foreignbuild.kotlin-native:16.0.0-aarch64-macos:65@tar.gz"
 ) {
-    include("apple-llvm-20200714-macos-aarch64-essentials/lib/libclang.dylib")
+    include("llvm-16.0.0-aarch64-macos-essentials-65/lib/libclang.dylib")
     eachFile { path = "libclang.dylib" }
 }

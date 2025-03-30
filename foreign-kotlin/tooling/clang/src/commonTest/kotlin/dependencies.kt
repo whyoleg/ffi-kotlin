@@ -6,7 +6,7 @@ import kotlin.random.*
 
 // TODO: fill those values via build config plugin
 private val compilerDependencies = ClangDependencies(
-    llvmPath = "/Users/Oleg.Yukhnevich/.konan/dependencies/apple-llvm-20200714-macos-aarch64-essentials",
+    llvmPath = "/Users/Oleg.Yukhnevich/.konan/dependencies/llvm-16.0.0-aarch64-macos-essentials-63",
     mingwToolchainPath = "/Users/Oleg.Yukhnevich/.konan/dependencies/msys2-mingw-w64-x86_64-2",
     linuxGccToolchainPath = "/Users/Oleg.Yukhnevich/.konan/dependencies/x86_64-unknown-linux-gnu-gcc-8.3.0-glibc-2.19-kernel-4.9-2",
     macosSdkPath = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk",
@@ -24,7 +24,6 @@ private fun openssl3TargetDirName(target: ClangTarget): String = when (target) {
     ClangTarget.IosDeviceArm64    -> "ios-device-arm64"
     ClangTarget.IosSimulatorArm64 -> "ios-simulator-arm64"
     ClangTarget.IosSimulatorX64   -> "ios-simulator-x64"
-    else                          -> TODO()
 }
 
 fun compilerArgs(target: ClangTarget): List<String> =

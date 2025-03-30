@@ -26,7 +26,7 @@ public fun ClangArguments.forTarget(
 ): List<String> {
     requireNotNull(dependencies.llvmPath) { "LLVM path is required" }
 
-    val isystemPath = "${dependencies.llvmPath}/lib/clang/11.1.0/include"
+    val isystemPath = "${dependencies.llvmPath}/lib/clang/16.0.0/include"
     val prefixPath = "${dependencies.llvmPath}/usr/bin"
     return when (target) {
         ClangTarget.MingwX64          -> mingwX64(
