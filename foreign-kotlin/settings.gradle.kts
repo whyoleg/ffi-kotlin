@@ -26,13 +26,15 @@ projects("foreign-kotlin", prefix = "foreign") {
         // uses chasm wasm runtime to execute wasm functions
         // module("chasm")
     }
-    folder("tooling") {
-        module("cxapi")
-        module("cbridge")
+    folder("tools", prefix = "tool") {
         // API and CLI to work with `libclang`
-        module("clang")
+        module("clang-api") // json serialized API for clang to be transferred between cli and user code
+        module("clang-compiler") // uses `libclang` to parse c declaration into `clang-api` models
+
         // generates code (C, Kotlin, etc)
-        module("codegen")
+        module("cbridge-api") // json serialized API to commonize and generate kotlin code
+        module("cbridge-commonizer") // takes `clang-api` models and converts them to N `cbridge-api` models
+        module("cbridge-codegen") // generates kotlin and c code based on `cbridge-api`, TBD, some metadata may need to be generated
     }
 
     module("gradle-plugin", "gradle") {

@@ -1,6 +1,6 @@
 package dev.whyoleg.foreign.gradle.workers
 
-import dev.whyoleg.foreign.tooling.clang.*
+import dev.whyoleg.foreign.tool.clang.compiler.*
 import org.gradle.api.file.*
 import org.gradle.api.provider.*
 import org.gradle.workers.*
