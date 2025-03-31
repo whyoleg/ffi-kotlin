@@ -61,16 +61,3 @@ dependencyResolutionManagement {
         )
     }
 }
-
-fun RepositoryHandler.remoteDistribution(url: String, subgroup: String, artifact: String) {
-    exclusiveContent {
-        filter { includeGroup("foreignbuild.$subgroup") }
-        forRepository {
-            ivy(url) {
-                name = "$subgroup distributions"
-                metadataSources { artifact() }
-                patternLayout { artifact(artifact) }
-            }
-        }
-    }
-}
