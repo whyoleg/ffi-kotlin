@@ -4,10 +4,10 @@ import kotlinx.serialization.*
 
 // TODO: may be add some meta information?
 // TODO: decide on builtins - there is only va_list + uint128_t
+// TODO: handle case when record/enum name is null, but there is typedef for it
 @Serializable
 public data class CxIndex(
     val variables: List<CxVariable>,
-    val unnamedEnumConstants: List<CxUnnamedEnumConstant>,
     val enums: List<CxEnum>,
     val typedefs: List<CxTypedef>,
     val records: List<CxRecord>,
@@ -44,11 +44,6 @@ public data class CxIndex(
             }
         }
 
-        fun CxRecordDefinition.collectIds() {
-            fields.forEach { it.type.collectIds() }
-            anonymousRecords.values.forEach { it.collectIds() }
-        }
-
         variables.forEach {
             it.type.collectIds()
         }
@@ -57,7 +52,7 @@ public data class CxIndex(
             it.resolvedType.collectIds()
         }
         records.forEach {
-            it.definition?.collectIds()
+            it.definition?.fields?.forEach { field -> field.type.collectIds() }
         }
         functions.forEach {
             it.returnType.collectIds()
@@ -85,12 +80,7 @@ public data class CxIndex(
         }
 
         stats("Typedefs", typedefIds, typedefs.mapTo(mutableSetOf()) { it.description.id })
-        stats("Records", recordIds, buildSet {
-            records.forEach {
-                add(it.description.id)
-                it.definition?.anonymousRecords?.keys?.let(::addAll)
-            }
-        })
+        stats("Records", recordIds, records.mapTo(mutableSetOf()) { it.description.id })
         stats("Enum", enumIds, enums.mapTo(mutableSetOf()) { it.description.id })
     }
 }
@@ -101,8 +91,6 @@ public fun CxIndex.filter(
     excludedHeaderPatterns: List<Regex> = emptyList(),
     includedVariablePatterns: List<Regex> = emptyList(),
     excludedVariablePatterns: List<Regex> = emptyList(),
-    includedUnnamedEnumConstantPatterns: List<Regex> = emptyList(),
-    excludedUnnamedEnumConstantPatterns: List<Regex> = emptyList(),
     includedEnumPatterns: List<Regex> = emptyList(),
     excludedEnumPatterns: List<Regex> = emptyList(),
     includedTypedefPatterns: List<Regex> = emptyList(),
@@ -113,7 +101,6 @@ public fun CxIndex.filter(
     excludedFunctionPatterns: List<Regex> = emptyList(),
 ): CxIndex {
     val referencedVariables = mutableSetOf<CxDeclarationId>()
-    val referencedUnnamedEnumConstants = mutableSetOf<CxDeclarationId>()
     val referencedEnums = mutableSetOf<CxDeclarationId>()
     val referencedTypedefs = mutableSetOf<CxDeclarationId>()
     val referencedRecords = mutableSetOf<CxDeclarationId>()
@@ -152,31 +139,27 @@ public fun CxIndex.filter(
         }
 
         when (this) {
-            is CxVariable            -> {
+            is CxVariable -> {
                 referencedVariables.add(description.id)
                 type.collectReferences()
             }
 
-            is CxUnnamedEnumConstant -> {
-                referencedUnnamedEnumConstants.add(description.id)
-            }
-
-            is CxEnum                -> {
+            is CxEnum     -> {
                 referencedEnums.add(description.id)
             }
 
-            is CxTypedef             -> {
+            is CxTypedef  -> {
                 referencedTypedefs.add(description.id)
                 aliasedType.collectReferences()
                 resolvedType.collectReferences()
             }
 
-            is CxRecord              -> {
+            is CxRecord   -> {
                 referencedRecords.add(description.id)
                 definition?.collectReferences()
             }
 
-            is CxFunction            -> {
+            is CxFunction -> {
                 referencedFunctions.add(description.id)
                 returnType.collectReferences()
                 parameters.forEach { it.type.collectReferences() }
@@ -186,12 +169,12 @@ public fun CxIndex.filter(
 
     fun <D : CxDeclaration> List<D>.collectReferences(
         includedDeclarationPatterns: List<Regex>,
-        excludedDeclatationPatterns: List<Regex>,
+        excludedDeclarationPatterns: List<Regex>,
     ) {
-        fun List<Regex>.matches(value: String) = any { it.matches(value) }
+        fun List<Regex>.matches(value: String?) = if (value == null) false else any { it.matches(value) }
         fun CxDeclaration.included(): Boolean = when {
             // exclusion goes first
-            excludedHeaderPatterns.matches(description.header) || excludedDeclatationPatterns.matches(description.name) -> false
+            excludedHeaderPatterns.matches(description.header) || excludedDeclarationPatterns.matches(description.name) -> false
             includedHeaderPatterns.matches(description.header) || includedDeclarationPatterns.matches(description.name) -> true
             else                                                                                                        -> false
         }
@@ -201,7 +184,6 @@ public fun CxIndex.filter(
     }
 
     variables.collectReferences(includedVariablePatterns, excludedVariablePatterns)
-    unnamedEnumConstants.collectReferences(includedUnnamedEnumConstantPatterns, excludedUnnamedEnumConstantPatterns)
     enums.collectReferences(includedEnumPatterns, excludedEnumPatterns)
     typedefs.collectReferences(includedTypedefPatterns, excludedTypedefPatterns)
     records.collectReferences(includedRecordPatterns, excludedRecordPatterns)
@@ -209,7 +191,6 @@ public fun CxIndex.filter(
 
     return CxIndex(
         variables = variables.filter { it.description.id in referencedVariables },
-        unnamedEnumConstants = unnamedEnumConstants.filter { it.description.id in referencedUnnamedEnumConstants },
         enums = enums.filter { it.description.id in referencedEnums },
         typedefs = typedefs.filter { it.description.id in referencedTypedefs },
         records = records.filter { it.description.id in referencedRecords },

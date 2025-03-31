@@ -13,17 +13,10 @@ internal class ClangIndexer {
     private val visited = mutableSetOf<CxDeclarationId>()
 
     private val variables = mutableMapOf<CxDeclarationId, CxVariable>()
-    private val unnamedEnumConstants = mutableMapOf<CxDeclarationId, CxUnnamedEnumConstant>()
     private val enums = mutableMapOf<CxDeclarationId, CxEnum>()
     private val typedefs = mutableMapOf<CxDeclarationId, CxTypedef>()
     private val records = mutableMapOf<CxDeclarationId, CxRecord>()
     private val functions = mutableMapOf<CxDeclarationId, CxFunction>()
-
-    // temporary fields, available only during indexing of unit
-    private val unnamedEnums = mutableMapOf<CxDeclarationId, CxEnum>()
-    private val unnamedRecords = mutableMapOf<CxDeclarationId, CxRecord>()
-
-    private val anonymousRecords = mutableMapOf<CxDeclarationId, CxRecord>()
 
     fun indexTranslationUnit(translationUnit: CXTranslationUnit) {
         // index includes first
@@ -60,39 +53,9 @@ internal class ClangIndexer {
             }
         }
 
-        // TODO: after this we could have typedef and record with the same name
-        //  typedef for such case should not be generated
-        // fix unnamed enums and records
-        typedefs.forEach { (_, typedef) ->
-            when (val type = typedef.aliasedType) {
-                is CxType.Record -> unnamedRecords.remove(type.id)?.let {
-                    records[type.id] = it.copy(description = it.description.copy(name = typedef.description.name))
-                }
-
-                is CxType.Enum   -> unnamedEnums.remove(type.id)?.let {
-                    enums[type.id] = it.copy(description = it.description.copy(name = typedef.description.name))
-                }
-
-                else             -> {}
-            }
-        }
-
-        check(unnamedRecords.isEmpty()) {
-            "there should be no unnamed records, but was: ${unnamedRecords.keys}"
-        }
-        check(unnamedEnums.isEmpty()) {
-            "there should be no unnamed enums, but was: ${unnamedEnums.keys}"
-        }
-        check(anonymousRecords.isEmpty()) {
-            "there should be no anonymous records, but was: ${anonymousRecords.keys}"
-        }
-        check(records.values.none { it.description.name.isEmpty() }) {
-            "there should be no records without name, but was: ${records.filter { it.value.description.name.isEmpty() }}"
-        }
-
         fun printBuiltins(type: String, declarations: Map<CxDeclarationId, CxDeclaration>) {
             declarations.forEach {
-                if (it.value.description.header.isEmpty()) println("  $type $it")
+                if (it.value.description.header.isNullOrEmpty()) println("  $type $it")
             }
         }
 
@@ -108,7 +71,6 @@ internal class ClangIndexer {
     fun buildIndex(): CxIndex {
         return CxIndex(
             variables = variables.values.toList(),
-            unnamedEnumConstants = unnamedEnumConstants.values.toList(),
             enums = enums.values.toList(),
             typedefs = typedefs.values.toList(),
             records = records.values.toList(),
@@ -132,11 +94,9 @@ internal class ClangIndexer {
 
     private fun description(cursor: CValue<CXCursor>): CxDeclarationDescription = CxDeclarationDescription(
         id = cursor.usr,
-        name = cursor.spelling ?: "",
-        header = when (val fileName = cursor.location.file?.fileName) {
-            null -> ""
-            else -> files.getValue(fileName)
-        }
+        name = if (cursor.isAnonymous) null else cursor.spelling,
+        isAnonymous = cursor.isAnonymous,
+        header = cursor.location.file?.fileName?.let(files::getValue)
     )
 
     private inline fun visit(cursor: CValue<CXCursor>, block: () -> Unit) {
@@ -152,18 +112,7 @@ internal class ClangIndexer {
 
     private fun visitEnum(cursor: CValue<CXCursor>) {
         visit(cursor) {
-            when {
-                // anonymous enums are just a bag of constants
-                cursor.isAnonymous -> cursor.visitChildren { constantCursor ->
-                    checkNotNull(constantCursor.spelling) { "Enum constant should have a name: ${constantCursor.debugString}" }
-                    unnamedEnumConstants.saveDeclaration(constantCursor, ::parseUnnamedEnumConstant)
-                }
-
-                else               -> when {
-                    cursor.spelling == null -> unnamedEnums
-                    else                    -> enums
-                }.saveDeclaration(cursor, ::parseEnum)
-            }
+            enums.saveDeclaration(cursor, ::parseEnum)
         }
     }
 
@@ -176,11 +125,7 @@ internal class ClangIndexer {
 
     private fun visitRecord(cursor: CValue<CXCursor>) {
         visit(cursor) {
-            when {
-                cursor.isAnonymous      -> anonymousRecords
-                cursor.spelling == null -> unnamedRecords
-                else                    -> records
-            }.saveDeclaration(cursor, ::parseRecord)
+            records.saveDeclaration(cursor, ::parseRecord)
         }
     }
 
@@ -225,19 +170,6 @@ internal class ClangIndexer {
         )
     }
 
-    private fun parseUnnamedEnumConstant(
-        description: CxDeclarationDescription,
-        cursor: CValue<CXCursor>
-    ): CxUnnamedEnumConstant {
-        cursor.ensureKind(CXCursor_EnumConstantDecl)
-
-        return CxUnnamedEnumConstant(
-            description = description,
-            value = clang_getEnumConstantDeclValue(cursor),
-            enumId = clang_getCursorLexicalParent(cursor).usr
-        )
-    }
-
     private fun parseTypedef(description: CxDeclarationDescription, cursor: CValue<CXCursor>): CxTypedef {
         cursor.ensureKind(CXCursor_TypedefDecl)
 
@@ -267,6 +199,40 @@ internal class ClangIndexer {
     private fun parseRecordDefinition(cursor: CValue<CXCursor>): CxRecordDefinition {
         val tag = cursor.debugString
 
+        val fields = mutableListOf<CxRecordField>()
+        val anonymousRecords = mutableSetOf<CxDeclarationId>()
+
+        cursor.visitChildren { fieldCursor ->
+            when (fieldCursor.kind) {
+                CXCursor_FieldDecl                      -> fields.add(
+                    CxRecordField(
+                        name = fieldCursor.spelling,
+                        type = parseType(tag, fieldCursor.type),
+                        // TODO: bit offset for anonymous records
+                        bitOffset = clang_Cursor_getOffsetOfField(fieldCursor).also {
+                            check(it >= 0) { "Unknown field offset $it field ${fieldCursor.debugString} in $tag" }
+                        },
+                        bitWidth = clang_getFieldDeclBitWidth(fieldCursor).takeIf { it > 0 }
+                    )
+                )
+
+                CXCursor_StructDecl, CXCursor_UnionDecl -> {
+                    visitRecord(fieldCursor)
+                    if (fieldCursor.isAnonymous) {
+                        anonymousRecords.add(fieldCursor.usr)
+                    }
+                }
+                // TODO: how to handle those?
+                CXCursor_UnexposedAttr,
+                CXCursor_PackedAttr,
+                CXCursor_AlignedAttr
+                                                        -> {
+                }
+
+                else                                    -> fieldCursor.throwWrongKind()
+            }
+        }
+
         return CxRecordDefinition(
             isUnion = when (cursor.kind) {
                 CXCursor_StructDecl -> false
@@ -275,53 +241,8 @@ internal class ClangIndexer {
             },
             byteSize = clang_Type_getSizeOf(cursor.type).also { check(it > 0) { "wrong sizeOf(=$it) result in $tag" } },
             byteAlignment = clang_Type_getAlignOf(cursor.type).also { check(it > 0) { "wrong alignOf(=$it) result in $tag" } },
-            fields = buildList {
-                cursor.visitChildren { fieldCursor ->
-                    when (fieldCursor.kind) {
-                        CXCursor_FieldDecl -> add(
-                            CxRecordField(
-                                name = fieldCursor.spelling,
-                                type = parseType(tag, fieldCursor.type),
-                                // TODO: bit offset for anonymous records
-                                bitOffset = clang_Cursor_getOffsetOfField(fieldCursor).also {
-                                    check(it >= 0) { "Unknown field offset $it field ${fieldCursor.debugString} in $tag" }
-                                },
-                                bitWidth = clang_getFieldDeclBitWidth(fieldCursor).takeIf { it > 0 }
-                            )
-                        )
-                        // such declarations will be parsed later
-                        CXCursor_StructDecl,
-                        CXCursor_UnionDecl -> {
-                        }
-                        // TODO: how to handle this?
-                        CXCursor_UnexposedAttr,
-                        CXCursor_PackedAttr,
-                        CXCursor_AlignedAttr
-                                           -> {
-                        }
-
-                        else               -> fieldCursor.throwWrongKind()
-                    }
-                }
-            },
-            anonymousRecords = buildMap {
-                cursor.visitChildren { recordCursor ->
-                    if (recordCursor.isAnonymous) when (recordCursor.kind) {
-                        CXCursor_StructDecl,
-                        CXCursor_UnionDecl -> {
-                            val id = recordCursor.usr
-                            if (id !in this) {
-                                val definition = checkNotNull(anonymousRecords.remove(id)) {
-                                    "anonymousRecord should be present for $id in $tag"
-                                }.definition ?: error("anonymousRecord should no be opaque in $tag")
-                                put(id, definition)
-                            }
-                        }
-
-                        else               -> {}
-                    }
-                }
-            }
+            fields = fields,
+            anonymousRecords = anonymousRecords
         )
     }
 
@@ -367,6 +288,7 @@ internal class ClangIndexer {
         CXType_Int128                -> CxType.Number(CxNumber.Int128)
         CXType_UInt128               -> CxType.Number(CxNumber.UnsignedInt128)
         CXType_Float                 -> CxType.Number(CxNumber.Float)
+        // TODO: add CXType_Float16?
         CXType_Double                -> CxType.Number(CxNumber.Double)
         CXType_LongDouble            -> CxType.Number(CxNumber.LongDouble)
 

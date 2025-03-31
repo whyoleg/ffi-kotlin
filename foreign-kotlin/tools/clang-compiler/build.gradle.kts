@@ -96,6 +96,7 @@ kotlin {
         }
     }
     sourceSets.jvmMain {
+        // TODO: include libclang.* inside
         resources.srcDir(copyClangLibs)
     }
 }

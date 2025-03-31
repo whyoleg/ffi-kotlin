@@ -3,14 +3,13 @@ package dev.whyoleg.foreign.tool.clang.api
 import kotlinx.serialization.*
 
 public typealias CxDeclarationId = String
-public typealias CxDeclarationName = String
-public typealias CxDeclarationHeader = String
 
 @Serializable
 public data class CxDeclarationDescription(
     val id: CxDeclarationId,
-    val name: CxDeclarationName,
-    val header: CxDeclarationHeader // TODO: empty string for builtins
+    val name: String?,
+    val isAnonymous: Boolean,
+    val header: String?
 )
 
 public sealed class CxDeclaration {
@@ -28,13 +27,6 @@ public data class CxVariable(
 public data class CxEnum(
     override val description: CxDeclarationDescription,
     val constants: List<CxEnumConstant>
-) : CxDeclaration()
-
-@Serializable
-public data class CxUnnamedEnumConstant(
-    override val description: CxDeclarationDescription,
-    val value: Long,
-    val enumId: CxDeclarationId // just for grouping
 ) : CxDeclaration()
 
 @Serializable
@@ -63,7 +55,7 @@ public data class CxRecordDefinition(
     val byteSize: Long,
     val byteAlignment: Long,
     val fields: List<CxRecordField>,
-    val anonymousRecords: Map<CxDeclarationId, CxRecordDefinition>
+    val anonymousRecords: Set<CxDeclarationId>
 )
 
 // TODO: field could have no name if it's a bit field
