@@ -5,29 +5,29 @@ import kotlinx.serialization.*
 public typealias CxDeclarationId = String
 
 @Serializable
-public data class CxDeclarationDescription(
+public data class CxDeclaration(
     val id: CxDeclarationId,
     val name: String?,
     val isAnonymous: Boolean,
-    val header: String?
+    val header: String?,
+    val data: CxDeclarationData
 )
 
-public sealed class CxDeclaration {
-    public abstract val description: CxDeclarationDescription
-}
-
 @Serializable
-public data class CxVariable(
-    override val description: CxDeclarationDescription,
+public sealed class CxDeclarationData
+
+@SerialName("variable")
+@Serializable
+public data class CxVariableData(
     val isConst: Boolean,
     val type: CxType,
-) : CxDeclaration()
+) : CxDeclarationData()
 
+@SerialName("enum")
 @Serializable
-public data class CxEnum(
-    override val description: CxDeclarationDescription,
+public data class CxEnumData(
     val constants: List<CxEnumConstant>
-) : CxDeclaration()
+) : CxDeclarationData()
 
 @Serializable
 public data class CxEnumConstant(
@@ -35,28 +35,27 @@ public data class CxEnumConstant(
     val value: Long
 )
 
+@SerialName("typedef")
 @Serializable
-public data class CxTypedef(
-    override val description: CxDeclarationDescription,
+public data class CxTypedefData(
     val aliasedType: CxType,
     val resolvedType: CxType
-) : CxDeclaration()
+) : CxDeclarationData()
 
 // https://stackoverflow.com/questions/38457109/c-how-to-access-different-types-of-anonymous-or-unnamed-nested-structs
+@SerialName("opaque")
 @Serializable
-public data class CxRecord(
-    override val description: CxDeclarationDescription,
-    val definition: CxRecordDefinition? // if null -> opaque
-) : CxDeclaration()
+public data object CxOpaqueData : CxDeclarationData()
 
+@SerialName("record")
 @Serializable
-public data class CxRecordDefinition(
+public data class CxRecordData(
     val isUnion: Boolean,
     val byteSize: Long,
     val byteAlignment: Long,
     val fields: List<CxRecordField>,
     val anonymousRecords: Set<CxDeclarationId>
-)
+) : CxDeclarationData()
 
 // TODO: field could have no name if it's a bit field
 //  decide how to work with bitfields
@@ -69,13 +68,13 @@ public data class CxRecordField(
     val bitWidth: Int?,
 )
 
+@SerialName("function")
 @Serializable
-public data class CxFunction(
-    override val description: CxDeclarationDescription,
+public data class CxFunctionData(
     val isVariadic: Boolean,
     val returnType: CxType,
     val parameters: List<CxFunctionParameter>,
-) : CxDeclaration()
+) : CxDeclarationData()
 
 @Serializable
 public data class CxFunctionParameter(

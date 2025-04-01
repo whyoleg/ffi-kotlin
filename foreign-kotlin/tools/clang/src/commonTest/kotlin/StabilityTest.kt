@@ -50,12 +50,7 @@ class StabilityTest {
             val targetP = target.toString().padEnd(targetL)
             val headerP = header.padEnd(headerL)
             println("[$indexP/${runs.size}] $targetP | $headerP : $time")
-            assertTrue(
-                result.enums.isNotEmpty() ||
-                        result.records.isNotEmpty() ||
-                        result.functions.isNotEmpty() ||
-                        result.typedefs.isNotEmpty()
-            )
+            assertTrue(result.declarations.isNotEmpty())
         }
     }
 }

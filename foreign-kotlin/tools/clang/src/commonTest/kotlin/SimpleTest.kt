@@ -78,13 +78,7 @@ class SimpleTest {
                 )
             }
             println("[$indexP/${runs.size}] $targetP | $headerP : $time")
-            assertTrue(
-                result.variables.isNotEmpty() || // TODO?
-                        result.enums.isNotEmpty() ||
-                        result.records.isNotEmpty() ||
-                        result.functions.isNotEmpty() ||
-                        result.typedefs.isNotEmpty()
-            )
+            assertTrue(result.declarations.isNotEmpty())
         }
     }
 }
