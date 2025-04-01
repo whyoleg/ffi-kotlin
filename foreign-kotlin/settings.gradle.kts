@@ -29,12 +29,14 @@ projects("foreign-kotlin", prefix = "foreign") {
     folder("tools", prefix = "tool") {
         // API and CLI to work with `libclang`
         module("clang-api") // json serialized API for clang to be transferred between cli and user code
-        module("clang-compiler") // uses `libclang` to parse c declaration into `clang-api` models
+        module("clang") // uses `libclang` to parse c declaration into `clang-api` models
+
+        // converts C-based declarations to Kotlin-based
+        module("cbridge-api") // json serialized API to commonize and generate kotlin code
+        module("cbridge") // takes `clang-api` models and converts them to N `cbridge-api` models
 
         // generates code (C, Kotlin, etc)
-        module("cbridge-api") // json serialized API to commonize and generate kotlin code
-        module("cbridge-commonizer") // takes `clang-api` models and converts them to N `cbridge-api` models
-        module("cbridge-codegen") // generates kotlin and c code based on `cbridge-api`, TBD, some metadata may need to be generated
+        module("codegen") // generates kotlin and c code based on `cbridge-api`, TBD, some metadata may need to be generated
     }
 
     module("gradle-plugin", "gradle") {

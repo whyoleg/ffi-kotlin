@@ -1,0 +1,16 @@
+package = dev.whyoleg.foreign.tool.libclang
+headerFilter = clang-c/**
+headers = clang-c/Index.h
+
+strictEnums = CXErrorCode \
+              CXCursorKind \
+              CXTypeKind \
+              CXIdxEntityKind \
+              CXIdxEntityRefKind \
+              CXIdxEntityLanguage \
+              CXSymbolRole \
+              CXDiagnosticSeverity
+
+linkerOpts.osx = -lclang
+linkerOpts.linux = -lclang
+linkerOpts.mingw = -llibclang

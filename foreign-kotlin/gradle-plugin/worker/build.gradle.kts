@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
-    api(projects.foreignToolClangCompiler)
-    api(projects.foreignToolCbridgeCodegen)
+    api(projects.foreignToolClang)
+    api(projects.foreignToolCbridge)
+    api(projects.foreignToolCodegen)
 }
