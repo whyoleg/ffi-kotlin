@@ -19,21 +19,24 @@ public data class CxIndex(
 
         fun CxType.collectIds() {
             when (this) {
-                is CxType.Pointer     -> pointed.collectIds()
-                is CxType.Array       -> elementType.collectIds()
-//                is CxType.Function    -> {
-//                    returnType.collectIds()
-//                    parameters.forEach(CxType::collectIds)
-//                }
+                is CxType.Pointer      -> pointed.collectIds()
+                is CxType.BlockPointer -> pointed.collectIds()
+                is CxType.Array        -> elementType.collectIds()
+                is CxType.Vector       -> elementType.collectIds()
+                is CxType.Function     -> {
+                    returnType.collectIds()
+                    parameters.forEach(CxType::collectIds)
+                }
 
-                is CxType.Enum        -> referenced.add(id)
-                is CxType.Record      -> referenced.add(id)
-                is CxType.Typedef     -> referenced.add(id)
+                is CxType.Enum         -> referenced.add(id)
+                is CxType.Record       -> referenced.add(id)
+                is CxType.Typedef      -> referenced.add(id)
 
                 CxType.Void,
-//                CxType.Bool,
+                CxType.Bool,
                 is CxType.Number,
-                is CxType.Unsupported -> {
+                is CxType.Complex,
+                is CxType.Unsupported  -> {
                 }
             }
         }
@@ -87,26 +90,29 @@ public fun CxIndex.filter(
     fun CxDeclaration.collectReferences() {
         fun CxType.collectReferences() {
             when (this) {
-                is CxType.Enum        -> referenced.add(id)
-                is CxType.Typedef     -> if (referenced.add(id)) {
+                is CxType.Enum         -> referenced.add(id)
+                is CxType.Typedef      -> if (referenced.add(id)) {
                     declarations.getValue(id).collectReferences()
                 }
 
-                is CxType.Record      -> if (referenced.add(id)) {
+                is CxType.Record       -> if (referenced.add(id)) {
                     declarations.getValue(id).collectReferences()
                 }
 
-                is CxType.Pointer     -> pointed.collectReferences()
-                is CxType.Array       -> elementType.collectReferences()
-//                is CxType.Function    -> {
-//                    returnType.collectReferences()
-//                    parameters.forEach { it.collectReferences() }
-//                }
+                is CxType.Pointer      -> pointed.collectReferences()
+                is CxType.BlockPointer -> pointed.collectReferences()
+                is CxType.Array        -> elementType.collectReferences()
+                is CxType.Vector       -> elementType.collectReferences()
+                is CxType.Function     -> {
+                    returnType.collectReferences()
+                    parameters.forEach { it.collectReferences() }
+                }
 
                 CxType.Void,
-//                CxType.Bool,
+                CxType.Bool,
                 is CxType.Number,
-                is CxType.Unsupported -> {
+                is CxType.Complex,
+                is CxType.Unsupported  -> {
                 }
             }
         }

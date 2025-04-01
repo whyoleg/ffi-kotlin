@@ -8,25 +8,37 @@ public sealed class CxType {
     @Serializable
     public data object Void : CxType()
 
-//    @SerialName("bool")
-//    @Serializable
-//    public data object Bool : CxType()
+    @SerialName("bool")
+    @Serializable
+    public data object Bool : CxType()
 
     @SerialName("number")
     @Serializable
     public data class Number(val value: CxNumber) : CxType()
 
+    @SerialName("complex")
+    @Serializable
+    public data class Complex(val value: CxNumber) : CxType()
+
     @SerialName("pointer")
     @Serializable
     public data class Pointer(val pointed: CxType) : CxType()
+
+    @SerialName("block_pointer")
+    @Serializable
+    public data class BlockPointer(val pointed: Function) : CxType()
 
     @SerialName("array")
     @Serializable
     public data class Array(val elementType: CxType, val size: Int?) : CxType()
 
-//    @SerialName("function")
-//    @Serializable
-//    public data class Function(val returnType: CxType, val parameters: List<CxType>) : CxType()
+    @SerialName("vector")
+    @Serializable
+    public data class Vector(val elementType: CxType, val size: Int) : CxType()
+
+    @SerialName("function")
+    @Serializable
+    public data class Function(val returnType: CxType, val parameters: List<CxType>) : CxType()
 
     @SerialName("typedef")
     @Serializable
