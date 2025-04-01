@@ -1,6 +1,7 @@
 package dev.whyoleg.foreign.tool.clang
 
 import dev.whyoleg.foreign.tool.clang.api.*
+import dev.whyoleg.foreign.tool.serialization.*
 import kotlinx.io.*
 import kotlinx.io.files.*
 import kotlinx.io.files.Path
@@ -29,11 +30,11 @@ public actual object ClangCompiler {
         val inputFilePath = Path(requestDirectoryPath, "input")
         val outputFilePath = outputPath?.let(::Path) ?: Path(requestDirectoryPath, "output")
 
-        encode<ClangCommand>(inputFilePath, ClangCommand.BuildIndex(headers, compilerArgs))
+        inputFilePath.encode<ClangCommand>(ClangCommand.BuildIndex(headers, compilerArgs))
 
         execute(inputFilePath, outputFilePath)
 
-        return decode(outputFilePath)
+        return outputFilePath.decode()
     }
 
     private fun execute(

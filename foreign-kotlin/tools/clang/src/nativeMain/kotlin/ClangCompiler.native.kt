@@ -1,6 +1,7 @@
 package dev.whyoleg.foreign.tool.clang
 
 import dev.whyoleg.foreign.tool.clang.api.*
+import dev.whyoleg.foreign.tool.serialization.*
 import kotlinx.io.files.*
 
 public actual object ClangCompiler {
@@ -14,7 +15,7 @@ public actual object ClangCompiler {
             useTranslationUnit(index, headers, compilerArgs, indexer::indexTranslationUnit)
             indexer.buildIndex()
         }
-        outputPath?.let { encode(Path(it), index) }
+        outputPath?.let(::Path)?.encode(index)
         return index
     }
 }
@@ -26,9 +27,8 @@ public fun main(args: Array<String>) {
     val inputFilePath = Path(args[0])
     val outputFilePath = Path(args[1])
 
-    when (val command = decode<ClangCommand>(inputFilePath)) {
-        is ClangCommand.BuildIndex -> encode(
-            outputFilePath,
+    when (val command = inputFilePath.decode<ClangCommand>()) {
+        is ClangCommand.BuildIndex -> outputFilePath.encode(
             ClangCompiler.buildIndex(command.headers, command.compilerArgs)
         )
     }

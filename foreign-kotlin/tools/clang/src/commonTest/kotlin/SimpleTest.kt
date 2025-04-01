@@ -1,6 +1,7 @@
 package dev.whyoleg.foreign.tool.clang
 
 import dev.whyoleg.foreign.tool.clang.api.*
+import dev.whyoleg.foreign.tool.serialization.*
 import kotlinx.io.files.*
 import kotlin.test.*
 import kotlin.time.*
@@ -26,8 +27,8 @@ class SimpleTest {
             val filteredIndex = index.filter(
                 includedHeaderPatterns = listOf(Regex("openssl/bn\\.h"))
             )
-            encode(Path(tempPath, "$target/bn/index.json"), index)
-            encode(Path(tempPath, "$target/bn/index.filtered.json"), filteredIndex)
+            Path(tempPath, "$target/bn/index.json").encode(index)
+            Path(tempPath, "$target/bn/index.filtered.json").encode(filteredIndex)
         }
     }
 

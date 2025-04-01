@@ -7,7 +7,7 @@ kotlin {
         commonMain.dependencies {
             api(projects.foreignToolCbridgeApi)
 
-            implementation(libs.kotlinx.io.core)
+            implementation(projects.foreignToolSerialization)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

@@ -27,6 +27,7 @@ projects("foreign-kotlin", prefix = "foreign") {
         // module("chasm")
     }
     folder("tools", prefix = "tool") {
+        module("serialization")
         // API and CLI to work with `libclang`
         module("clang-api") // json serialized API for clang to be transferred between cli and user code
         module("clang") // uses `libclang` to parse c declaration into `clang-api` models

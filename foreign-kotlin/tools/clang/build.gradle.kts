@@ -18,8 +18,7 @@ kotlin {
         commonMain.dependencies {
             api(projects.foreignToolClangApi)
 
-            implementation(libs.kotlinx.io.core)
-            implementation(libs.kotlinx.serialization.json.io)
+            implementation(projects.foreignToolSerialization)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

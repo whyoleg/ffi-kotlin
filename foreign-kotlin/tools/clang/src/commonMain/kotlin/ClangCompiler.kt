@@ -1,11 +1,7 @@
 package dev.whyoleg.foreign.tool.clang
 
 import dev.whyoleg.foreign.tool.clang.api.*
-import kotlinx.io.*
-import kotlinx.io.files.*
 import kotlinx.serialization.*
-import kotlinx.serialization.json.*
-import kotlinx.serialization.json.io.*
 
 public expect object ClangCompiler {
     public fun buildIndex(
@@ -22,24 +18,4 @@ internal sealed class ClangCommand {
         val headers: Set<String>,
         val compilerArgs: List<String>,
     ) : ClangCommand()
-}
-
-private val json = Json {
-    prettyPrint = true
-    classDiscriminator = "@kind"
-}
-
-@OptIn(ExperimentalSerializationApi::class)
-internal inline fun <reified T> decode(path: Path): T {
-    return SystemFileSystem.source(path).buffered().use {
-        json.decodeFromSource(it)
-    }
-}
-
-@OptIn(ExperimentalSerializationApi::class)
-internal inline fun <reified T> encode(path: Path, value: T) {
-    SystemFileSystem.createDirectories(path.parent!!)
-    return SystemFileSystem.sink(path).buffered().use {
-        json.encodeToSink(value, it)
-    }
 }
