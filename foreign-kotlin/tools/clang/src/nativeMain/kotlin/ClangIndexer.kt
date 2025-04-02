@@ -60,7 +60,7 @@ internal class ClangIndexer {
         println()
     }
 
-    fun buildIndex(): CxIndex = CxIndex(declarations)
+    fun buildIndex(): CxIndex = CxIndex(declarations.values.toList())
 
     private fun visit(cursor: CValue<CXCursor>, block: (cursor: CValue<CXCursor>) -> CxDeclarationData) {
         val id = cursor.usr

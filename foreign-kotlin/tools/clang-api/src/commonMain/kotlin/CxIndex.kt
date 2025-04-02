@@ -7,7 +7,7 @@ import kotlinx.serialization.*
 // TODO: handle case when record/enum name is null, but there is typedef for it
 @Serializable
 public data class CxIndex(
-    val declarations: Map<CxDeclarationId, CxDeclaration>
+    val declarations: List<CxDeclaration>
 ) {
 
     init {
@@ -68,13 +68,15 @@ public data class CxIndex(
             }
         }
 
-        declarations.values.forEach { it.data.collectIds() }
+        declarations.forEach { it.data.collectIds() }
 
-        check(declarations.keys.containsAll(referenced)) {
+        val declared = declarations.map(CxDeclaration::id).toSet()
+
+        check(declared.containsAll(referenced)) {
             """|missing:
-               |  referenced     : ${referenced.size}
-               |  declarations   : ${declarations.size}
-               |  inaccessible   : ${referenced - declarations.keys}
+               |  referenced   : ${referenced.size}
+               |  declared     : ${declared.size}
+               |  inaccessible : ${referenced - declared}
             """.trimMargin()
         }
     }
@@ -85,6 +87,7 @@ public fun CxIndex.filter(
     includedHeaderPatterns: List<Regex> = emptyList(),
     excludedHeaderPatterns: List<Regex> = emptyList(),
 ): CxIndex {
+    val declarationsMap = declarations.associateBy(CxDeclaration::id)
     val referenced = mutableSetOf<CxDeclarationId>()
 
     fun CxDeclaration.collectReferences() {
@@ -92,11 +95,11 @@ public fun CxIndex.filter(
             when (this) {
                 is CxType.Enum         -> referenced.add(id)
                 is CxType.Typedef      -> if (referenced.add(id)) {
-                    declarations.getValue(id).collectReferences()
+                    declarationsMap.getValue(id).collectReferences()
                 }
 
                 is CxType.Record       -> if (referenced.add(id)) {
-                    declarations.getValue(id).collectReferences()
+                    declarationsMap.getValue(id).collectReferences()
                 }
 
                 is CxType.Pointer      -> pointed.collectReferences()
@@ -156,11 +159,11 @@ public fun CxIndex.filter(
         else                                   -> false
     }
 
-    declarations.values.forEach { declaration ->
+    declarations.forEach { declaration ->
         if (declaration.included()) declaration.collectReferences()
     }
 
-    return CxIndex(declarations.filterKeys { it in referenced })
+    return CxIndex(declarations.filter { it.id in referenced })
 }
 
 // TODO: decide on unsupported filtering
