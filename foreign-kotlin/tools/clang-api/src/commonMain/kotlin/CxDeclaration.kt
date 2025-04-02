@@ -8,7 +8,6 @@ public typealias CxDeclarationId = String
 public data class CxDeclaration(
     val id: CxDeclarationId,
     val name: String?,
-    val isAnonymous: Boolean,
     val header: String?,
     val data: CxDeclarationData
 )

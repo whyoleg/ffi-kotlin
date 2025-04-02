@@ -8,9 +8,10 @@ import kotlin.time.*
 
 class SimpleTest {
 
+    val tempPath = Path("build/foreign-temp")
+
     @Test
     fun testSingle() {
-        val tempPath = Path("build/foreign-temp")
         listOf(
             ClangTarget.MacosArm64,
             ClangTarget.MacosX64,
@@ -79,6 +80,7 @@ class SimpleTest {
             }
             println("[$indexP/${runs.size}] $targetP | $headerP : $time")
             assertTrue(result.declarations.isNotEmpty())
+            Path(tempPath, "ALL/$target/${header}.json").encode(result)
         }
     }
 }

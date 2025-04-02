@@ -71,7 +71,6 @@ internal class ClangIndexer {
         val declaration = CxDeclaration(
             id = canonicalCursor.usr,
             name = if (canonicalCursor.isAnonymous) null else canonicalCursor.spelling,
-            isAnonymous = canonicalCursor.isAnonymous,
             header = canonicalCursor.location.file?.fileName?.let(files::getValue),
             data = data
         )
@@ -245,9 +244,7 @@ internal class ClangIndexer {
                 "_Complex long double", "long double _Complex" -> CxNumber.LongDouble
                 else                                           -> error("WRONG complex type ${type.spelling}")
             }
-        ).also {
-            println("!!!: $it")
-        }
+        )
 
         // artificial type
         CXType_Elaborated                            -> parseType(
