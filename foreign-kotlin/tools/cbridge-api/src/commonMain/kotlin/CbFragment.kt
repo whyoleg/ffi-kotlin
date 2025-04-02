@@ -16,16 +16,16 @@ public typealias CbFragmentName = String
 public data class CbFragment(
     public val name: CbFragmentName,
     public val target: CbTarget?, // null -> shared fragment
-    public val packages: Map<String, CbPackage>,
+    public val packages: List<CbPackage>,
 )
 
 @Serializable
 public data class CbPackage(
     val name: String,
-    val enums: Map<String, CbEnum>,
-    val properties: Map<String, CbProperty>,
-    val functions: Map<String, CbFunction>,
-    val classes: Map<String, CbClass>
+    val enums: List<CbEnum>,
+    val properties: List<CbProperty>,
+    val functions: List<CbFunction>,
+    val classes: List<CbClass>
 )
 
 //@JvmInline
