@@ -151,8 +151,10 @@ public fun CxIndex.filter(
         }
     }
 
-    fun List<Regex>.matches(value: String?) = if (value == null) false else any { it.matches(value) }
+    fun List<Regex>.matches(value: String) = any { it.matches(value) }
     fun CxDeclaration.included(): Boolean = when {
+        // include builtins by default
+        header == null                         -> true
         // exclusion goes first
         excludedHeaderPatterns.matches(header) -> false
         includedHeaderPatterns.matches(header) -> true
