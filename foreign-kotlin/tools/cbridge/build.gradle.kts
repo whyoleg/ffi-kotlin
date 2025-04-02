@@ -5,6 +5,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            api(projects.foreignToolClangApi)
             api(projects.foreignToolCbridgeApi)
 
             implementation(projects.foreignToolSerialization)
