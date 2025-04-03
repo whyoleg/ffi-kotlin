@@ -26,17 +26,25 @@ internal fun clangCompilerArguments(
     arguments.addAll(
         when (target) {
             ClangTarget.MingwX64          -> {
-                val mingwToolchainPath = required(ClangOption.MINGW_TOOLCHAIN_PATH)
+                val mingwToolchainPath = required(ClangOption.MINGW_X64_TOOLCHAIN_PATH)
                 listOf(
                     "--sysroot=${mingwToolchainPath}"
                 )
             }
 
             ClangTarget.LinuxX64          -> {
-                val gccToolchainPath = required(ClangOption.LINUX_GCC_TOOLCHAIN_PATH)
+                val gccToolchainPath = required(ClangOption.LINUX_X64_TOOLCHAIN_PATH)
                 listOf(
                     "--gcc-toolchain=$gccToolchainPath",
-                    "--sysroot=$gccToolchainPath/x86_64-unknown-linux-gnu/sysroot",
+                    "--sysroot=$gccToolchainPath/${target.llvmTarget}/sysroot",
+                )
+            }
+
+            ClangTarget.LinuxArm64          -> {
+                val gccToolchainPath = required(ClangOption.LINUX_ARM64_TOOLCHAIN_PATH)
+                listOf(
+                    "--gcc-toolchain=$gccToolchainPath",
+                    "--sysroot=$gccToolchainPath/${target.llvmTarget}/sysroot",
                 )
             }
 

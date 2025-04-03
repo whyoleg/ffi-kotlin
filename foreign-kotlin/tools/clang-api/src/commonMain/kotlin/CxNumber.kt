@@ -50,6 +50,10 @@ public class CxNumbers private constructor(
             longSize = Long.SIZE_BYTES,
             longDoubleSize = Long.SIZE_BYTES * 2
         )
+        public val LinuxArm64: CxNumbers = primitiveDataTypes(
+            longSize = Long.SIZE_BYTES,
+            longDoubleSize = Long.SIZE_BYTES * 2
+        )
         public val MingwX64: CxNumbers = primitiveDataTypes(
             longSize = Int.SIZE_BYTES,
             longDoubleSize = Long.SIZE_BYTES * 2

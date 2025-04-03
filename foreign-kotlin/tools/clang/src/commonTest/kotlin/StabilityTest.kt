@@ -12,6 +12,7 @@ class StabilityTest {
             ClangTarget.MacosX64,
             ClangTarget.MingwX64,
             ClangTarget.LinuxX64,
+            ClangTarget.LinuxArm64,
             ClangTarget.IosDeviceArm64,
             ClangTarget.IosSimulatorArm64,
             ClangTarget.IosSimulatorX64,

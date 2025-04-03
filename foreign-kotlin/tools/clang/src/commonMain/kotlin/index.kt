@@ -3,10 +3,12 @@ package dev.whyoleg.foreign.tool.clang
 import dev.whyoleg.foreign.tool.clang.api.*
 
 // TODO: support all K targets
+// TODO: take values from konan.properties
 public enum class ClangTarget(
     internal val llvmTarget: String
 ) {
     LinuxX64("x86_64-unknown-linux-gnu"),
+    LinuxArm64("aarch64-unknown-linux-gnu"),
     MingwX64("x86_64-pc-windows-gnu"),
     MacosArm64("arm64-apple-macos10.16"),
     MacosX64("x86_64-apple-macos10.13"),
@@ -20,8 +22,9 @@ public enum class ClangOption(
 ) {
     LLVM_PATH,
     LLVM_VERSION("16.0.0"),
-    MINGW_TOOLCHAIN_PATH,
-    LINUX_GCC_TOOLCHAIN_PATH,
+    MINGW_X64_TOOLCHAIN_PATH,
+    LINUX_X64_TOOLCHAIN_PATH,
+    LINUX_ARM64_TOOLCHAIN_PATH,
     MACOS_SDK_PATH,
     IOS_DEVICE_SDK_PATH,
     IOS_SIMULATOR_SDK_PATH

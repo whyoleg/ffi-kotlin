@@ -18,6 +18,7 @@ class PrimitivesTest {
             ClangTarget.MacosX64,
             ClangTarget.MingwX64,
             ClangTarget.LinuxX64,
+            ClangTarget.LinuxArm64,
             ClangTarget.IosDeviceArm64,
             ClangTarget.IosSimulatorArm64,
             ClangTarget.IosSimulatorX64,
@@ -70,6 +71,7 @@ class PrimitivesTest {
                 ClangTarget.MacosArm64        -> CxNumbers.MacosArm64
                 ClangTarget.MacosX64          -> CxNumbers.MacosX64
                 ClangTarget.LinuxX64          -> CxNumbers.LinuxX64
+                ClangTarget.LinuxArm64        -> CxNumbers.LinuxArm64
                 ClangTarget.MingwX64          -> CxNumbers.MingwX64
             }
             assertEquals(types, targetTypes.values, target.toString())
