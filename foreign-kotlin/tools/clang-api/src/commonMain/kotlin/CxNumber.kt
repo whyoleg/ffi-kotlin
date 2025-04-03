@@ -84,7 +84,7 @@ public class CxNumbers private constructor(
                 CxNumber.LongLong to Long.SIZE_BYTES,
                 CxNumber.UnsignedLongLong to Long.SIZE_BYTES,
                 CxNumber.Float to Int.SIZE_BYTES,
-                CxNumber.Float16 to Short.SIZE_BYTES, // TODO
+                //CxNumber.Float16 to Short.SIZE_BYTES, // TODO
                 CxNumber.Double to Long.SIZE_BYTES,
                 CxNumber.LongDouble to longDoubleSize,
                 CxNumber.Int128 to Long.SIZE_BYTES * 2,

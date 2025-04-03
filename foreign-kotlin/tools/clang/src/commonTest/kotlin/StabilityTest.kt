@@ -1,5 +1,6 @@
 package dev.whyoleg.foreign.tool.clang
 
+import dev.whyoleg.foreign.tool.clang.testenv.*
 import kotlin.test.*
 import kotlin.time.*
 
@@ -41,10 +42,7 @@ class StabilityTest {
 
         runs.shuffled().forEachIndexed { index, (target, header) ->
             val (result, time) = measureTimedValue {
-                ClangCompiler.buildIndex(
-                    headers = setOf(header),
-                    compilerArgs = openssl3CompilerArgs(target)
-                )
+                indexWithOpenssl3Headers(target, setOf(header))
             }
             val indexP = (index + 1).toString().padStart(indexL)
             val targetP = target.toString().padEnd(targetL)

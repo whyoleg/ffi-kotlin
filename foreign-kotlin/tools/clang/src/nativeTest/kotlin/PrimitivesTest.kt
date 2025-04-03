@@ -4,6 +4,7 @@ import dev.whyoleg.foreign.tool.libclang.*
 import dev.whyoleg.foreign.tool.libclang.CXCursorKind.*
 import dev.whyoleg.foreign.tool.libclang.CXTypeKind.*
 import dev.whyoleg.foreign.tool.clang.api.*
+import dev.whyoleg.foreign.tool.clang.testenv.*
 import kotlinx.io.files.*
 import kotlin.test.*
 
@@ -26,7 +27,7 @@ class PrimitivesTest {
                 useTranslationUnit(
                     index = index,
                     headers = setOf("primitives.h"),
-                    compilerArgs = compilerArgs(target)  + listOf("-I$headersPath")
+                    compilerArgs = clangCompilerArguments(target, TestenvOptions) + listOf("-I$headersPath")
                 ) { translationUnit ->
                     translationUnit.cursor.visitChildren { cursor ->
                         if (cursor.spelling != "primitives") return@visitChildren

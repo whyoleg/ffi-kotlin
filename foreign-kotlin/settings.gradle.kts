@@ -31,6 +31,7 @@ projects("foreign-kotlin", prefix = "foreign") {
         // API and CLI to work with `libclang`
         module("clang-api") // json serialized API for clang to be transferred between cli and user code
         module("clang") // uses `libclang` to parse c declaration into `clang-api` models
+        module("clang-testenv") // provides K/N and openssl for tests
 
         // converts C-based declarations to Kotlin-based
         module("cbridge-api") // json serialized API to commonize and generate kotlin code

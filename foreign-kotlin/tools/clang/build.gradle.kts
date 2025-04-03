@@ -10,7 +10,6 @@ plugins {
     alias(libs.plugins.kotlin.plugin.serialization)
 
     id("foreignbuild.setup-libclang")
-    id("foreignbuild.setup-openssl")
 }
 
 kotlin {
@@ -21,6 +20,7 @@ kotlin {
             implementation(projects.foreignToolSerialization)
         }
         commonTest.dependencies {
+            implementation(projects.foreignToolClangTestenv)
             implementation(kotlin("test"))
         }
     }
@@ -98,16 +98,6 @@ kotlin {
         // TODO: include libclang.* inside
         resources.srcDir(copyClangLibs)
     }
-}
-
-// generateConstants setup
-registerGenerateConstantsTask("generateClangTestConstants", kotlin.sourceSets.commonTest) {
-    packageName = "dev.whyoleg.foreign.tool.clang"
-    className = "TestConstants"
-    properties.put(
-        "OPENSSL3_ROOT_PATH",
-        openssl.v3_2.setupTask.map { it.outputDirectory.get().asFile.absolutePath }
-    )
 }
 
 fun setupClangLibsTask(konanTarget: KonanTarget) = when (konanTarget) {

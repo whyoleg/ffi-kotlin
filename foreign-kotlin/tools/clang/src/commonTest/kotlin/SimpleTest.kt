@@ -1,6 +1,7 @@
 package dev.whyoleg.foreign.tool.clang
 
 import dev.whyoleg.foreign.tool.clang.api.*
+import dev.whyoleg.foreign.tool.clang.testenv.*
 import dev.whyoleg.foreign.tool.serialization.*
 import kotlinx.io.files.*
 import kotlin.test.*
@@ -21,10 +22,7 @@ class SimpleTest {
             ClangTarget.IosSimulatorArm64,
             ClangTarget.IosSimulatorX64,
         ).forEach { target ->
-            val index = ClangCompiler.buildIndex(
-                headers = setOf("openssl/bn.h"),
-                compilerArgs = openssl3CompilerArgs(target)
-            )
+            val index = indexWithOpenssl3Headers(target, setOf("openssl/bn.h"))
             val filteredIndex = index.filter(
                 includedHeaderPatterns = listOf(Regex("openssl/bn\\.h"))
             )
@@ -73,10 +71,7 @@ class SimpleTest {
 
             println("[$indexP/${runs.size}] $targetP | $headerP: START")
             val (result, time) = measureTimedValue {
-                ClangCompiler.buildIndex(
-                    headers = setOf(header),
-                    compilerArgs = openssl3CompilerArgs(target)
-                )
+                indexWithOpenssl3Headers(target, setOf(header))
             }
             println("[$indexP/${runs.size}] $targetP | $headerP : $time")
             assertTrue(result.declarations.isNotEmpty())
