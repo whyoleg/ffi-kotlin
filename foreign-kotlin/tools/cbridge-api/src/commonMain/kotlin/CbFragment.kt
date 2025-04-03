@@ -10,8 +10,6 @@ public typealias CbFragmentName = String
 // enums = named enums
 // classes = records + opaque + typedefs
 
-// N*CxIndex -> M*CbFragment
-
 @Serializable
 public data class CbFragment(
     public val name: CbFragmentName,
