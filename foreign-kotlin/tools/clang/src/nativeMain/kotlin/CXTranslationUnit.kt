@@ -52,14 +52,21 @@ internal inline fun <R> useTranslationUnit(
         resultVar.value!!
     }
     try {
-        checkDiagnostics(translationUnit)
+        if (checkDiagnostics(translationUnit)) {
+            error(
+                """|"There were errors during parsing translation unit, please consult logged messages"
+                   |headers = $headers
+                   |arguments = ${compilerArgs.joinToString(" ")}
+                """.trimMargin()
+            )
+        }
         return block(translationUnit)
     } finally {
         clang_disposeTranslationUnit(translationUnit)
     }
 }
 
-private fun checkDiagnostics(translationUnit: CXTranslationUnit) {
+private fun checkDiagnostics(translationUnit: CXTranslationUnit): Boolean {
     // TODO: decide on options
     val options = clang_defaultDiagnosticDisplayOptions()
     var hasErrors = false
@@ -84,5 +91,5 @@ private fun checkDiagnostics(translationUnit: CXTranslationUnit) {
             clang_disposeDiagnostic(diagnostic)
         }
     }
-    check(!hasErrors) { "There were errors during parsing translation unit, please consult logged messages" }
+    return hasErrors
 }
