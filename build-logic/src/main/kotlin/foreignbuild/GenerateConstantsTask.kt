@@ -6,13 +6,23 @@ import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.*
 import org.jetbrains.kotlin.gradle.plugin.*
+import kotlin.reflect.*
 
 fun Project.registerGenerateConstantsTask(
     name: String,
     sourceSet: NamedDomainObjectProvider<KotlinSourceSet>,
     configure: GenerateConstantsTask.() -> Unit
 ): TaskProvider<GenerateConstantsTask> {
-    val task = tasks.register<GenerateConstantsTask>(name) {
+    return registerGenerateConstantsTask(name, GenerateConstantsTask::class, sourceSet, configure)
+}
+
+fun <T : GenerateConstantsTask> Project.registerGenerateConstantsTask(
+    name: String,
+    type: KClass<T>,
+    sourceSet: NamedDomainObjectProvider<KotlinSourceSet>,
+    configure: T.() -> Unit
+): TaskProvider<T> {
+    val task = tasks.register(name, type) {
         destinationDir = temporaryDir
         configure()
     }
